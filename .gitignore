@@ -1,0 +1,9 @@
+# Binaries
+target/
+
+# Misc
+.*.swp
+*~
+*.bak
+*.rs.bk
+
