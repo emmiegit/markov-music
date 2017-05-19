@@ -6,21 +6,30 @@ use std::fmt;
 use std::io;
 
 #[derive(Debug)]
+enum ErrorString {
+    Static(&'static str),
+    Dynamic(String),
+}
+
+#[derive(Debug)]
 pub struct Error {
-    message: &'static str,
+    message: ErrorString,
 }
 
 impl Error {
-    pub fn new(message: &'static str) -> Error {
+    pub fn new(msg: &'static str) -> Error {
         Error {
-            message: message,
+            message: ErrorString::Static(msg)
         }
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        self.message
+        match self.message {
+            ErrorString::Static(ref msg) => msg,
+            ErrorString::Dynamic(ref msg) => &msg,
+        }
     }
 
     fn cause(&self) -> Option<&error::Error> {
@@ -30,7 +39,11 @@ impl error::Error for Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error: {}", self.message)
+        let s = match self.message {
+            ErrorString::Static(ref msg) => msg,
+            ErrorString::Dynamic(ref msg) => &msg[..],
+        };
+        write!(f, "Error: {}", s)
     }
 }
 
@@ -38,9 +51,10 @@ impl fmt::Display for Error {
 impl convert::From<io::Error> for Error {
     fn from(error: io::Error) -> Error {
         Error {
-            //FIXME
-            //message: error.description(),
-            message: "I/O error",
+            message: {
+                let desc = error::Error::description(&error);
+                ErrorString::Dynamic(desc.to_string())
+            }
         }
     }
 }
@@ -48,9 +62,10 @@ impl convert::From<io::Error> for Error {
 impl convert::From<serde_json::Error> for Error {
     fn from(error: serde_json::Error) -> Error {
         Error {
-            //FIXME
-            //message: error.description(),
-            message: "JSON decoding error",
+            message: {
+                let desc = error::Error::description(&error);
+                ErrorString::Dynamic(desc.to_string())
+            }
         }
     }
 }
@@ -58,9 +73,10 @@ impl convert::From<serde_json::Error> for Error {
 impl convert::From<mpv::Error> for Error {
     fn from(error: mpv::Error) -> Error {
         Error {
-            //FIXME
-            //message: error.description(),
-            message: "MPV error",
+            message: {
+                let desc = error::Error::description(&error);
+                ErrorString::Dynamic(desc.to_string())
+            }
         }
     }
 }

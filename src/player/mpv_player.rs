@@ -30,7 +30,6 @@ impl Player for Mpv {
 
     // Playlist
     fn play(&mut self, song: &str) -> Result<(), Error> {
-        //FIXME when error is fixed
         match self.handle.command(&["loadfile", song, "replace"]) {
             Ok(_) => Ok(()),
             Err(e) => Err(Error::from(e)),
@@ -38,7 +37,6 @@ impl Player for Mpv {
     }
 
     fn enqueue(&mut self, song: &str) -> Result<(), Error> {
-        //FIXME when error is fixed
         match self.handle.command(&["loadfile", song, "append"]) {
             Ok(_) => Ok(()),
             Err(e) => Err(Error::from(e)),
