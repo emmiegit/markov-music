@@ -17,7 +17,7 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn new(msg: &'static str) -> Error {
+    pub fn new(msg: &'static str) -> Self {
         Error {
             message: ErrorString::Static(msg)
         }

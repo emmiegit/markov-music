@@ -1,24 +1,24 @@
 use error::Error;
 use mpv::{MpvHandler,MpvHandlerBuilder};
-use player::Player;
+use player::MediaPlayer;
 
-pub struct Mpv {
+pub struct MpvPlayer {
     handle: MpvHandler,
 }
 
-impl Mpv {
-    fn new() -> Mpv {
+impl MpvPlayer {
+    pub fn new() -> Self {
         let mut mpv_builder = MpvHandlerBuilder::new().expect("Failed to initialize MPV builder");
         mpv_builder.set_option("vo", "null").expect("Unable to disable video output");
         let mpv_handler = mpv_builder.build().expect("Unable to build MPV handler");
 
-        Mpv {
+        MpvPlayer {
             handle: mpv_handler,
         }
     }
 }
 
-impl Player for Mpv {
+impl MediaPlayer for MpvPlayer {
     // Player control
     fn set_pause(&mut self, pause: bool) {
         self.handle.set_property_async("pause", pause, 0).expect("Unable to set player pause");

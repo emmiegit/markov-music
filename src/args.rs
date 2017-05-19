@@ -20,6 +20,12 @@ pub fn parse_args() -> Result<Args, Error> {
              .takes_value(true)
              .value_name("FILE")
              .help("Use a specific configuration file instead of the default"))
+        .arg(Arg::with_name("player")
+             .short("P")
+             .long("player")
+             .takes_value(true)
+             .value_name("PLAYER")
+             .help("Specify which media player to use to play the music"))
         .arg(Arg::with_name("color")
              .long("color")
              .takes_value(true)
@@ -27,10 +33,14 @@ pub fn parse_args() -> Result<Args, Error> {
              .help("Specify when color output is used"))
         .get_matches();
 
-    let config = match matches.value_of("config") {
+    let mut config = match matches.value_of("config") {
         Some(path) => read_config(Path::new(path))?,
         None => read_default_config(),
     };
+
+    if let Some(player) = matches.value_of("player") {
+        config.set_player(player);
+    }
 
     let args = Args {
         config: config,

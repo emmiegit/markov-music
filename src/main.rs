@@ -9,6 +9,7 @@ extern crate termcolor;
 
 use args::{Args, parse_args};
 use error::Error;
+use selector::Selector;
 use std::io::Write;
 use std::process::exit;
 
@@ -16,6 +17,7 @@ mod args;
 mod config;
 mod error;
 mod player;
+mod selector;
 
 #[inline]
 fn print_error(err: Error) {
@@ -34,5 +36,6 @@ fn main() {
         }
     }
 
+    let mut selector = Selector::new(&args.config);
 
 }
