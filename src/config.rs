@@ -48,9 +48,13 @@ fn default_config() -> Config {
             let mut pathbuf = env::home_dir().expect("Unable to get home directory");
             pathbuf.push(MUSIC_DIR_NAME);
 
-            pathbuf.as_path().to_str().expect("Unable to convert path to string").to_string()
+            pathbuf
+                .as_path()
+                .to_str()
+                .expect("Unable to convert path to string")
+                .to_string()
         },
-        markov_storage_file: MARKOV_FILE_NAME.to_string()
+        markov_storage_file: MARKOV_FILE_NAME.to_string(),
     }
 }
 
@@ -66,7 +70,7 @@ pub fn read_default_config() -> Config {
             } else {
                 path.push(".config");
             }
-        },
+        }
         Err(_) => {
             path.push(".config");
         }

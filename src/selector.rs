@@ -16,8 +16,6 @@ impl Selector {
             }
         };
 
-        Ok(Selector {
-            player: player,
-        })
+        Ok(Selector { player: player })
     }
 }

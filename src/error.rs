@@ -18,9 +18,7 @@ pub struct Error {
 
 impl Error {
     pub fn new(msg: &'static str) -> Self {
-        Error {
-            message: ErrorString::Static(msg)
-        }
+        Error { message: ErrorString::Static(msg) }
     }
 }
 
@@ -54,7 +52,7 @@ impl convert::From<io::Error> for Error {
             message: {
                 let desc = error::Error::description(&error);
                 ErrorString::Dynamic(desc.to_string())
-            }
+            },
         }
     }
 }
@@ -65,7 +63,7 @@ impl convert::From<serde_json::Error> for Error {
             message: {
                 let desc = error::Error::description(&error);
                 ErrorString::Dynamic(desc.to_string())
-            }
+            },
         }
     }
 }
@@ -76,7 +74,7 @@ impl convert::From<mpv::Error> for Error {
             message: {
                 let desc = error::Error::description(&error);
                 ErrorString::Dynamic(desc.to_string())
-            }
+            },
         }
     }
 }
