@@ -29,7 +29,7 @@ pub fn parse_args() -> Result<Args, Error> {
 
     let config = match matches.value_of("config") {
         Some(path) => read_config(Path::new(path))?,
-        None => read_default_config()?,
+        None => read_default_config(),
     };
 
     let args = Args {

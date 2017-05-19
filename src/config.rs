@@ -2,7 +2,7 @@ use error::Error;
 use serde_json;
 use std::env;
 use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
@@ -32,7 +32,7 @@ fn default_config() -> Config {
     }
 }
 
-pub fn read_default_config() -> Result<Config, Error> {
+pub fn read_default_config() -> Config {
     const CONFIG_FILE: &str = "markov-music.json";
     let mut path = env::home_dir().expect("Unable to get home directory");
 
@@ -52,5 +52,8 @@ pub fn read_default_config() -> Result<Config, Error> {
 
     // Read "$CONFIG/markov-music/config.json"
     path.push(CONFIG_FILE);
-    read_config(path.as_path())
+    match read_config(path.as_path()) {
+        Ok(cfg) => cfg,
+        Err(_) => default_config(),
+    }
 }
