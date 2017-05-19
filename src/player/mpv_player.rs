@@ -20,8 +20,8 @@ impl Mpv {
 
 impl Player for Mpv {
     // Player control
-    fn set_pause(&mut self, state: bool) {
-        self.handle.set_property_async("pause", state, 0).expect("Unable to set player pause");
+    fn set_pause(&mut self, pause: bool) {
+        self.handle.set_property_async("pause", pause, 0).expect("Unable to set player pause");
     }
 
     fn get_pause(&self) -> bool {
@@ -30,11 +30,19 @@ impl Player for Mpv {
 
     // Playlist
     fn play(&mut self, song: &str) -> Result<(), Error> {
-        self.handle.command(&["loadfile", song, "replace"])
+        //FIXME when error is fixed
+        match self.handle.command(&["loadfile", song, "replace"]) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Error::from(e)),
+        }
     }
 
     fn enqueue(&mut self, song: &str) -> Result<(), Error> {
-        self.handle.command(&["loadfile", song, "append"])
+        //FIXME when error is fixed
+        match self.handle.command(&["loadfile", song, "append"]) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Error::from(e)),
+        }
     }
 
     fn clear(&mut self) {

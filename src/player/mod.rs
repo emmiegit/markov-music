@@ -4,10 +4,11 @@ mod mpv_player;
 
 pub trait Player {
     // Player control
-    fn set_pause(&mut self, state: bool);
+    fn set_pause(&mut self, pause: bool);
     fn get_pause(&self) -> bool;
     fn toggle_pause(&mut self) {
-        self.set_pause(!self.get_pause());
+        let pause = self.get_pause();
+        self.set_pause(!pause);
     }
 
     // Playlist

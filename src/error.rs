@@ -38,7 +38,9 @@ impl fmt::Display for Error {
 impl convert::From<io::Error> for Error {
     fn from(error: io::Error) -> Error {
         Error {
-            message: error.description(),
+            //FIXME
+            //message: error.description(),
+            message: "I/O error",
         }
     }
 }
@@ -46,7 +48,9 @@ impl convert::From<io::Error> for Error {
 impl convert::From<serde_json::Error> for Error {
     fn from(error: serde_json::Error) -> Error {
         Error {
-            message: error.description(),
+            //FIXME
+            //message: error.description(),
+            message: "JSON decoding error",
         }
     }
 }
@@ -54,7 +58,9 @@ impl convert::From<serde_json::Error> for Error {
 impl convert::From<mpv::Error> for Error {
     fn from(error: mpv::Error) -> Error {
         Error {
-            message: error.description(),
+            //FIXME
+            //message: error.description(),
+            message: "MPV error",
         }
     }
 }
