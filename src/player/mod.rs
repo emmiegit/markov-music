@@ -1,7 +1,9 @@
+pub use mpv_player::MpvPlayer;
+pub use player::Player;
 use error::Error;
 
-pub mod mpv_player;
-pub mod player;
+mod mpv_player;
+mod player;
 
 pub trait MediaPlayer {
     // Player control

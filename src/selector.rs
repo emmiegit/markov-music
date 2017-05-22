@@ -1,10 +1,13 @@
 use config::Config;
 use error::Error;
-use player::mpv_player::MpvPlayer;
-use player::player::Player;
+use markov::Chain;
+use player::MpvPlayer;
+use player::Player;
+use song::Song;
 
 pub struct Selector {
     player: Player,
+    chain: Chain<Song>,
 }
 
 impl Selector {
@@ -16,6 +19,9 @@ impl Selector {
             }
         };
 
-        Ok(Selector { player: player })
+        Ok(Selector {
+            player: player,
+            chain: Chain::new(
+        })
     }
 }
