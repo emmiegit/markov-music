@@ -11,8 +11,6 @@ impl Song {
 
         assert!(path.is_relative);
 
-        Song {
-            path: Box::new(path),
-        }
+        Song { path: Box::new(path) }
     }
 }

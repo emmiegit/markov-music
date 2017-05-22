@@ -20,8 +20,8 @@ impl Selector {
         };
 
         Ok(Selector {
-            player: player,
-            chain: Chain::new(
-        })
+               player: player,
+               chain: Chain::new(),
+           })
     }
 }

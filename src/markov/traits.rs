@@ -1,3 +1,1 @@
-pub trait Chainable: Eq + Hash<Hasher> {
-}
-
+pub trait Chainable: Eq + Hash<Hasher> {}
