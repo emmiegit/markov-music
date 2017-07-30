@@ -23,7 +23,7 @@ use rand::{thread_rng, Rng};
 use serde_json;
 use song::Song;
 use std::collections::HashMap;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::hash::Hash;
 use std::path::Path;
 
@@ -79,5 +79,20 @@ impl Chain {
             Some(probs) => roulette_wheel(&probs, &mut rng),
             None => None,
         }
+    }
+
+    pub fn possible_next(&self, current: &Song) -> Option<&HashMap<Song, u32>> {
+        self.assocs.get(current)
+    }
+
+    pub fn write(&self, path: &Path) -> Result<(), Error> {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path)?;
+        serde_json::to_writer(file, self)?;
+
+        Ok(())
     }
 }
