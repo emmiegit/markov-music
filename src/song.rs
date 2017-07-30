@@ -22,15 +22,24 @@ use std::path::Path;
 
 #[derive(Eq, Hash, PartialEq, Debug)]
 pub struct Song {
-    path: Box<Path>,
+    path: String,
 }
 
 impl Song {
     pub fn new(pathstr: &str) -> Self {
         let path = Path::new(pathstr);
+        assert!(path.is_relative());
 
-        assert!(path.is_relative);
+        Song {
+            path: String::from(pathstr),
+        }
+    }
 
-        Song { path: Box::new(path) }
+    pub fn get_str(&self) -> &str {
+        &self.path
+    }
+
+    pub fn get_path(&self) -> &Path {
+        Path::new(&self.path)
     }
 }

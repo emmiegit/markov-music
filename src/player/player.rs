@@ -27,13 +27,13 @@ pub enum Player {
 }
 
 impl Player {
-    fn get_inst<'a>(&'a self) -> &'a MediaPlayer {
+    fn get_inst(&self) -> &MediaPlayer {
         match self {
             &Player::Mpv(ref x) => x,
         }
     }
 
-    fn get_mut_inst<'a>(&'a mut self) -> &'a mut MediaPlayer {
+    fn get_mut_inst(&mut self) -> &mut MediaPlayer {
         match self {
             &mut Player::Mpv(ref mut x) => x,
         }

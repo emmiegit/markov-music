@@ -18,8 +18,8 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub use mpv_player::MpvPlayer;
-pub use player::Player;
+pub use self::mpv_player::MpvPlayer;
+pub use self::player::Player;
 use error::Error;
 
 mod mpv_player;
