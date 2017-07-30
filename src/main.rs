@@ -30,6 +30,8 @@ extern crate walkdir;
 extern crate serde_derive;
 
 use args::{Args, parse_args};
+use markov::Chain;
+use player::{MpvPlayer, Player};
 use std::process::exit;
 
 mod args;
@@ -48,6 +50,8 @@ fn main() {
         }
     };
 
+
+    let player = Player::Mpv(MpvPlayer::new());
 
     // TODO args.config
 }

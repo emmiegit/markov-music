@@ -20,7 +20,7 @@
 
 use std::path::Path;
 
-#[derive(Eq, Hash, PartialEq, Debug)]
+#[derive(Eq, Hash, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Song {
     path: String,
 }

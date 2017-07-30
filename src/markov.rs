@@ -18,9 +18,14 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use error::Error;
 use rand::{thread_rng, Rng};
+use serde_json;
+use song::Song;
 use std::collections::HashMap;
+use std::fs::File;
 use std::hash::Hash;
+use std::path::Path;
 
 fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> Option<&'a T> {
     let sum = map.values().sum::<u32>() as f32;
@@ -36,14 +41,13 @@ fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> 
     None
 }
 
-pub trait Chainable: Eq + Hash {}
-
-pub struct Chain<T: Chainable> {
-    assocs: HashMap<T, HashMap<T, u32>>,
-    start: HashMap<T, u32>,
+#[derive(Serialize, Deserialize)]
+pub struct Chain {
+    assocs: HashMap<Song, HashMap<Song, u32>>,
+    start: HashMap<Song, u32>,
 }
 
-impl<T: Chainable> Chain<T> {
+impl Chain {
     pub fn new() -> Self {
         Chain {
             assocs: HashMap::new(),
@@ -51,18 +55,25 @@ impl<T: Chainable> Chain<T> {
         }
     }
 
-    pub fn associate(&mut self, prev: T, next: T) {
+    pub fn read(path: &Path) -> Result<Self, Error> {
+        let file = File::open(path)?;
+        let config = serde_json::from_reader(file)?;
+
+        Ok(config)
+    }
+
+    pub fn associate(&mut self, prev: Song, next: Song) {
         let probs = self.assocs.entry(prev).or_insert_with(HashMap::new);
         let count = probs.entry(next).or_insert(0);
         *count += 1;
     }
 
-    pub fn start(&self) -> Option<&T> {
+    pub fn start(&self) -> Option<&Song> {
         let mut rng = thread_rng();
         roulette_wheel(&self.start, &mut rng)
     }
 
-    pub fn next(&self, current: &T) -> Option<&T> {
+    pub fn next(&self, current: &Song) -> Option<&Song> {
         let mut rng = thread_rng();
         match self.assocs.get(current) {
             Some(probs) => roulette_wheel(&probs, &mut rng),

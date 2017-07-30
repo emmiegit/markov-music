@@ -19,7 +19,7 @@
  */
 
 use clap::{App, Arg};
-use config::{Config, read_config, read_default_config};
+use config::Config;
 use error::Error;
 use std::path::Path;
 use termcolor::ColorChoice;
@@ -60,8 +60,8 @@ pub fn parse_args() -> Result<Args, Error> {
         .get_matches();
 
     let mut config = match matches.value_of("config") {
-        Some(path) => read_config(Path::new(path))?,
-        None => read_default_config(),
+        Some(path) => Config::read(Path::new(path))?,
+        None => Config::default(),
     };
 
     if let Some(player) = matches.value_of("player") {
