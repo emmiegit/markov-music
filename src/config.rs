@@ -80,6 +80,7 @@ fn default_config() -> Config {
 
 pub fn read_default_config() -> Config {
     const CONFIG_FILE: &str = "markov-music.json";
+    const CONFIG_DIR: &str = ".config";
     let mut path = env::home_dir().expect("Unable to get home directory");
 
     // Get configuration directory
@@ -88,11 +89,11 @@ pub fn read_default_config() -> Config {
             if val.len() > 0 {
                 path.push(val);
             } else {
-                path.push(".config");
+                path.push(CONFIG_DIR);
             }
         }
         Err(_) => {
-            path.push(".config");
+            path.push(CONFIG_DIR);
         }
     }
 

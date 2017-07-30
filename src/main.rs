@@ -40,16 +40,13 @@ mod player;
 mod song;
 
 fn main() {
-    let args: Args;
-    match parse_args() {
-        Ok(x) => {
-            args = x;
-        }
+    let args = match parse_args() {
+        Ok(x) => x,
         Err(e) => {
             println!("Error: {}", e);
             exit(1);
         }
-    }
+    };
 
 
     // TODO args.config
