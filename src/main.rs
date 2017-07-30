@@ -29,9 +29,11 @@ extern crate walkdir;
 #[macro_use]
 extern crate serde_derive;
 
-use args::{Args, parse_args};
+use args::parse_args;
 use markov::Chain;
 use player::{MpvPlayer, Player};
+use std::env;
+use std::path::Path;
 use std::process::exit;
 
 mod args;
@@ -41,17 +43,45 @@ mod markov;
 mod player;
 mod song;
 
+fn get_player(player_name: &str) -> Player {
+    match player_name {
+        "mpv" => Player::Mpv(MpvPlayer::new()),
+        _ => {
+            println!("Unknown type of player: '{}'", player_name);
+            exit(1);
+        }
+    }
+}
+
 fn main() {
     let args = match parse_args() {
         Ok(x) => x,
         Err(e) => {
-            println!("Error: {}", e);
+            println!("Error parsing arguments: {}", e);
             exit(1);
         }
     };
+    let config = &args.config;
 
+    let chain = {
+        let pathstr = &config.markov_storage_file;
+        let path = Path::new(pathstr);
+        match Chain::read(path) {
+            Ok(x) => x,
+            Err(e) => {
+                println!("Can't read markov data: {}", e);
+                exit(1);
+            }
+        };
+    };
 
-    let player = Player::Mpv(MpvPlayer::new());
+    if let Err(e) = env::set_current_dir(&config.music_dir) {
+        println!("Can't switch to music directory '{}': {}",
+                 config.music_dir, e);
+        exit(1);
+    }
+
+    let player = get_player(&config.player);
 
     // TODO args.config
 }

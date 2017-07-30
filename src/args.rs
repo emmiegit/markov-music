@@ -65,7 +65,7 @@ pub fn parse_args() -> Result<Args, Error> {
     };
 
     if let Some(player) = matches.value_of("player") {
-        config.set_player(player);
+        config.player = String::from(player);
     }
 
     const INVALID_COLOR_MODE: &str = "Color mode is not one of 'always', 'auto', or 'never'";

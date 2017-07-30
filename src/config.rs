@@ -26,9 +26,9 @@ use std::path::Path;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    player: String,
-    music_dir: String,
-    markov_storage_file: String,
+    pub player: String,
+    pub music_dir: String,
+    pub markov_storage_file: String,
 }
 
 impl Config {
@@ -87,21 +87,5 @@ impl Config {
             Ok(cfg) => cfg,
             Err(_) => Config::default_config(),
         }
-    }
-
-    pub fn set_player(&mut self, player: &str) {
-        self.player = player.to_string();
-    }
-
-    pub fn get_player(&self) -> &str {
-        &self.player
-    }
-
-    pub fn get_music_dir(&self) -> &str {
-        &self.music_dir
-    }
-
-    pub fn get_markov_storage_file(&self) -> &str {
-        &self.markov_storage_file
     }
 }
