@@ -30,9 +30,7 @@ impl Song {
         let path = Path::new(pathstr);
         assert!(path.is_relative());
 
-        Song {
-            path: String::from(pathstr),
-        }
+        Song { path: String::from(pathstr) }
     }
 
     pub fn get_str(&self) -> &str {

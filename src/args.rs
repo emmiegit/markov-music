@@ -34,23 +34,29 @@ pub fn parse_args() -> Result<Args, Error> {
         .version("0.0.1")
         .about("Music player that chooses music based on a Markov chain")
         .max_term_width(80)
-        .arg(Arg::with_name("config")
-                 .short("c")
-                 .long("config")
-                 .takes_value(true)
-                 .value_name("FILE")
-                 .help("Use a specific configuration file instead of the default"))
-        .arg(Arg::with_name("player")
-                 .short("P")
-                 .long("player")
-                 .takes_value(true)
-                 .value_name("PLAYER")
-                 .help("Specify which media player to use to play the music"))
-        .arg(Arg::with_name("color")
-                 .long("color")
-                 .takes_value(true)
-                 .value_name("WHEN")
-                 .help("Specify when color output is used"))
+        .arg(
+            Arg::with_name("config")
+                .short("c")
+                .long("config")
+                .takes_value(true)
+                .value_name("FILE")
+                .help("Use a specific configuration file instead of the default"),
+        )
+        .arg(
+            Arg::with_name("player")
+                .short("P")
+                .long("player")
+                .takes_value(true)
+                .value_name("PLAYER")
+                .help("Specify which media player to use to play the music"),
+        )
+        .arg(
+            Arg::with_name("color")
+                .long("color")
+                .takes_value(true)
+                .value_name("WHEN")
+                .help("Specify when color output is used"),
+        )
         .get_matches();
 
     let mut config = match matches.value_of("config") {
