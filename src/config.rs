@@ -66,7 +66,7 @@ impl Config {
     pub fn default() -> Self {
         const CONFIG_HOME: &str = ".config";
         const CONFIG_DIR: &str = "markov-music";
-        const CONFIG_FILE: &str = "markov-music.json";
+        const CONFIG_FILE: &str = "config.toml";
         let mut path = env::home_dir().expect("Unable to get home directory");
 
         println!("Using default configuration.");
@@ -85,7 +85,7 @@ impl Config {
             }
         }
 
-        // Read "$CONFIG/markov-music/config.json"
+        // Read "$CONFIG/markov-music/config.toml"
         path.push(CONFIG_DIR);
         path.push(CONFIG_FILE);
         match Config::read(path.as_path()) {
