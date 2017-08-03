@@ -23,6 +23,7 @@ use std::env;
 use std::fs::File;
 use std::path::Path;
 use std::io::prelude::Read;
+use super::HOME_DIR_PATH;
 use toml;
 
 #[derive(Debug, Deserialize)]
@@ -41,10 +42,10 @@ impl Config {
         Config {
             player: DEFAULT_PLAYER.to_string(),
             music_dir: {
-                let mut pathbuf = env::home_dir().expect("Unable to get home directory");
-                pathbuf.push(MUSIC_DIR_NAME);
+                let mut path = HOME_DIR_PATH.clone();
+                path.push(MUSIC_DIR_NAME);
 
-                pathbuf
+                path
                     .as_path()
                     .to_str()
                     .expect("Unable to convert path to string")
@@ -67,7 +68,7 @@ impl Config {
         const CONFIG_HOME: &str = ".config";
         const CONFIG_DIR: &str = "markov-music";
         const CONFIG_FILE: &str = "config.toml";
-        let mut path = env::home_dir().expect("Unable to get home directory");
+        let mut path = HOME_DIR_PATH.clone();
 
         // Get configuration directory
         match env::var("XDG_CONFIG_HOME") {
