@@ -24,6 +24,7 @@ extern crate rand;
 extern crate serde;
 extern crate serde_json;
 extern crate termion;
+extern crate toml;
 extern crate walkdir;
 
 #[macro_use]
@@ -35,6 +36,7 @@ use player::{MpvPlayer, Player};
 use std::env;
 use std::path::Path;
 use std::process::exit;
+use ui::CursesUI;
 
 mod args;
 mod config;
@@ -81,7 +83,11 @@ fn main() {
         exit(1);
     }
 
-    let player = get_player(&config.player);
-
-    // TODO args.config
+    let ui = match CursesUI::new(get_player(&config.player)) {
+        Ok(x) => x,
+        Err(e) => {
+            println!("Error opening curses UI: {}", e);
+            exit(1);
+        }
+    };
 }

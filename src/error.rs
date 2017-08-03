@@ -24,6 +24,7 @@ use std::convert;
 use std::error;
 use std::fmt;
 use std::io;
+use toml;
 
 #[derive(Debug)]
 enum ErrorString {
@@ -77,6 +78,17 @@ impl convert::From<io::Error> for Error {
     }
 }
 
+impl convert::From<mpv::Error> for Error {
+    fn from(error: mpv::Error) -> Error {
+        Error {
+            message: {
+                let desc = error::Error::description(&error);
+                ErrorString::Dynamic(desc.to_string())
+            },
+        }
+    }
+}
+
 impl convert::From<serde_json::Error> for Error {
     fn from(error: serde_json::Error) -> Error {
         Error {
@@ -88,8 +100,8 @@ impl convert::From<serde_json::Error> for Error {
     }
 }
 
-impl convert::From<mpv::Error> for Error {
-    fn from(error: mpv::Error) -> Error {
+impl convert::From<toml::de::Error> for Error {
+    fn from(error: toml::de::Error) -> Error {
         Error {
             message: {
                 let desc = error::Error::description(&error);

@@ -19,12 +19,13 @@
  */
 
 use error::Error;
-use serde_json;
 use std::env;
 use std::fs::File;
 use std::path::Path;
+use std::io::prelude::Read;
+use toml;
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Deserialize)]
 pub struct Config {
     pub player: String,
     pub music_dir: String,
@@ -54,8 +55,10 @@ impl Config {
     }
 
     pub fn read(path: &Path) -> Result<Self, Error> {
-        let file = File::open(path)?;
-        let config = serde_json::from_reader(file)?;
+        let mut file = File::open(path)?;
+        let mut contents = String::new();
+        let _ = file.read_to_string(&mut contents)?;
+        let config = toml::from_str(&contents)?;
 
         Ok(config)
     }
@@ -65,6 +68,8 @@ impl Config {
         const CONFIG_DIR: &str = "markov-music";
         const CONFIG_FILE: &str = "markov-music.json";
         let mut path = env::home_dir().expect("Unable to get home directory");
+
+        println!("Using default configuration.");
 
         // Get configuration directory
         match env::var("XDG_CONFIG_HOME") {
