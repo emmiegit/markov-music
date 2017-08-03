@@ -87,8 +87,11 @@ fn main() {
     };
 
     if let Err(e) = env::set_current_dir(&config.music_dir) {
-        println!("Can't switch to music directory '{}': {}",
-                 config.music_dir, e);
+        println!(
+            "Can't switch to music directory '{}': {}",
+            config.music_dir,
+            e
+        );
         exit(1);
     }
 

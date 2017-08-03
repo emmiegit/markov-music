@@ -91,7 +91,7 @@ impl Config {
             Err(e) => {
                 println!("{}\nUsing default configuration data", e);
                 Config::default_config()
-            },
+            }
         }
     }
 }

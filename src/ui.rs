@@ -32,7 +32,7 @@ pub struct CursesUI {
 
 impl CursesUI {
     pub fn new(player: Player) -> Result<CursesUI, Error> {
-        let mut ui = CursesUI { player: player, };
+        let mut ui = CursesUI { player: player };
         ui.full_redraw()?;
 
         Ok(ui)
@@ -56,9 +56,12 @@ impl CursesUI {
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
         let mut screen = AlternateScreen::from(stdout());
-        write!(screen, "{clear}{goto}",
-               clear = clear::All,
-               goto = cursor::Goto(1, 1))?;
+        write!(
+            screen,
+            "{clear}{goto}",
+            clear = clear::All,
+            goto = cursor::Goto(1, 1)
+        )?;
         screen.flush()?;
 
         Ok(())
