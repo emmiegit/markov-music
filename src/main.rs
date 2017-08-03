@@ -42,6 +42,7 @@ mod error;
 mod markov;
 mod player;
 mod song;
+mod ui;
 
 fn get_player(player_name: &str) -> Player {
     match player_name {
@@ -54,14 +55,13 @@ fn get_player(player_name: &str) -> Player {
 }
 
 fn main() {
-    let args = match parse_args() {
+    let config = match parse_args() {
         Ok(x) => x,
         Err(e) => {
             println!("Error parsing arguments: {}", e);
             exit(1);
         }
     };
-    let config = &args.config;
 
     let chain = {
         let pathstr = &config.markov_storage_file;
