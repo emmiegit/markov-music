@@ -27,42 +27,37 @@ use std::io;
 use toml;
 
 #[derive(Debug)]
-enum ErrorString {
-    Static(&'static str),
-    Dynamic(String),
+enum ErrorCause {
+    Io(io::Error),
+    Mpv(mpv::Error),
+    SerdeJson(serde_json::Error),
+    TomlDe(toml::de::Error),
 }
 
 #[derive(Debug)]
 pub struct Error {
-    message: ErrorString,
-}
-
-impl Error {
-    pub fn new(msg: &'static str) -> Self {
-        Error { message: ErrorString::Static(msg) }
-    }
+    message: String,
+    error: ErrorCause,
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        match self.message {
-            ErrorString::Static(ref msg) => msg,
-            ErrorString::Dynamic(ref msg) => &msg,
-        }
+        &self.message
     }
 
     fn cause(&self) -> Option<&error::Error> {
-        None
+        match self.error {
+            ErrorCause::Io(ref e) => Some(e),
+            ErrorCause::Mpv(ref e) => Some(e),
+            ErrorCause::SerdeJson(ref e) => Some(e),
+            ErrorCause::TomlDe(ref e) => Some(e),
+        }
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match self.message {
-            ErrorString::Static(ref msg) => msg,
-            ErrorString::Dynamic(ref msg) => &msg[..],
-        };
-        write!(f, "Error: {}", s)
+        write!(f, "Error: {}", &self.message)
     }
 }
 
@@ -70,10 +65,8 @@ impl fmt::Display for Error {
 impl convert::From<io::Error> for Error {
     fn from(error: io::Error) -> Error {
         Error {
-            message: {
-                let desc = error::Error::description(&error);
-                ErrorString::Dynamic(desc.to_string())
-            },
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::Io(error),
         }
     }
 }
@@ -81,10 +74,8 @@ impl convert::From<io::Error> for Error {
 impl convert::From<mpv::Error> for Error {
     fn from(error: mpv::Error) -> Error {
         Error {
-            message: {
-                let desc = error::Error::description(&error);
-                ErrorString::Dynamic(desc.to_string())
-            },
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::Mpv(error),
         }
     }
 }
@@ -92,10 +83,8 @@ impl convert::From<mpv::Error> for Error {
 impl convert::From<serde_json::Error> for Error {
     fn from(error: serde_json::Error) -> Error {
         Error {
-            message: {
-                let desc = error::Error::description(&error);
-                ErrorString::Dynamic(desc.to_string())
-            },
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::SerdeJson(error),
         }
     }
 }
@@ -103,10 +92,8 @@ impl convert::From<serde_json::Error> for Error {
 impl convert::From<toml::de::Error> for Error {
     fn from(error: toml::de::Error) -> Error {
         Error {
-            message: {
-                let desc = error::Error::description(&error);
-                ErrorString::Dynamic(desc.to_string())
-            },
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::TomlDe(error),
         }
     }
 }

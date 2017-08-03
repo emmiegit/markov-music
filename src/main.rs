@@ -66,8 +66,7 @@ fn main() {
     };
 
     let mut chain = {
-        let pathstr = &config.markov_storage_file;
-        let path = Path::new(pathstr);
+        let path = Path::new(&config.markov_storage_file);
         if path.exists() {
             match Chain::read(path) {
                 Ok(x) => x,
