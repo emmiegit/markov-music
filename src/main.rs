@@ -27,8 +27,10 @@ extern crate termion;
 extern crate toml;
 extern crate walkdir;
 
-#[macro_use] extern crate serde_derive;
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate serde_derive;
+#[macro_use]
+extern crate lazy_static;
 
 use args::parse_args;
 use error::Error;
@@ -50,7 +52,8 @@ mod ui;
 
 lazy_static! {
     pub static ref HOME_DIR_PATH: PathBuf = env::home_dir().expect("Unable to get home directory");
-    pub static ref HOME_DIR: &'static str = HOME_DIR_PATH.as_path().to_str().expect("Home directory not UTF-8");
+    pub static ref HOME_DIR: &'static str = HOME_DIR_PATH.as_path()
+        .to_str().expect("Home directory not UTF-8");
 }
 
 fn get_player(player_name: &str) -> Player {
@@ -73,8 +76,7 @@ fn main() {
     };
 
     if let Err(e) = env::set_current_dir(HOME_DIR_PATH.as_path()) {
-        println!("Can't switch to home directory '{}': {}",
-                 *HOME_DIR, e);
+        println!("Can't switch to home directory '{}': {}", *HOME_DIR, e);
         exit(1);
     }
 
@@ -87,7 +89,7 @@ fn main() {
         exit(1);
     }
 
-    let mut chain: MarkovChain = {
+    let chain: MarkovChain = {
         let path = Path::new(&config.storage_file);
         if path.exists() {
             match MarkovChain::read(path) {
@@ -108,7 +110,7 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    let mut ui = CursesUI::new(player);
+    let ui = CursesUI::new(player);
     if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);

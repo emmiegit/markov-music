@@ -27,8 +27,7 @@ use song::Song;
 use termion::{clear, cursor};
 use termion::raw::{IntoRawMode, RawTerminal};
 
-pub struct CursesUI
-{
+pub struct CursesUI {
     player: Player,
     term: RawTerminal<io::Stdout>,
 }
@@ -37,7 +36,9 @@ impl CursesUI {
     pub fn new(player: Player) -> CursesUI {
         CursesUI {
             player: player,
-            term: io::stdout().into_raw_mode().expect("Unable to get stdout in raw mode"),
+            term: io::stdout().into_raw_mode().expect(
+                "Unable to get stdout in raw mode",
+            ),
         }
     }
 

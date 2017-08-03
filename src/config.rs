@@ -45,8 +45,7 @@ impl Config {
                 let mut path = HOME_DIR_PATH.clone();
                 path.push(MUSIC_DIR_NAME);
 
-                path
-                    .as_path()
+                path.as_path()
                     .to_str()
                     .expect("Unable to convert path to string")
                     .to_string()
