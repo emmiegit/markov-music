@@ -69,8 +69,6 @@ impl Config {
         const CONFIG_FILE: &str = "config.toml";
         let mut path = env::home_dir().expect("Unable to get home directory");
 
-        println!("Using default configuration.");
-
         // Get configuration directory
         match env::var("XDG_CONFIG_HOME") {
             Ok(val) => {
@@ -90,7 +88,10 @@ impl Config {
         path.push(CONFIG_FILE);
         match Config::read(path.as_path()) {
             Ok(cfg) => cfg,
-            Err(_) => Config::default_config(),
+            Err(e) => {
+                println!("{}\nUsing default configuration data", e);
+                Config::default_config()
+            },
         }
     }
 }
