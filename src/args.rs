@@ -22,11 +22,9 @@ use clap::{App, Arg};
 use config::Config;
 use error::Error;
 use std::path::Path;
-use termcolor::ColorChoice;
 
 pub struct Args {
     pub config: Config,
-    pub color: ColorChoice,
 }
 
 pub fn parse_args() -> Result<Args, Error> {
@@ -50,13 +48,6 @@ pub fn parse_args() -> Result<Args, Error> {
                 .value_name("PLAYER")
                 .help("Specify which media player to use to play the music"),
         )
-        .arg(
-            Arg::with_name("color")
-                .long("color")
-                .takes_value(true)
-                .value_name("WHEN")
-                .help("Specify when color output is used"),
-        )
         .get_matches();
 
     let mut config = match matches.value_of("config") {
@@ -68,22 +59,8 @@ pub fn parse_args() -> Result<Args, Error> {
         config.player = String::from(player);
     }
 
-    const INVALID_COLOR_MODE: &str = "Color mode is not one of 'always', 'auto', or 'never'";
     let args = Args {
         config: config,
-        color: match matches.value_of("color") {
-            Some(mode) => {
-                match mode {
-                    "always" => ColorChoice::Always,
-                    "auto" => ColorChoice::Auto,
-                    "never" => ColorChoice::Never,
-                    _ => {
-                        return Err(Error::new(INVALID_COLOR_MODE));
-                    }
-                }
-            }
-            None => ColorChoice::Auto,
-        },
     };
 
     Ok(args)

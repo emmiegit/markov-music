@@ -23,7 +23,7 @@ extern crate mpv;
 extern crate rand;
 extern crate serde;
 extern crate serde_json;
-extern crate termcolor;
+extern crate termion;
 extern crate walkdir;
 
 #[macro_use]
