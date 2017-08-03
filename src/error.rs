@@ -57,7 +57,7 @@ impl error::Error for Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error: {}", &self.message)
+        write!(f, "{}", &self.message)
     }
 }
 
@@ -92,7 +92,7 @@ impl convert::From<serde_json::Error> for Error {
 impl convert::From<toml::de::Error> for Error {
     fn from(error: toml::de::Error) -> Error {
         Error {
-            message: error::Error::description(&error).to_string(),
+            message: format!("{}", &error),
             error: ErrorCause::TomlDe(error),
         }
     }

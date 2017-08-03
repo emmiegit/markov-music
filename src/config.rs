@@ -29,7 +29,7 @@ use toml;
 pub struct Config {
     pub player: String,
     pub music_dir: String,
-    pub markov_storage_file: String,
+    pub storage_file: String,
 }
 
 impl Config {
@@ -50,7 +50,7 @@ impl Config {
                     .expect("Unable to convert path to string")
                     .to_string()
             },
-            markov_storage_file: MARKOV_FILE_NAME.to_string(),
+            storage_file: MARKOV_FILE_NAME.to_string(),
         }
     }
 
@@ -89,7 +89,7 @@ impl Config {
         match Config::read(path.as_path()) {
             Ok(cfg) => cfg,
             Err(e) => {
-                println!("{}\nUsing default configuration data", e);
+                println!("Error: {} - using default configuration data", e);
                 Config::default_config()
             }
         }

@@ -65,8 +65,17 @@ fn main() {
         }
     };
 
+    if let Err(e) = env::set_current_dir(&config.music_dir) {
+        println!(
+            "Can't switch to music directory '{}': {}",
+            config.music_dir,
+            e
+        );
+        exit(1);
+    }
+
     let mut chain = {
-        let path = Path::new(&config.markov_storage_file);
+        let path = Path::new(&config.storage_file);
         if path.exists() {
             match Chain::read(path) {
                 Ok(x) => x,
@@ -84,15 +93,6 @@ fn main() {
             chain
         };
     };
-
-    if let Err(e) = env::set_current_dir(&config.music_dir) {
-        println!(
-            "Can't switch to music directory '{}': {}",
-            config.music_dir,
-            e
-        );
-        exit(1);
-    }
 
     let ui = match CursesUI::new(get_player(&config.player)) {
         Ok(x) => x,
