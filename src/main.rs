@@ -65,15 +65,24 @@ fn main() {
         }
     };
 
-    let chain = {
+    let mut chain = {
         let pathstr = &config.markov_storage_file;
         let path = Path::new(pathstr);
-        match Chain::read(path) {
-            Ok(x) => x,
-            Err(e) => {
-                println!("Can't read markov data: {}", e);
+        if path.exists() {
+            match Chain::read(path) {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("Can't read markov data: {}", e);
+                    exit(1);
+                }
+            }
+        } else {
+            let mut chain = Chain::new();
+            if let Err(e) = chain.write(path) {
+                println!("Can't write markov data: {}", e);
                 exit(1);
             }
+            chain
         };
     };
 
