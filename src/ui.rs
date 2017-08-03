@@ -31,11 +31,10 @@ pub struct CursesUI {
 }
 
 impl CursesUI {
-    pub fn new(player: Player) -> Result<CursesUI, Error> {
-        let mut ui = CursesUI { player: player };
-        ui.full_redraw()?;
-
-        Ok(ui)
+    pub fn new(player: Player) -> CursesUI {
+        CursesUI {
+            player: player,
+        }
     }
 
     pub fn pause(&mut self, value: bool) -> Result<(), Error> {

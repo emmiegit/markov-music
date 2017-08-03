@@ -31,6 +31,7 @@ extern crate walkdir;
 #[macro_use] extern crate lazy_static;
 
 use args::parse_args;
+use error::Error;
 use markov::Chain;
 use player::{MpvPlayer, Player};
 use std::env;
@@ -105,11 +106,15 @@ fn main() {
         };
     };
 
-    let ui = match CursesUI::new(get_player(&config.player)) {
-        Ok(x) => x,
-        Err(e) => {
-            println!("Error opening curses UI: {}", e);
-            exit(1);
-        }
-    };
+    let mut ui = CursesUI::new(get_player(&config.player));
+    if let Err(e) = ui_main(ui) {
+        println!("Error in main loop: {}", e);
+        exit(1);
+    }
+}
+
+fn ui_main(mut ui: CursesUI) -> Result<(), Error> {
+    ui.full_redraw()?;
+
+    Ok(())
 }
