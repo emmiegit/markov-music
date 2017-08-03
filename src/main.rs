@@ -35,6 +35,7 @@ use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
 use std::env;
+use std::io;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 use ui::CursesUI;
@@ -106,7 +107,8 @@ fn main() {
         }
     };
 
-    let mut ui = CursesUI::new(get_player(&config.player));
+    let player = get_player(&config.player);
+    let mut ui = CursesUI::new(player);
     if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);

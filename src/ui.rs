@@ -21,47 +21,34 @@
 use error::Error;
 use player::Player;
 use std::path::Path;
+use std::io;
+use std::io::Write;
 use song::Song;
-use std::io::{Write, stdout};
 use termion::{clear, cursor};
-use termion::screen::AlternateScreen;
+use termion::raw::{IntoRawMode, RawTerminal};
 
-pub struct CursesUI {
+pub struct CursesUI
+{
     player: Player,
+    term: RawTerminal<io::Stdout>,
 }
 
 impl CursesUI {
     pub fn new(player: Player) -> CursesUI {
         CursesUI {
             player: player,
+            term: io::stdout().into_raw_mode().expect("Unable to get stdout in raw mode"),
         }
     }
 
-    pub fn pause(&mut self, value: bool) -> Result<(), Error> {
-        unimplemented!();
-    }
-
-    pub fn volume(&mut self, value: u8) -> Result<(), Error> {
-        unimplemented!();
-    }
-
-    pub fn playing(&mut self, song: &Song) -> Result<(), Error> {
-        unimplemented!();
-    }
-
-    pub fn current_dir(&mut self, path: &Path) -> Result<(), Error> {
-        unimplemented!();
-    }
-
     pub fn full_redraw(&mut self) -> Result<(), Error> {
-        let mut screen = AlternateScreen::from(stdout());
         write!(
-            screen,
+            self.term,
             "{clear}{goto}",
             clear = clear::All,
             goto = cursor::Goto(1, 1)
         )?;
-        screen.flush()?;
+        self.term.flush()?;
 
         Ok(())
     }
