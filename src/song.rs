@@ -20,7 +20,7 @@
 
 use std::path::Path;
 
-#[derive(Eq, Hash, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Hash, Debug, Serialize, Deserialize)]
 pub struct Song {
     path: String,
 }
@@ -34,10 +34,16 @@ impl Song {
     }
 
     pub fn get_str(&self) -> &str {
-        &self.path
+        &*self.path
     }
 
     pub fn get_path(&self) -> &Path {
-        Path::new(&self.path)
+        Path::new(&*self.path)
+    }
+}
+
+impl Clone for Song {
+    fn clone(&self) -> Self {
+        Song { path: self.path.clone() }
     }
 }

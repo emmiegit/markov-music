@@ -41,7 +41,7 @@ fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> 
     None
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Chain {
     assocs: HashMap<Song, HashMap<Song, u32>>,
     start: HashMap<Song, u32>,
