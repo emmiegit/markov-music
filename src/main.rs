@@ -32,7 +32,7 @@ extern crate walkdir;
 
 use args::parse_args;
 use error::Error;
-use markov::Chain;
+use markov::MarkovChain;
 use player::{MpvPlayer, Player};
 use std::env;
 use std::path::{Path, PathBuf};
@@ -86,10 +86,10 @@ fn main() {
         exit(1);
     }
 
-    let mut chain = {
+    let mut chain: MarkovChain = {
         let path = Path::new(&config.storage_file);
         if path.exists() {
-            match Chain::read(path) {
+            match MarkovChain::read(path) {
                 Ok(x) => x,
                 Err(e) => {
                     println!("Can't read markov data: {}", e);
@@ -97,23 +97,23 @@ fn main() {
                 }
             }
         } else {
-            let mut chain = Chain::new();
+            let mut chain = MarkovChain::new();
             if let Err(e) = chain.write(path) {
                 println!("Can't write markov data: {}", e);
                 exit(1);
             }
             chain
-        };
+        }
     };
 
     let mut ui = CursesUI::new(get_player(&config.player));
-    if let Err(e) = ui_main(ui) {
+    if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
-fn ui_main(mut ui: CursesUI) -> Result<(), Error> {
+fn main_loop(mut ui: CursesUI, mut chain: MarkovChain) -> Result<(), Error> {
     ui.full_redraw()?;
 
     Ok(())
