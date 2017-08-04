@@ -1,0 +1,15 @@
+# What music player to use
+# Currently only supports mpv
+player = "mpv"
+
+# The name of your music directory
+# If this is a relative path, it's
+# relative to your home directory.
+music_dir = "music"
+
+# The file to create and manage in
+# your music directory
+storage_file = ".markov_music.json"
+
+# Use these if your terminal doesn't support unicode
+ascii_chars = false
