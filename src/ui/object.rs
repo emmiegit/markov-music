@@ -20,8 +20,7 @@
 
 use config::Config;
 use ui::output::Output;
-use super::{Error, Player, Song};
-use std::path::Path;
+use super::{Error, Player};
 use std::io;
 use termion::input::TermRead;
 use termion::event::Key;
@@ -49,12 +48,13 @@ impl Ui {
         }
     }
 
-    fn get_output(&mut self) -> Output<AlternateScreen<RawTerminal<io::Stdout>>> {
+    fn get_output(&mut self) -> Result<Output<AlternateScreen<RawTerminal<io::Stdout>>>, Error>
+    {
         Output::new(&mut self.output, &self.config)
     }
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
-        let mut output = self.get_output();
+        let mut output = self.get_output()?;
         output.clear()?;
         output.draw_box()?;
         output.flush()?;

@@ -20,24 +20,35 @@
 
 use mpv;
 use serde_json;
-use std::convert;
 use std::error;
 use std::fmt;
 use std::io;
 use toml;
 
 #[derive(Debug)]
-enum ErrorCause {
+pub enum ErrorCause {
     Io(io::Error),
     Mpv(mpv::Error),
     SerdeJson(serde_json::Error),
     TomlDe(toml::de::Error),
+    NoCause(),
 }
 
 #[derive(Debug)]
 pub struct Error {
     message: String,
     error: ErrorCause,
+}
+
+impl Error {
+    pub fn new<M>(message: M, error: ErrorCause) -> Self
+        where M: Into<String>
+    {
+        Error {
+            message: message.into(),
+            error: error,
+        }
+    }
 }
 
 impl error::Error for Error {
@@ -51,6 +62,7 @@ impl error::Error for Error {
             ErrorCause::Mpv(ref e) => Some(e),
             ErrorCause::SerdeJson(ref e) => Some(e),
             ErrorCause::TomlDe(ref e) => Some(e),
+            ErrorCause::NoCause() => None,
         }
     }
 }

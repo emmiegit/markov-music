@@ -30,25 +30,28 @@ where
     W: Write,
 {
     out: &'a mut W,
-    config: &'a Config,
+    chars: &'static Chars,
+    cols: u16,
+    rows: u16,
 }
 
 impl<'a, W> Output<'a, W>
 where
     W: Write,
 {
-    pub fn new(out: &'a mut W, config: &'a Config) -> Self {
-        Output {
+    pub fn new(out: &'a mut W, config: &'a Config) -> Result<Self, Error> {
+        let (cols, rows) = terminal_size()?;
+        let output = Output {
             out: out,
-            config: config,
-        }
-    }
+            chars: match config.ascii_chars {
+                true => &ASCII_CHARS,
+                false => &BOX_CHARS,
+            },
+            cols: cols,
+            rows: rows,
+        };
 
-    fn get_chars(&self) -> &'static Chars {
-        match self.config.ascii_chars {
-            true => &ASCII_CHARS,
-            false => &BOX_CHARS,
-        }
+        Ok(output)
     }
 
     pub fn clear(&mut self) -> Result<(), Error> {
@@ -64,41 +67,42 @@ where
     }
 
     pub fn draw_box(&mut self) -> Result<(), Error> {
-        let (cols, rows) = terminal_size()?;
-        let chars = self.get_chars();
-
         // Draw top
-        write!(self.out, "{}{}", cursor::Goto(1, 1), chars.corner_top_left)?;
-        for _ in 0..(cols - 2) {
-            write!(self.out, "{}", chars.bar_horizontal)?;
+        write!(self.out, "{}{}", cursor::Goto(1, 1), self.chars.corner_top_left)?;
+        for _ in 0..(self.cols - 2) {
+            write!(self.out, "{}", self.chars.bar_horizontal)?;
         }
-        write!(self.out, "{}", chars.corner_top_right)?;
+        write!(self.out, "{}", self.chars.corner_top_right)?;
 
         // Draw bottom
         write!(
             self.out,
             "{}{}",
-            cursor::Goto(1, rows),
-            chars.corner_bottom_left
+            cursor::Goto(1, self.rows),
+            self.chars.corner_bottom_left
         )?;
-        for _ in 0..(cols - 2) {
-            write!(self.out, "{}", chars.bar_horizontal)?;
+        for _ in 0..(self.cols - 2) {
+            write!(self.out, "{}", self.chars.bar_horizontal)?;
         }
-        write!(self.out, "{}", chars.corner_bottom_right)?;
+        write!(self.out, "{}", self.chars.corner_bottom_right)?;
 
         // Draw sides
-        write!(self.out, "{}", cursor::Goto(1, 2));
-        for i in 0..(rows - 1) {
+        write!(self.out, "{}", cursor::Goto(1, 2))?;
+        for i in 0..(self.rows - 1) {
             write!(
                 self.out,
                 "{}{}{}{}",
-                chars.bar_vertical,
-                cursor::Right(cols - 2),
-                chars.bar_vertical,
+                self.chars.bar_vertical,
+                cursor::Right(self.cols - 2),
+                self.chars.bar_vertical,
                 cursor::Goto(1, i + 2)
             )?;
         }
 
         Ok(())
+    }
+
+    pub fn draw_directory(&mut self) -> Result<(), Error> {
+        unimplemented!();
     }
 }

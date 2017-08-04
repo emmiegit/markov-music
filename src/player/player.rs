@@ -21,6 +21,7 @@
 use error::Error;
 use player::MediaPlayer;
 use player::mpv_player::MpvPlayer;
+use std::path::Path;
 
 pub enum Player {
     Mpv(MpvPlayer),
@@ -51,6 +52,14 @@ impl MediaPlayer for Player {
 
     fn play(&mut self, song: &str) -> Result<(), Error> {
         self.get_mut_inst().play(song)
+    }
+
+    fn get_current_dir<'a>(&'a self) -> &'a Path {
+        self.get_inst().get_current_dir()
+    }
+
+    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
+        self.get_mut_inst().set_current_dir(path)
     }
 
     fn enqueue(&mut self, song: &str) -> Result<(), Error> {

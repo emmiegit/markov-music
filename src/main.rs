@@ -37,9 +37,9 @@ use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::exit;
-use ui::{Ui, UiConfig};
+use ui::Ui;
 use utils::{HOME_DIR, HOME_DIR_PATH};
 
 mod args;
@@ -95,7 +95,7 @@ fn main() {
                 }
             }
         } else {
-            let mut chain = MarkovChain::new();
+            let chain = MarkovChain::new();
             if let Err(e) = chain.write(path) {
                 println!("Can't write markov data: {}", e);
                 exit(1);

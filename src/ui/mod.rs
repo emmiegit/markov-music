@@ -18,14 +18,12 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub use self::config::Config as UiConfig;
 pub use self::object::Ui;
 pub use super::error::Error;
 pub use super::player::Player;
 pub use super::song::Song;
 
 mod chars;
-mod config;
 mod input;
 mod object;
 mod output;

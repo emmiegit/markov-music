@@ -23,7 +23,6 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::Read;
 use std::path::Path;
-use ui::UiConfig;
 use utils::HOME_DIR_PATH;
 use toml;
 

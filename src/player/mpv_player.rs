@@ -18,12 +18,15 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
+use error::{Error, ErrorCause};
 use mpv::{MpvHandler, MpvHandlerBuilder};
 use player::MediaPlayer;
+use std::env;
+use std::path::{Path, PathBuf};
 
 pub struct MpvPlayer {
     handle: MpvHandler,
+    path: PathBuf,
 }
 
 impl MpvPlayer {
@@ -34,7 +37,10 @@ impl MpvPlayer {
         );
         let mpv_handler = mpv_builder.build().expect("Unable to build MPV handler");
 
-        MpvPlayer { handle: mpv_handler }
+        MpvPlayer {
+            handle: mpv_handler,
+            path: env::current_dir().expect("Unable to get current directory"),
+        }
     }
 }
 
@@ -50,6 +56,22 @@ impl MediaPlayer for MpvPlayer {
         self.handle.get_property("pause").expect(
             "Unable to get player pause",
         )
+    }
+
+    // Navigator
+    fn get_current_dir<'a>(&'a self) -> &'a Path {
+        &self.path
+    }
+
+    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
+        if path.is_dir() {
+            self.path = PathBuf::from(path);
+            Ok(())
+        } else {
+            let message = format!("Not a directory: {}",
+                        path.to_str().unwrap_or("<invalid UTF-8>"));
+            Err(Error::new(message, ErrorCause::NoCause()))
+        }
     }
 
     // Playlist

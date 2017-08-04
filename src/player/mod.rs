@@ -20,6 +20,7 @@
 
 pub use self::mpv_player::MpvPlayer;
 pub use self::player::Player;
+use std::path::Path;
 use error::Error;
 
 mod mpv_player;
@@ -33,6 +34,10 @@ pub trait MediaPlayer {
         let pause = self.get_pause();
         self.set_pause(!pause);
     }
+
+    // Navigator
+    fn get_current_dir<'a>(&'a self) -> &'a Path;
+    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error>;
 
     // Playlist
     fn play(&mut self, song: &str) -> Result<(), Error>;
