@@ -36,11 +36,11 @@ use args::parse_args;
 use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
-use std::env;
-use std::io;
+use std::{env, io};
 use std::path::{Path, PathBuf};
 use std::process::exit;
-use ui::CursesUI;
+use ui::UI;
+use utils::{HOME_DIR, HOME_DIR_PATH};
 
 mod args;
 mod config;
@@ -49,12 +49,7 @@ mod markov;
 mod player;
 mod song;
 mod ui;
-
-lazy_static! {
-    pub static ref HOME_DIR_PATH: PathBuf = env::home_dir().expect("Unable to get home directory");
-    pub static ref HOME_DIR: &'static str = HOME_DIR_PATH.as_path()
-        .to_str().expect("Home directory not UTF-8");
-}
+mod utils;
 
 fn get_player(player_name: &str) -> Player {
     match player_name {
@@ -110,14 +105,14 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    let ui = CursesUI::new(player);
+    let ui = UI::new(player);
     if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(mut ui: CursesUI, mut chain: MarkovChain) -> Result<(), Error> {
+fn main_loop(mut ui: UI, mut chain: MarkovChain) -> Result<(), Error> {
     ui.full_redraw()?;
 
     Ok(())

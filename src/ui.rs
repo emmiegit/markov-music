@@ -24,33 +24,36 @@ use std::path::Path;
 use std::io;
 use std::io::Write;
 use song::Song;
-use termion::{clear, cursor};
+use termion::{clear, cursor, terminal_size};
+use termion::screen::AlternateScreen;
 use termion::raw::{IntoRawMode, RawTerminal};
 
-pub struct CursesUI {
+pub struct UI {
     player: Player,
-    term: RawTerminal<io::Stdout>,
+    term: AlternateScreen<RawTerminal<io::Stdout>>,
 }
 
-impl CursesUI {
-    pub fn new(player: Player) -> CursesUI {
-        CursesUI {
+impl UI {
+    pub fn new(player: Player) -> UI {
+        let raw_stdout = io::stdout().into_raw_mode().expect("Unable to get stdout in raw mode");
+
+        UI {
             player: player,
-            term: io::stdout().into_raw_mode().expect(
-                "Unable to get stdout in raw mode",
-            ),
+            term: AlternateScreen::from(raw_stdout),
         }
     }
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
-        write!(
-            self.term,
-            "{clear}{goto}",
-            clear = clear::All,
-            goto = cursor::Goto(1, 1)
-        )?;
+        let (rows, cols) = terminal_size()?;
+
+        write!(self.term, "{}{}╭", clear::All, cursor::Goto(1, 1))?;
+
         self.term.flush()?;
 
         Ok(())
+    }
+
+    pub fn redraw(&mut self) -> Result<(), Error> {
+        unimplemented!();
     }
 }

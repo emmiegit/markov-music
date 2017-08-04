@@ -23,7 +23,7 @@ use std::env;
 use std::fs::File;
 use std::path::Path;
 use std::io::prelude::Read;
-use super::HOME_DIR_PATH;
+use utils::HOME_DIR_PATH;
 use toml;
 
 #[derive(Debug, Deserialize)]
