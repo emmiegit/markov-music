@@ -1,5 +1,5 @@
 /*
- * ui/mod.rs
+ * ui/input.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -18,14 +18,4 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub use self::config::Config as UiConfig;
-pub use self::object::Ui as Ui;
-pub use super::error::Error;
-pub use super::player::Player;
-pub use super::song::Song;
-
-mod chars;
-mod config;
-mod input;
-mod object;
-mod output;
+// TODO

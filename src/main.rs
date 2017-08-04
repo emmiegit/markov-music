@@ -39,7 +39,7 @@ use player::{MpvPlayer, Player};
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::exit;
-use ui::UI;
+use ui::{Ui, UiConfig};
 use utils::{HOME_DIR, HOME_DIR_PATH};
 
 mod args;
@@ -105,15 +105,17 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    let ui = UI::new(player);
+    let ui = Ui::new(player, config);
     if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(mut ui: UI, mut chain: MarkovChain) -> Result<(), Error> {
+fn main_loop(mut ui: Ui, mut chain: MarkovChain) -> Result<(), Error> {
     ui.full_redraw()?;
+
+    ui._loop();
 
     Ok(())
 }

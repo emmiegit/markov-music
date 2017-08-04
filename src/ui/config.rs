@@ -1,5 +1,5 @@
 /*
- * ui/mod.rs
+ * ui/config.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -18,14 +18,16 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub use self::config::Config as UiConfig;
-pub use self::object::Ui as Ui;
-pub use super::error::Error;
-pub use super::player::Player;
-pub use super::song::Song;
+use super::config::Config as MainConfig;
 
-mod chars;
-mod config;
-mod input;
-mod object;
-mod output;
+pub struct Config {
+    pub ascii_chars: bool,
+}
+
+impl Config {
+    pub fn from(config: &MainConfig) -> Self {
+        Config {
+            ascii_chars: config.ascii_chars,
+        }
+    }
+}
