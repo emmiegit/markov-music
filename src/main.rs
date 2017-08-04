@@ -36,7 +36,7 @@ use args::parse_args;
 use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
-use std::{env, io};
+use std::env;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 use ui::UI;

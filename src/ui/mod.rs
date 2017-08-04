@@ -1,5 +1,5 @@
 /*
- * ui.rs
+ * ui/mod.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -18,15 +18,18 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
-use player::Player;
+use self::chars::{ASCII_CHARS, BOX_CHARS};
+use super::error::Error;
+use super::player::Player;
 use std::path::Path;
 use std::io;
 use std::io::Write;
-use song::Song;
+use super::song::Song;
 use termion::{clear, cursor, terminal_size};
 use termion::screen::AlternateScreen;
 use termion::raw::{IntoRawMode, RawTerminal};
+
+mod chars;
 
 pub struct UI {
     player: Player,
@@ -46,7 +49,7 @@ impl UI {
     pub fn full_redraw(&mut self) -> Result<(), Error> {
         let (rows, cols) = terminal_size()?;
 
-        write!(self.term, "{}{}╭", clear::All, cursor::Goto(1, 1))?;
+        write!(self.term, "{}{}", clear::All, cursor::Goto(1, 1))?;
 
         self.term.flush()?;
 

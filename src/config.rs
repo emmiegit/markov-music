@@ -31,6 +31,7 @@ pub struct Config {
     pub player: String,
     pub music_dir: String,
     pub storage_file: String,
+    pub ascii_chars: bool,
 }
 
 impl Config {
@@ -51,6 +52,7 @@ impl Config {
                     .to_string()
             },
             storage_file: MARKOV_FILE_NAME.to_string(),
+            ascii_chars: false,
         }
     }
 
