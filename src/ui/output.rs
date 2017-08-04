@@ -25,14 +25,17 @@ use super::Error;
 use termion::{clear, cursor, terminal_size};
 
 pub struct Output<'a, W>
-    where W: 'a, W: Write
+where
+    W: 'a,
+    W: Write,
 {
     out: &'a mut W,
     config: &'a Config,
 }
 
 impl<'a, W> Output<'a, W>
-    where W: Write
+where
+    W: Write,
 {
     pub fn new(out: &'a mut W, config: &'a Config) -> Self {
         Output {
@@ -66,26 +69,34 @@ impl<'a, W> Output<'a, W>
 
         // Draw top
         write!(self.out, "{}{}", cursor::Goto(1, 1), chars.corner_top_left)?;
-        for _ in 0..(cols-2) {
+        for _ in 0..(cols - 2) {
             write!(self.out, "{}", chars.bar_horizontal)?;
         }
         write!(self.out, "{}", chars.corner_top_right)?;
 
         // Draw bottom
-        write!(self.out, "{}{}", cursor::Goto(1, rows), chars.corner_bottom_left)?;
-        for _ in 0..(cols-2) {
+        write!(
+            self.out,
+            "{}{}",
+            cursor::Goto(1, rows),
+            chars.corner_bottom_left
+        )?;
+        for _ in 0..(cols - 2) {
             write!(self.out, "{}", chars.bar_horizontal)?;
         }
         write!(self.out, "{}", chars.corner_bottom_right)?;
 
         // Draw sides
         write!(self.out, "{}", cursor::Goto(1, 2));
-        for i in 0..(rows-1) {
-            write!(self.out, "{}{}{}{}",
-                   chars.bar_vertical,
-                   cursor::Right(cols - 2),
-                   chars.bar_vertical,
-                   cursor::Goto(1, i + 2))?;
+        for i in 0..(rows - 1) {
+            write!(
+                self.out,
+                "{}{}{}{}",
+                chars.bar_vertical,
+                cursor::Right(cols - 2),
+                chars.bar_vertical,
+                cursor::Goto(1, i + 2)
+            )?;
         }
 
         Ok(())

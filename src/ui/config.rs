@@ -26,8 +26,6 @@ pub struct Config {
 
 impl Config {
     pub fn from(config: &MainConfig) -> Self {
-        Config {
-            ascii_chars: config.ascii_chars,
-        }
+        Config { ascii_chars: config.ascii_chars }
     }
 }

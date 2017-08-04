@@ -16,7 +16,9 @@ pub fn compress_path<P: AsRef<Path>>(path: P) -> String {
             pathbuf.push(p);
 
             &pathbuf
-        },
+        }
         Err(_) => path,
-    }.to_str().expect("Path not valid UTF-8").to_string()
+    }.to_str()
+        .expect("Path not valid UTF-8")
+        .to_string()
 }

@@ -37,7 +37,9 @@ pub struct Ui {
 
 impl Ui {
     pub fn new(player: Player, config: Config) -> Self {
-        let raw_stdout = io::stdout().into_raw_mode().expect("Unable to get stdout in raw mode");
+        let raw_stdout = io::stdout().into_raw_mode().expect(
+            "Unable to get stdout in raw mode",
+        );
 
         Ui {
             player: player,

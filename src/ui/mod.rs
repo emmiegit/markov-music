@@ -19,7 +19,7 @@
  */
 
 pub use self::config::Config as UiConfig;
-pub use self::object::Ui as Ui;
+pub use self::object::Ui;
 pub use super::error::Error;
 pub use super::player::Player;
 pub use super::song::Song;
