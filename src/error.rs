@@ -62,7 +62,7 @@ impl fmt::Display for Error {
 }
 
 // Auto-conversion
-impl convert::From<io::Error> for Error {
+impl From<io::Error> for Error {
     fn from(error: io::Error) -> Error {
         Error {
             message: error::Error::description(&error).to_string(),
@@ -71,7 +71,7 @@ impl convert::From<io::Error> for Error {
     }
 }
 
-impl convert::From<mpv::Error> for Error {
+impl From<mpv::Error> for Error {
     fn from(error: mpv::Error) -> Error {
         Error {
             message: error::Error::description(&error).to_string(),
@@ -80,7 +80,7 @@ impl convert::From<mpv::Error> for Error {
     }
 }
 
-impl convert::From<serde_json::Error> for Error {
+impl From<serde_json::Error> for Error {
     fn from(error: serde_json::Error) -> Error {
         Error {
             message: error::Error::description(&error).to_string(),
@@ -89,7 +89,7 @@ impl convert::From<serde_json::Error> for Error {
     }
 }
 
-impl convert::From<toml::de::Error> for Error {
+impl From<toml::de::Error> for Error {
     fn from(error: toml::de::Error) -> Error {
         Error {
             message: format!("{}", &error),
