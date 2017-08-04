@@ -7,14 +7,16 @@ lazy_static! {
         .to_str().expect("Home directory not UTF-8");
 }
 
-pub fn compress_path<'a>(path: &'a Path) -> Result<PathBuf, &'a Path> {
+pub fn compress_path<P: AsRef<Path>>(path: P) -> String {
+    let path = path.as_ref();
+    let mut pathbuf;
     match path.strip_prefix(HOME_DIR_PATH.as_path()) {
         Ok(p) => {
-            let mut path = PathBuf::from("~");
-            path.push(p);
+            pathbuf = PathBuf::from("~");
+            pathbuf.push(p);
 
-            Ok(path)
+            &pathbuf
         },
-        Err(_) => Err(path),
-    }
+        Err(_) => path,
+    }.to_str().expect("Path not valid UTF-8").to_string()
 }
