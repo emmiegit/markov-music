@@ -61,7 +61,7 @@ impl<'a, W> Output<'a, W>
     }
 
     pub fn draw_box(&mut self) -> Result<(), Error> {
-        let (rows, cols) = terminal_size()?;
+        let (cols, rows) = terminal_size()?;
         let chars = self.get_chars();
 
         // Draw top
@@ -69,28 +69,23 @@ impl<'a, W> Output<'a, W>
         for _ in 0..(cols-2) {
             write!(self.out, "{}", chars.bar_horizontal)?;
         }
-        write!(self.out, "{}{}", chars.corner_top_right, cursor::Goto(2, 1))?;
-
-        // Draw sides
-        for _ in 0..(rows-2) {
-            write!(self.out, "{}{}{}{}{}",
-                   cursor::Down(1),
-                   chars.bar_vertical,
-                   cursor::Right(cols - 1),
-                   chars.bar_vertical,
-                   cursor::Left(cols - 1),
-            )?;
-        }
+        write!(self.out, "{}", chars.corner_top_right)?;
 
         // Draw bottom
-        write!(self.out, "{}{}{}{}",
-               chars.corner_bottom_left,
-               cursor::Goto(rows, cols),
-               chars.corner_bottom_right,
-               cursor::Goto(rows, 2),
-        )?;
+        write!(self.out, "{}{}", cursor::Goto(1, rows), chars.corner_bottom_left)?;
         for _ in 0..(cols-2) {
             write!(self.out, "{}", chars.bar_horizontal)?;
+        }
+        write!(self.out, "{}", chars.corner_bottom_right)?;
+
+        // Draw sides
+        write!(self.out, "{}", cursor::Goto(1, 2));
+        for i in 0..(rows-1) {
+            write!(self.out, "{}{}{}{}",
+                   chars.bar_vertical,
+                   cursor::Right(cols - 2),
+                   chars.bar_vertical,
+                   cursor::Goto(1, i + 2))?;
         }
 
         Ok(())

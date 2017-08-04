@@ -23,7 +23,6 @@ use ui::output::Output;
 use super::{Error, Player, Song};
 use std::path::Path;
 use std::io;
-use std::io::Write;
 use termion::input::TermRead;
 use termion::event::Key;
 use termion::screen::AlternateScreen;
