@@ -20,6 +20,7 @@
 
 use config::Config;
 use pancurses::*;
+use std::ptr;
 use super::{Error, Player};
 use ui::output::Output;
 
@@ -32,20 +33,12 @@ pub struct Ui {
 impl Ui {
     pub fn new(player: Player, config: Config) -> Result<Self, Error> {
         let win = initscr();
-    println!("cbreak");
+        let _ = mousemask(ALL_MOUSE_EVENTS, ptr::null_mut());
         curses!(cbreak())?;
-    println!("nl");
         curses!(nl())?;
-    println!("noecho");
         curses!(noecho())?;
-        /*
-    println!("keypad");
         curses!(win.keypad(true))?;
-        */
-        /*
-    println!("nodelay");
         curses!(win.nodelay(true))?;
-        */
 
         Ok(Ui {
             win: win,

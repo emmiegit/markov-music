@@ -40,7 +40,7 @@ use player::{MpvPlayer, Player};
 use std::env;
 use std::path::Path;
 use std::process::exit;
-use ui::{Ui, process_event};
+use ui::{Event, Ui, process_event};
 use utils::{HOME_DIR, HOME_DIR_PATH};
 
 #[macro_use]
@@ -125,15 +125,15 @@ fn main() {
 }
 
 fn main_loop(player: Player, chain: MarkovChain, config: Config) -> Result<(), Error> {
-    println!("ui::new");
     let mut ui = Ui::new(player, config)?;
-    println!("ui_full_redraw");
     ui.full_redraw()?;
 
     loop {
-        println!("process_event");
-        process_event(&mut ui);
-        println!("redraw");
-        ui.redraw()?;
+        match process_event(&mut ui) {
+            Event::Quit => break,
+            Event::Nothing => (),
+        }
     }
+
+    Ok(())
 }

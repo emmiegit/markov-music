@@ -19,14 +19,20 @@
  */
 
 use pancurses::Input::*;
-use std::process::exit;
 use ui::Ui;
 
-pub fn process_event(ui: &mut Ui) {
+pub enum Event {
+    Quit,
+    Nothing,
+}
+
+pub fn process_event(ui: &mut Ui) -> Event {
     if let Some(key) = ui.get_mut_window().getch() {
         match key {
-            Character('q') => exit(1),
-            _ => (),
+            Character('q') => Event::Quit,
+            _ => Event::Nothing,
         }
+    } else {
+        Event::Nothing
     }
 }
