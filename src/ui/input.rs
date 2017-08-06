@@ -18,4 +18,21 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO
+use error::Error;
+use ui::Ui;
+
+pub struct Input<'a> {
+    ui: &'a mut Ui,
+}
+
+impl<'a> Input<'a> {
+    pub fn new(ui: &'a mut Ui) -> Self {
+        Input {
+            ui: ui,
+        }
+    }
+
+    pub fn process_event(&mut self) -> Result<(), Error> {
+        unimplemented!();
+    }
+}

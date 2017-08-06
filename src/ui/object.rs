@@ -19,19 +19,20 @@
  */
 
 use config::Config;
+use ui::input::Input;
 use ui::output::Output;
 use super::{Error, Player};
 use std::io;
-use termion::input::TermRead;
-use termion::event::Key;
+use std::sync::Mutex;
 use termion::screen::AlternateScreen;
 use termion::raw::{IntoRawMode, RawTerminal};
+
+type Screen = AlternateScreen<RawTerminal<io::Stdout>>;
 
 pub struct Ui {
     config: Config,
     player: Player,
-    input: io::Stdin,
-    output: AlternateScreen<RawTerminal<io::Stdout>>,
+    screen: Screen,
 }
 
 impl Ui {
@@ -43,14 +44,12 @@ impl Ui {
         Ui {
             player: player,
             config: config,
-            input: io::stdin(),
-            output: AlternateScreen::from(raw_stdout),
+            screen: AlternateScreen::from(raw_stdout),
         }
     }
 
-    fn get_output(&mut self) -> Result<Output<AlternateScreen<RawTerminal<io::Stdout>>>, Error>
-    {
-        Output::new(&mut self.output, &self.config)
+    fn get_output(&mut self) -> Result<Output<Screen>, Error> {
+        Output::new(&mut self.screen, &self.config)
     }
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
@@ -64,15 +63,5 @@ impl Ui {
 
     pub fn redraw(&mut self) -> Result<(), Error> {
         unimplemented!();
-    }
-
-    pub fn _loop(&mut self) {
-        let input = &mut self.input;
-        for c in input.keys() {
-            match c.unwrap() {
-                Key::Char('q') => break,
-                _ => (),
-            }
-        }
     }
 }

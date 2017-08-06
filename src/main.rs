@@ -36,9 +36,13 @@ use args::parse_args;
 use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
-use std::env;
+use std::{env, io};
 use std::path::Path;
 use std::process::exit;
+use std::sync::Mutex;
+use termion::async_stdin;
+use termion::event::Key;
+use termion::input::TermRead;
 use ui::Ui;
 use utils::{HOME_DIR, HOME_DIR_PATH};
 
@@ -115,7 +119,15 @@ fn main() {
 fn main_loop(mut ui: Ui, mut chain: MarkovChain) -> Result<(), Error> {
     ui.full_redraw()?;
 
-    ui._loop();
+    let ui = Mutex::new(ui);
+    //let input = io::stdin();
+    let input = termion::async_stdin();
+    for c in input.keys() {
+        match c.unwrap() {
+            Key::Char('q') => break,
+            _ => (),
+        }
+    }
 
     Ok(())
 }
