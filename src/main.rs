@@ -135,7 +135,6 @@ fn main_loop(player: Player, chain: MarkovChain, config: Config) -> Result<(), E
             Event::MoveDown => curses!(ui.get_window_mut().addch('j'))?,
             Event::MoveLeft => curses!(ui.get_window_mut().addch('h'))?,
             Event::MoveRight => curses!(ui.get_window_mut().addch('l'))?,
-            Event::Mouse => (), // TODO
             Event::Redraw => ui.full_redraw()?,
             Event::Quit => break,
             Event::Nothing => (),

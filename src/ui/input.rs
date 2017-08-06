@@ -19,6 +19,7 @@
  */
 
 use pancurses::Input::*;
+use pancurses::getmouse;
 use ui::Ui;
 
 pub enum Event {
@@ -26,7 +27,6 @@ pub enum Event {
     MoveDown,
     MoveLeft,
     MoveRight,
-    Mouse,
     Redraw,
     Quit,
     Nothing,
@@ -41,7 +41,7 @@ pub fn process_event(ui: &Ui) -> Event {
             Character('k') | KeyUp => Event::MoveUp,
             Character('h') | KeyLeft => Event::MoveLeft,
             Character('l') | KeyRight => Event::MoveRight,
-            KeyMouse => Event::Mouse,
+            KeyMouse => process_mouse(),
             Character(CTRL_L) | KeyClear | KeyResize => Event::Redraw,
             Character('q') => Event::Quit,
             _ => Event::Nothing,
@@ -49,4 +49,10 @@ pub fn process_event(ui: &Ui) -> Event {
     } else {
         Event::Nothing
     }
+}
+
+fn process_mouse() -> Event {
+    let mevt = getmouse().expect("Not mouse event despite character event");
+    let _ = mevt;
+    Event::Nothing
 }

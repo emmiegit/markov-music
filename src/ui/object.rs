@@ -40,12 +40,13 @@ impl Ui {
         curses!(noecho())?;
         curses!(win.keypad(true))?;
         curses!(win.nodelay(true))?;
-
-        Ok(Ui {
+        let ui = Ui {
             win: win,
             player: player,
             config: config,
-        })
+        };
+
+        Ok(ui)
     }
 
     pub fn get_window<'a>(&'a self) -> &'a Window {
