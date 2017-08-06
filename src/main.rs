@@ -33,6 +33,8 @@ extern crate serde_derive;
 extern crate lazy_static;
 
 use args::parse_args;
+use config::Config;
+use error::Error;
 use markov::MarkovChain;
 use player::{MpvPlayer, Player};
 use std::env;
@@ -45,9 +47,9 @@ use utils::{HOME_DIR, HOME_DIR_PATH};
 mod macros {
     macro_rules! curses {
         ($call:expr) => {
-            let ret = $call;
-            if ret == ERR {
-                panic!(concat!("curses call failed: ", stringify!($call)));
+            match $call {
+                ERR => Err(::ui::UiError::new(stringify!($call))),
+                _ => Ok(()),
             }
         }
     }
@@ -116,16 +118,22 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    println!("pre ui");
-    let mut ui = Ui::new(player, config);
-    println!("made ui");
-    ui.full_redraw();
-    println!("full_redraw");
+    if let Err(e) = main_loop(player, chain, config) {
+        println!("Error in main loop: {}", e);
+        exit(1);
+    }
+}
+
+fn main_loop(player: Player, chain: MarkovChain, config: Config) -> Result<(), Error> {
+    println!("ui::new");
+    let mut ui = Ui::new(player, config)?;
+    println!("ui_full_redraw");
+    ui.full_redraw()?;
 
     loop {
         println!("process_event");
         process_event(&mut ui);
         println!("redraw");
-        ui.redraw();
+        ui.redraw()?;
     }
 }

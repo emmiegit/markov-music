@@ -19,9 +19,9 @@
  */
 
 use config::Config;
-use ui::output::Output;
 use pancurses::*;
-use super::Player;
+use super::{Error, Player};
+use ui::output::Output;
 
 pub struct Ui {
     win: Window,
@@ -30,19 +30,28 @@ pub struct Ui {
 }
 
 impl Ui {
-    pub fn new(player: Player, config: Config) -> Self {
+    pub fn new(player: Player, config: Config) -> Result<Self, Error> {
         let win = initscr();
-        curses!(cbreak());
-        curses!(nl());
-        curses!(noecho());
-        curses!(win.keypad(true));
-        curses!(win.nodelay(true));
+    println!("cbreak");
+        curses!(cbreak())?;
+    println!("nl");
+        curses!(nl())?;
+    println!("noecho");
+        curses!(noecho())?;
+        /*
+    println!("keypad");
+        curses!(win.keypad(true))?;
+        */
+        /*
+    println!("nodelay");
+        curses!(win.nodelay(true))?;
+        */
 
-        Ui {
+        Ok(Ui {
             win: win,
             player: player,
             config: config,
-        }
+        })
     }
 
     pub fn get_window<'a>(&'a self) -> &'a Window {
@@ -53,20 +62,22 @@ impl Ui {
         &mut self.win
     }
 
-    pub fn full_redraw(&mut self) {
+    pub fn full_redraw(&mut self) -> Result<(), Error> {
         let mut output = Output::new(&mut self.win, &self.config);
-        output.clear();
-        output.draw_box();
-        output.flush();
+        output.clear()?;
+        output.draw_box()?;
+        output.flush()?;
+
+        Ok(())
     }
 
-    pub fn redraw(&mut self) {
+    pub fn redraw(&mut self) -> Result<(), Error> {
         unimplemented!();
     }
 }
 
 impl Drop for Ui {
     fn drop(&mut self) {
-        curses!(endwin());
+        curses!(endwin()).expect("Calling endwin() failed");
     }
 }

@@ -21,6 +21,7 @@
 use config::Config;
 use pancurses::*;
 use ui::chars::{ASCII_CHARS, BOX_CHARS, Chars};
+use ui::UiError;
 
 pub struct Output<'a> {
     win: &'a mut Window,
@@ -43,17 +44,21 @@ impl<'a> Output<'a> {
         }
     }
 
-    pub fn clear(&mut self) {
-        curses!(self.win.clear());
+    pub fn clear(&mut self) -> Result<(), UiError> {
+        curses!(self.win.clear())?;
+
+        Ok(())
     }
 
-    pub fn flush(&mut self) {
-        curses!(self.win.refresh());
+    pub fn flush(&mut self) -> Result<(), UiError> {
+        curses!(self.win.refresh())?;
+
+        Ok(())
     }
 
-    pub fn draw_box(&mut self) {
-        curses!(self.win.mvaddch(1, 1, self.chars.corner_top_left));
-        curses!(self.win.mvaddch(1, self.cols - 1, self.chars.corner_top_right));
+    pub fn draw_box(&mut self) -> Result<(), UiError> {
+        curses!(self.win.mvaddch(0, 0, self.chars.corner_top_left))?;
+        curses!(self.win.mvaddch(0, self.cols - 1, self.chars.corner_top_right))?;
 
         /*
         // Draw top
@@ -88,9 +93,11 @@ impl<'a> Output<'a> {
             )?;
         }
         */
+
+        Ok(())
     }
 
-    pub fn draw_directory(&mut self) {
+    pub fn draw_directory(&mut self) -> Result<(), UiError> {
         unimplemented!();
     }
 }

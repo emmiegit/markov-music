@@ -23,15 +23,13 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct UiError {
-    pub ret: i32,
     message: String,
 }
 
 impl UiError {
-    pub fn new(ret: i32, fn_name: &str) -> Self {
+    pub fn new(fn_name: &str) -> Self {
         UiError {
-            ret: ret,
-            message: format!("Curses call {} failed", fn_name),
+            message: format!("Curses call \"{}\" failed", fn_name),
         }
     }
 }

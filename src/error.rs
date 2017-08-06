@@ -112,3 +112,12 @@ impl From<toml::de::Error> for Error {
         }
     }
 }
+
+impl From<UiError> for Error {
+    fn from(error: UiError) -> Error {
+        Error {
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::Curses(error),
+        }
+    }
+}
