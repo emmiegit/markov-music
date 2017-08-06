@@ -19,6 +19,7 @@
  */
 
 pub use self::object::Ui;
+pub use self::input::process_event;
 pub use super::error::Error;
 pub use super::player::Player;
 pub use super::song::Song;

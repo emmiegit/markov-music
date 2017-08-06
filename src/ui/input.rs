@@ -18,21 +18,15 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
+use pancurses::Input::*;
+use std::process::exit;
 use ui::Ui;
 
-pub struct Input<'a> {
-    ui: &'a mut Ui,
-}
-
-impl<'a> Input<'a> {
-    pub fn new(ui: &'a mut Ui) -> Self {
-        Input {
-            ui: ui,
+pub fn process_event(ui: &mut Ui) {
+    if let Some(key) = ui.get_mut_window().getch() {
+        match key {
+            Character('q') => exit(1),
+            _ => (),
         }
-    }
-
-    pub fn process_event(&mut self) -> Result<(), Error> {
-        unimplemented!();
     }
 }

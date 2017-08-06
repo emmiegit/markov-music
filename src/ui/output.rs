@@ -20,8 +20,6 @@
 
 use config::Config;
 use pancurses::*;
-use std::io::Write;
-use super::Error;
 use ui::chars::{ASCII_CHARS, BOX_CHARS, Chars};
 
 pub struct Output<'a> {
@@ -55,7 +53,7 @@ impl<'a> Output<'a> {
 
     pub fn draw_box(&mut self) {
         curses!(self.win.mvaddch(1, 1, self.chars.corner_top_left));
-        curses!(self.win.mvaddch(self.cols - 1, 1, self.chars.corner_top_right));
+        curses!(self.win.mvaddch(1, self.cols - 1, self.chars.corner_top_right));
 
         /*
         // Draw top

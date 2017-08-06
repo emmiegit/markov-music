@@ -19,12 +19,9 @@
  */
 
 use config::Config;
-use ui::input::Input;
 use ui::output::Output;
 use pancurses::*;
-use super::{Error, Player};
-use std::io;
-use std::sync::Mutex;
+use super::Player;
 
 pub struct Ui {
     win: Window,
@@ -38,6 +35,7 @@ impl Ui {
         curses!(cbreak());
         curses!(nl());
         curses!(noecho());
+        curses!(win.keypad(true));
         curses!(win.nodelay(true));
 
         Ui {
@@ -45,6 +43,14 @@ impl Ui {
             player: player,
             config: config,
         }
+    }
+
+    pub fn get_window<'a>(&'a self) -> &'a Window {
+        &self.win
+    }
+
+    pub fn get_mut_window<'a>(&'a mut self) -> &'a mut Window {
+        &mut self.win
     }
 
     pub fn full_redraw(&mut self) {
