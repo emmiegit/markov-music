@@ -51,7 +51,7 @@ impl Ui {
         &self.win
     }
 
-    pub fn get_mut_window<'a>(&'a mut self) -> &'a mut Window {
+    pub fn get_window_mut<'a>(&'a mut self) -> &'a mut Window {
         &mut self.win
     }
 

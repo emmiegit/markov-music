@@ -48,8 +48,8 @@ mod macros {
     macro_rules! curses {
         ($call:expr) => {
             match $call {
-                ERR => Err(::ui::UiError::new(stringify!($call))),
-                _ => Ok(()),
+                0 => Ok(()),
+                _ => Err(::ui::UiError::new(stringify!($call))),
             }
         }
     }
@@ -129,7 +129,13 @@ fn main_loop(player: Player, chain: MarkovChain, config: Config) -> Result<(), E
     ui.full_redraw()?;
 
     loop {
-        match process_event(&mut ui) {
+        match process_event(&ui) {
+            Event::MoveUp => curses!(ui.get_window_mut().addch('k'))?,
+            Event::MoveDown => curses!(ui.get_window_mut().addch('j'))?,
+            Event::MoveLeft => curses!(ui.get_window_mut().addch('h'))?,
+            Event::MoveRight => curses!(ui.get_window_mut().addch('l'))?,
+            Event::Mouse => (), // TODO
+            Event::Redraw => ui.full_redraw()?,
             Event::Quit => break,
             Event::Nothing => (),
         }

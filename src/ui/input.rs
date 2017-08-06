@@ -22,13 +22,25 @@ use pancurses::Input::*;
 use ui::Ui;
 
 pub enum Event {
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+    Mouse,
+    Redraw,
     Quit,
     Nothing,
 }
 
-pub fn process_event(ui: &mut Ui) -> Event {
-    if let Some(key) = ui.get_mut_window().getch() {
+pub fn process_event(ui: &Ui) -> Event {
+    if let Some(key) = ui.get_window().getch() {
         match key {
+            Character('j') | KeyDown => Event::MoveDown,
+            Character('k') | KeyUp => Event::MoveUp,
+            Character('h') | KeyLeft => Event::MoveLeft,
+            Character('l') | KeyRight => Event::MoveRight,
+            KeyMouse => Event::Mouse,
+            Character('\x0c') | KeyResize => Event::Redraw,
             Character('q') => Event::Quit,
             _ => Event::Nothing,
         }

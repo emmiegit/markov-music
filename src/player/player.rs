@@ -34,7 +34,7 @@ impl Player {
         }
     }
 
-    fn get_mut_inst(&mut self) -> &mut MediaPlayer {
+    fn get_inst_mut(&mut self) -> &mut MediaPlayer {
         match self {
             &mut Player::Mpv(ref mut x) => x,
         }
@@ -43,7 +43,7 @@ impl Player {
 
 impl MediaPlayer for Player {
     fn set_pause(&mut self, pause: bool) {
-        self.get_mut_inst().set_pause(pause);
+        self.get_inst_mut().set_pause(pause);
     }
 
     fn get_pause(&self) -> bool {
@@ -51,7 +51,7 @@ impl MediaPlayer for Player {
     }
 
     fn play(&mut self, song: &str) -> Result<(), Error> {
-        self.get_mut_inst().play(song)
+        self.get_inst_mut().play(song)
     }
 
     fn get_current_dir<'a>(&'a self) -> &'a Path {
@@ -59,26 +59,26 @@ impl MediaPlayer for Player {
     }
 
     fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
-        self.get_mut_inst().set_current_dir(path)
+        self.get_inst_mut().set_current_dir(path)
     }
 
     fn enqueue(&mut self, song: &str) -> Result<(), Error> {
-        self.get_mut_inst().enqueue(song)
+        self.get_inst_mut().enqueue(song)
     }
 
     fn clear(&mut self) {
-        self.get_mut_inst().clear();
+        self.get_inst_mut().clear();
     }
 
     fn stop(&mut self) {
-        self.get_mut_inst().stop();
+        self.get_inst_mut().stop();
     }
 
     fn next(&mut self) {
-        self.get_mut_inst().next();
+        self.get_inst_mut().next();
     }
 
     fn prev(&mut self) {
-        self.get_mut_inst().prev();
+        self.get_inst_mut().prev();
     }
 }
