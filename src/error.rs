@@ -24,6 +24,7 @@ use std::error;
 use std::fmt;
 use std::io;
 use toml;
+use ui::UiError;
 
 #[derive(Debug)]
 pub enum ErrorCause {
@@ -31,6 +32,7 @@ pub enum ErrorCause {
     Mpv(mpv::Error),
     SerdeJson(serde_json::Error),
     TomlDe(toml::de::Error),
+    Curses(UiError),
     NoCause(),
 }
 
@@ -62,6 +64,7 @@ impl error::Error for Error {
             ErrorCause::Mpv(ref e) => Some(e),
             ErrorCause::SerdeJson(ref e) => Some(e),
             ErrorCause::TomlDe(ref e) => Some(e),
+            ErrorCause::Curses(ref e) => Some(e),
             ErrorCause::NoCause() => None,
         }
     }
