@@ -34,6 +34,7 @@ impl Ui {
     pub fn new(player: Player, config: Config) -> Result<Self, Error> {
         let win = initscr();
         let _ = mousemask(ALL_MOUSE_EVENTS, ptr::null_mut());
+        set_title("Markov Music Player");
         curses!(cbreak())?;
         curses!(nl())?;
         curses!(noecho())?;

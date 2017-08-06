@@ -20,12 +20,11 @@
 
 use config::Config;
 use pancurses::*;
-use ui::chars::{ASCII_CHARS, BOX_CHARS, Chars};
+use ncurses;
 use ui::UiError;
 
 pub struct Output<'a> {
     win: &'a mut Window,
-    chars: &'static Chars,
     rows: i32,
     cols: i32,
 }
@@ -35,10 +34,6 @@ impl<'a> Output<'a> {
         let (rows, cols) = win.get_max_yx();
         Output {
             win: win,
-            chars: match config.ascii_chars {
-                true => &ASCII_CHARS,
-                false => &ASCII_CHARS,
-            },
             rows: rows,
             cols: cols,
         }
@@ -58,14 +53,14 @@ impl<'a> Output<'a> {
 
     pub fn draw_box(&mut self) -> Result<(), UiError> {
         curses!(self.win.border(
-                self.chars.bar_vertical,
-                self.chars.bar_vertical,
-                self.chars.bar_horizontal,
-                self.chars.bar_horizontal,
-                self.chars.corner_top_left,
-                self.chars.corner_top_right,
-                self.chars.corner_bottom_left,
-                self.chars.corner_bottom_right,
+                ncurses::ACS_VLINE(),
+                ncurses::ACS_VLINE(),
+                ncurses::ACS_HLINE(),
+                ncurses::ACS_HLINE(),
+                ncurses::ACS_ULCORNER(),
+                ncurses::ACS_URCORNER(),
+                ncurses::ACS_LLCORNER(),
+                ncurses::ACS_LRCORNER(),
         ))?;
 
         Ok(())

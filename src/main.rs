@@ -20,6 +20,7 @@
 
 extern crate clap;
 extern crate mpv;
+extern crate ncurses;
 extern crate pancurses;
 extern crate rand;
 extern crate serde;

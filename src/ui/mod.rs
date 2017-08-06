@@ -25,7 +25,6 @@ pub use super::error::Error;
 pub use super::player::Player;
 pub use super::song::Song;
 
-mod chars;
 mod error;
 mod input;
 mod object;
