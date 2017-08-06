@@ -21,47 +21,46 @@
 use config::Config;
 use ui::input::Input;
 use ui::output::Output;
+use pancurses::*;
 use super::{Error, Player};
 use std::io;
 use std::sync::Mutex;
-use termion::screen::AlternateScreen;
-use termion::raw::{IntoRawMode, RawTerminal};
-
-type Screen = AlternateScreen<RawTerminal<io::Stdout>>;
 
 pub struct Ui {
+    win: Window,
     config: Config,
     player: Player,
-    screen: Screen,
 }
 
 impl Ui {
     pub fn new(player: Player, config: Config) -> Self {
-        let raw_stdout = io::stdout().into_raw_mode().expect(
-            "Unable to get stdout in raw mode",
-        );
+        let win = initscr();
+        curses!(cbreak());
+        curses!(nl());
+        curses!(noecho());
+        curses!(win.nodelay(true));
 
         Ui {
+            win: win,
             player: player,
             config: config,
-            screen: AlternateScreen::from(raw_stdout),
         }
     }
 
-    fn get_output(&mut self) -> Result<Output<Screen>, Error> {
-        Output::new(&mut self.screen, &self.config)
+    pub fn full_redraw(&mut self) {
+        let mut output = Output::new(&mut self.win, &self.config);
+        output.clear();
+        output.draw_box();
+        output.flush();
     }
 
-    pub fn full_redraw(&mut self) -> Result<(), Error> {
-        let mut output = self.get_output()?;
-        output.clear()?;
-        output.draw_box()?;
-        output.flush()?;
-
-        Ok(())
-    }
-
-    pub fn redraw(&mut self) -> Result<(), Error> {
+    pub fn redraw(&mut self) {
         unimplemented!();
+    }
+}
+
+impl Drop for Ui {
+    fn drop(&mut self) {
+        curses!(endwin());
     }
 }

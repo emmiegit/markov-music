@@ -20,10 +20,10 @@
 
 extern crate clap;
 extern crate mpv;
+extern crate pancurses;
 extern crate rand;
 extern crate serde;
 extern crate serde_json;
-extern crate termion;
 extern crate toml;
 extern crate walkdir;
 
@@ -40,11 +40,20 @@ use std::{env, io};
 use std::path::Path;
 use std::process::exit;
 use std::sync::Mutex;
-use termion::async_stdin;
-use termion::event::Key;
-use termion::input::TermRead;
 use ui::Ui;
 use utils::{HOME_DIR, HOME_DIR_PATH};
+
+#[macro_use]
+mod macros {
+    macro_rules! curses {
+        ($call:expr) => {
+            let ret = $call;
+            if ret != OK {
+                panic!(concat!("curses call failed: ", stringify!($call)))
+            }
+        }
+    }
+}
 
 mod args;
 mod config;
@@ -110,24 +119,10 @@ fn main() {
 
     let player = get_player(&config.player);
     let ui = Ui::new(player, config);
+    /*
     if let Err(e) = main_loop(ui, chain) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
-}
-
-fn main_loop(mut ui: Ui, mut chain: MarkovChain) -> Result<(), Error> {
-    ui.full_redraw()?;
-
-    let ui = Mutex::new(ui);
-    //let input = io::stdin();
-    let input = termion::async_stdin();
-    for c in input.keys() {
-        match c.unwrap() {
-            Key::Char('q') => break,
-            _ => (),
-        }
-    }
-
-    Ok(())
+    */
 }

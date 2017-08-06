@@ -18,55 +18,46 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use ui::chars::{ASCII_CHARS, BOX_CHARS, Chars};
 use config::Config;
+use pancurses::*;
 use std::io::Write;
 use super::Error;
-use termion::{clear, cursor, terminal_size};
+use ui::chars::{ASCII_CHARS, BOX_CHARS, Chars};
 
-pub struct Output<'a, W>
-where
-    W: 'a,
-    W: Write,
-{
-    out: &'a mut W,
+pub struct Output<'a> {
+    win: &'a mut Window,
     chars: &'static Chars,
-    cols: u16,
-    rows: u16,
+    rows: i32,
+    cols: i32,
 }
 
-impl<'a, W> Output<'a, W>
-where
-    W: Write,
-{
-    pub fn new(out: &'a mut W, config: &'a Config) -> Result<Self, Error> {
-        let (cols, rows) = terminal_size()?;
-        let output = Output {
-            out: out,
+impl<'a> Output<'a> {
+    pub fn new(win: &'a mut Window, config: &Config) -> Self {
+        let (rows, cols) = win.get_max_yx();
+        Output {
+            win: win,
             chars: match config.ascii_chars {
                 true => &ASCII_CHARS,
                 false => &BOX_CHARS,
             },
-            cols: cols,
             rows: rows,
-        };
-
-        Ok(output)
+            cols: cols,
+        }
     }
 
-    pub fn clear(&mut self) -> Result<(), Error> {
-        write!(self.out, "{}", clear::All)?;
-
-        Ok(())
+    pub fn clear(&mut self) {
+        curses!(self.win.clear());
     }
 
-    pub fn flush(&mut self) -> Result<(), Error> {
-        self.out.flush()?;
-
-        Ok(())
+    pub fn flush(&mut self) {
+        curses!(self.win.refresh());
     }
 
-    pub fn draw_box(&mut self) -> Result<(), Error> {
+    pub fn draw_box(&mut self) {
+        curses!(self.win.mvaddch(1, 1, self.chars.corner_top_left));
+        curses!(self.win.mvaddch(self.cols - 1, 1, self.chars.corner_top_right));
+
+        /*
         // Draw top
         write!(self.out, "{}{}", cursor::Goto(1, 1), self.chars.corner_top_left)?;
         for _ in 0..(self.cols - 2) {
@@ -98,11 +89,10 @@ where
                 cursor::Goto(1, i + 2)
             )?;
         }
-
-        Ok(())
+        */
     }
 
-    pub fn draw_directory(&mut self) -> Result<(), Error> {
+    pub fn draw_directory(&mut self) {
         unimplemented!();
     }
 }
