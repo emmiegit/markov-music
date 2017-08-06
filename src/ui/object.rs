@@ -21,17 +21,16 @@
 use config::Config;
 use pancurses::*;
 use std::ptr;
-use super::{Error, Player};
+use super::Error;
 use ui::output::Output;
 
-pub struct Ui {
+pub struct Ui<'a> {
     win: Window,
-    config: Config,
-    player: Player,
+    config: &'a Config,
 }
 
-impl Ui {
-    pub fn new(player: Player, config: Config) -> Result<Self, Error> {
+impl<'a> Ui<'a> {
+    pub fn new(config: &'a Config) -> Result<Self, Error> {
         let win = initscr();
         let _ = mousemask(ALL_MOUSE_EVENTS, ptr::null_mut());
         set_title("Markov Music Player");
@@ -40,20 +39,18 @@ impl Ui {
         curses!(noecho())?;
         curses!(win.keypad(true))?;
         curses!(win.nodelay(true))?;
-        let ui = Ui {
-            win: win,
-            player: player,
-            config: config,
-        };
 
-        Ok(ui)
+        Ok(Ui {
+            win: win,
+            config: config,
+        })
     }
 
-    pub fn get_window<'a>(&'a self) -> &'a Window {
+    pub fn get_window<'w>(&'w self) -> &'w Window {
         &self.win
     }
 
-    pub fn get_window_mut<'a>(&'a mut self) -> &'a mut Window {
+    pub fn get_window_mut<'w>(&'w mut self) -> &'w mut Window {
         &mut self.win
     }
 
@@ -71,7 +68,7 @@ impl Ui {
     }
 }
 
-impl Drop for Ui {
+impl<'a> Drop for Ui<'a> {
     fn drop(&mut self) {
         curses!(endwin()).expect("Calling endwin() failed");
     }

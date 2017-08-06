@@ -42,14 +42,14 @@ fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> 
 }
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize)]
-pub struct MarkovChain {
+pub struct Chain {
     assocs: HashMap<Song, HashMap<Song, u32>>,
     start: HashMap<Song, u32>,
 }
 
-impl MarkovChain {
+impl Chain {
     pub fn new() -> Self {
-        MarkovChain {
+        Chain {
             assocs: HashMap::new(),
             start: HashMap::new(),
         }

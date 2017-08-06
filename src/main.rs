@@ -36,12 +36,12 @@ extern crate lazy_static;
 use args::parse_args;
 use config::Config;
 use error::Error;
-use markov::MarkovChain;
 use player::{MpvPlayer, Player};
 use std::env;
 use std::path::Path;
 use std::process::exit;
-use ui::{Event, Ui, process_event};
+use ui::Command::*;
+use ui::{Ui, next_command};
 use utils::{HOME_DIR, HOME_DIR_PATH};
 
 #[macro_use]
@@ -98,10 +98,10 @@ fn main() {
         exit(1);
     }
 
-    let chain: MarkovChain = {
+    let chain: markov::Chain = {
         let path = Path::new(&config.storage_file);
         if path.exists() {
-            match MarkovChain::read(path) {
+            match markov::Chain::read(path) {
                 Ok(x) => x,
                 Err(e) => {
                     println!("Can't read markov data: {}", e);
@@ -109,7 +109,7 @@ fn main() {
                 }
             }
         } else {
-            let chain = MarkovChain::new();
+            let chain = markov::Chain::new();
             if let Err(e) = chain.write(path) {
                 println!("Can't write markov data: {}", e);
                 exit(1);
@@ -119,26 +119,44 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    if let Err(e) = main_loop(player, chain, config) {
+    let handle = markov::Handle::new(chain, player, &config);
+    if let Err(e) = main_loop(handle, &config) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(player: Player, chain: MarkovChain, config: Config) -> Result<(), Error> {
-    let mut ui = Ui::new(player, config)?;
+fn main_loop(handle: markov::Handle, config: &Config) -> Result<(), Error> {
+    let mut ui = Ui::new(config)?;
     ui.full_redraw()?;
 
     loop {
-        match process_event(&ui) {
-            Event::MoveUp => curses!(ui.get_window_mut().addch('k'))?,
-            Event::MoveDown => curses!(ui.get_window_mut().addch('j'))?,
-            Event::MoveLeft => curses!(ui.get_window_mut().addch('h'))?,
-            Event::MoveRight => curses!(ui.get_window_mut().addch('l'))?,
-            Event::Redraw => ui.full_redraw()?,
-            Event::Quit => break,
-            Event::Nothing => (),
+        /*
+        match next_command(&ui) {
+            TogglePause => handle.player_toggle_pause(),
+            Stop => handle.player_stop(),
+            MoveUp => handle.cursor_up(),
+            MoveDown => handle.cursor_down(),
+            ParentDir => handle.cursor_parent(),
+            PlaySelected => handle.cursor_play(),
+            SeekBackwards => handle.player_seek_backwards(),
+            SeekForward => handle.player_seek_forward(),
+            AddSelected => handle.cursor_add(),
+            Shuffle => handle.,
+            Next,
+            Previous,
+            Repeat,
+            LoopBack,
+            Like,
+            Dislike,
+            Random,
+            Tired,
+            Redraw => ui.full_redraw()?,
+            Quit | Abort => break,
+            Nothing => (),
         }
+        */
+        break;
     }
 
     Ok(())
