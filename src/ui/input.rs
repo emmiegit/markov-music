@@ -32,6 +32,8 @@ pub enum Event {
     Nothing,
 }
 
+const CTRL_L: char = '\x0c';
+
 pub fn process_event(ui: &Ui) -> Event {
     if let Some(key) = ui.get_window().getch() {
         match key {
@@ -40,7 +42,7 @@ pub fn process_event(ui: &Ui) -> Event {
             Character('h') | KeyLeft => Event::MoveLeft,
             Character('l') | KeyRight => Event::MoveRight,
             KeyMouse => Event::Mouse,
-            Character('\x0c') | KeyResize => Event::Redraw,
+            Character(CTRL_L) | KeyClear | KeyResize => Event::Redraw,
             Character('q') => Event::Quit,
             _ => Event::Nothing,
         }
