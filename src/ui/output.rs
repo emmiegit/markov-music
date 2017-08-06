@@ -37,7 +37,7 @@ impl<'a> Output<'a> {
             win: win,
             chars: match config.ascii_chars {
                 true => &ASCII_CHARS,
-                false => &BOX_CHARS,
+                false => &ASCII_CHARS,
             },
             rows: rows,
             cols: cols,
@@ -57,42 +57,16 @@ impl<'a> Output<'a> {
     }
 
     pub fn draw_box(&mut self) -> Result<(), UiError> {
-        curses!(self.win.mvaddch(0, 0, self.chars.corner_top_left))?;
-        curses!(self.win.mvaddch(0, self.cols - 1, self.chars.corner_top_right))?;
-
-        /*
-        // Draw top
-        write!(self.out, "{}{}", cursor::Goto(1, 1), self.chars.corner_top_left)?;
-        for _ in 0..(self.cols - 2) {
-            write!(self.out, "{}", self.chars.bar_horizontal)?;
-        }
-        write!(self.out, "{}", self.chars.corner_top_right)?;
-
-        // Draw bottom
-        write!(
-            self.out,
-            "{}{}",
-            cursor::Goto(1, self.rows),
-            self.chars.corner_bottom_left
-        )?;
-        for _ in 0..(self.cols - 2) {
-            write!(self.out, "{}", self.chars.bar_horizontal)?;
-        }
-        write!(self.out, "{}", self.chars.corner_bottom_right)?;
-
-        // Draw sides
-        write!(self.out, "{}", cursor::Goto(1, 2))?;
-        for i in 0..(self.rows - 1) {
-            write!(
-                self.out,
-                "{}{}{}{}",
+        curses!(self.win.border(
                 self.chars.bar_vertical,
-                cursor::Right(self.cols - 2),
                 self.chars.bar_vertical,
-                cursor::Goto(1, i + 2)
-            )?;
-        }
-        */
+                self.chars.bar_horizontal,
+                self.chars.bar_horizontal,
+                self.chars.corner_top_left,
+                self.chars.corner_top_right,
+                self.chars.corner_bottom_left,
+                self.chars.corner_bottom_right,
+        ))?;
 
         Ok(())
     }
