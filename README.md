@@ -5,9 +5,6 @@ Through the use of the `Player` struct, it is possible to implement other player
 
 Licensed under the GPL, version 2 or later.
 
-**Note:**
-Don't expect this to work for a while. It may not even compile for you.
-
 ### Compilation
 Run `cargo build --release` in the top directory of the repository.
 
