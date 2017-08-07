@@ -11,5 +11,8 @@ music_dir = "music"
 # your music directory
 storage_file = ".markov_music.json"
 
-# Use these if your terminal doesn't support unicode
-ascii_chars = false
+# Default seconds to seek by
+seek_seconds = 0.2
+
+# How much to increase/decrease the volume by
+volume_step = 1
