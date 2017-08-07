@@ -120,7 +120,7 @@ fn main() {
     let player = get_player(&config.player);
     let handle = markov::Handle::new(chain, player);
     if let Err(e) = main_loop(handle, config) {
-        println!("Error in main loop: {}", e);
+        println!("Error: {}", e);
         exit(1);
     }
 }
