@@ -40,7 +40,8 @@ pub struct Error {
 
 impl Error {
     pub fn new<M>(message: M, error: ErrorCause) -> Self
-        where M: Into<String>
+    where
+        M: Into<String>,
     {
         Error {
             message: message.into(),

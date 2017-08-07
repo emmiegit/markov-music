@@ -64,13 +64,19 @@ impl Config {
         let config: Config = toml::from_str(&contents)?;
 
         if !config.seek_seconds.is_finite() {
-            Err(Error::new("Seek seconds is not a real number", ErrorCause::NoCause()))
+            Err(Error::new(
+                "Seek seconds is not a real number",
+                ErrorCause::NoCause(),
+            ))
         } else if config.seek_seconds == 0.0 {
             Err(Error::new("Seek seconds is zero", ErrorCause::NoCause()))
         } else if config.volume_step < 0 {
             Err(Error::new("Volume step is negative", ErrorCause::NoCause()))
         } else if config.volume_step > 100 {
-            Err(Error::new("Volume step is greater than 100", ErrorCause::NoCause()))
+            Err(Error::new(
+                "Volume step is greater than 100",
+                ErrorCause::NoCause(),
+            ))
         } else {
             Ok(config)
         }

@@ -40,9 +40,9 @@ impl Cursor {
     }
 
     fn current(&self) -> Result<&str, Error> {
-        self.files[self.pos]
-            .to_str()
-            .ok_or_else(|| Error::new("Path not valid UTF-8", ErrorCause::NoCause()))
+        self.files[self.pos].to_str().ok_or_else(|| {
+            Error::new("Path not valid UTF-8", ErrorCause::NoCause())
+        })
     }
 
     fn up(&mut self) {
@@ -85,8 +85,10 @@ impl Handle {
             self.cursor.path = PathBuf::from(path);
             Ok(())
         } else {
-            let message = format!("Not a directory: {}",
-                        path.to_str().unwrap_or("<invalid UTF-8>"));
+            let message = format!(
+                "Not a directory: {}",
+                path.to_str().unwrap_or("<invalid UTF-8>")
+            );
             Err(Error::new(message, ErrorCause::NoCause()))
         }
     }

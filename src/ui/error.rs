@@ -28,9 +28,7 @@ pub struct UiError {
 
 impl UiError {
     pub fn new(fn_name: &str) -> Self {
-        UiError {
-            message: format!("Curses call \"{}\" failed", fn_name),
-        }
+        UiError { message: format!("Curses call \"{}\" failed", fn_name) }
     }
 }
 

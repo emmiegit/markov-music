@@ -75,9 +75,9 @@ impl MediaPlayer for MpvPlayer {
     fn set_volume(&mut self, volume: i32) {
         assert!(volume >= 0);
         assert!(volume <= 100);
-        self.handle.set_property_async("ao-volume", volume as i64, 0).expect(
-            "Unable to set player volume",
-        );
+        self.handle
+            .set_property_async("ao-volume", volume as i64, 0)
+            .expect("Unable to set player volume");
     }
 
     // Playlist
@@ -124,7 +124,10 @@ impl MediaPlayer for MpvPlayer {
             Absolute(secs) => (secs, "absolute"),
             Relative(secs) => (secs, "relative"),
         };
-        self.handle.command_async(&["seek", &format!("{}", secs), mode], 0)?;
+        self.handle.command_async(
+            &["seek", &format!("{}", secs), mode],
+            0,
+        )?;
 
         Ok(())
     }

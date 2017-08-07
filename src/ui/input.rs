@@ -87,9 +87,12 @@ pub fn next_command(ui: &Ui) -> Command {
 
             /* Misc */
             KeyMouse => process_mouse(),
-            Character(CTRL_L) | KeyClear | KeyResize => Command::Redraw,
+            Character(CTRL_L) |
+            KeyClear |
+            KeyResize => Command::Redraw,
             Character('q') | KeyClose | KeyExit => Command::Quit,
-            Character(CTRL_C) | KeyCancel => Command::Abort,
+            Character(CTRL_C) |
+            KeyCancel => Command::Abort,
             _ => Command::Nothing,
         }
     } else {

@@ -53,14 +53,14 @@ impl<'a> Output<'a> {
 
     pub fn draw_box(&mut self) -> Result<(), UiError> {
         curses!(self.win.border(
-                ncurses::ACS_VLINE(),
-                ncurses::ACS_VLINE(),
-                ncurses::ACS_HLINE(),
-                ncurses::ACS_HLINE(),
-                ncurses::ACS_ULCORNER(),
-                ncurses::ACS_URCORNER(),
-                ncurses::ACS_LLCORNER(),
-                ncurses::ACS_LRCORNER(),
+            ncurses::ACS_VLINE(),
+            ncurses::ACS_VLINE(),
+            ncurses::ACS_HLINE(),
+            ncurses::ACS_HLINE(),
+            ncurses::ACS_ULCORNER(),
+            ncurses::ACS_URCORNER(),
+            ncurses::ACS_LLCORNER(),
+            ncurses::ACS_LRCORNER(),
         ))?;
 
         Ok(())
