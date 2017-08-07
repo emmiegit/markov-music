@@ -46,11 +46,11 @@ impl<'a> Ui<'a> {
         })
     }
 
-    pub fn get_window<'w>(&'w self) -> &'w Window {
+    pub fn get_window(&self) -> &Window {
         &self.win
     }
 
-    pub fn get_window_mut<'w>(&'w mut self) -> &'w mut Window {
+    pub fn get_window_mut(&mut self) -> &mut Window {
         &mut self.win
     }
 

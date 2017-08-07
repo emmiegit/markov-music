@@ -1,5 +1,5 @@
 /*
- * markov.rs
+ * markov/chain.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith

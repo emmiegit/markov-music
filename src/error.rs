@@ -18,12 +18,8 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use mpv;
-use serde_json;
-use std::error;
-use std::fmt;
-use std::io;
-use toml;
+use {mpv, serde_json, toml};
+use std::{error, fmt, io};
 use ui::UiError;
 
 #[derive(Debug)]

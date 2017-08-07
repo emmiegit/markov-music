@@ -21,12 +21,11 @@
 use error::{Error, ErrorCause};
 use mpv::{MpvHandler, MpvHandlerBuilder};
 use player::MediaPlayer;
+use player::Seek::{self, Absolute, Relative};
 use std::env;
-use std::path::{Path, PathBuf};
 
 pub struct MpvPlayer {
     handle: MpvHandler,
-    path: PathBuf,
 }
 
 impl MpvPlayer {
@@ -37,41 +36,48 @@ impl MpvPlayer {
         );
         let mpv_handler = mpv_builder.build().expect("Unable to build MPV handler");
 
-        MpvPlayer {
-            handle: mpv_handler,
-            path: env::current_dir().expect("Unable to get current directory"),
-        }
+        MpvPlayer { handle: mpv_handler }
     }
 }
 
 impl MediaPlayer for MpvPlayer {
     // Player control
-    fn set_pause(&mut self, pause: bool) {
-        self.handle.set_property_async("pause", pause, 0).expect(
-            "Unable to set player pause",
-        );
-    }
-
     fn get_pause(&self) -> bool {
         self.handle.get_property("pause").expect(
             "Unable to get player pause",
         )
     }
 
-    // Navigator
-    fn get_current_dir<'a>(&'a self) -> &'a Path {
-        &self.path
+    fn set_pause(&mut self, pause: bool) {
+        self.handle.set_property_async("pause", pause, 0).expect(
+            "Unable to set player pause",
+        );
     }
 
-    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
-        if path.is_dir() {
-            self.path = PathBuf::from(path);
-            Ok(())
-        } else {
-            let message = format!("Not a directory: {}",
-                        path.to_str().unwrap_or("<invalid UTF-8>"));
-            Err(Error::new(message, ErrorCause::NoCause()))
-        }
+    fn get_mute(&self) -> bool {
+        self.handle.get_property("ao-mute").expect(
+            "Unable to get player mute",
+        )
+    }
+
+    fn set_mute(&mut self, mute: bool) {
+        self.handle.set_property_async("ao-mute", mute, 0).expect(
+            "Unable to set player mute",
+        );
+    }
+
+    fn get_volume(&self) -> i32 {
+        self.handle.get_property::<i64>("ao-volume").expect(
+            "Unable to get player volume",
+        ) as i32
+    }
+
+    fn set_volume(&mut self, volume: i32) {
+        assert!(volume >= 0);
+        assert!(volume <= 100);
+        self.handle.set_property_async("ao-volume", volume as i64, 0).expect(
+            "Unable to set player volume",
+        );
     }
 
     // Playlist
@@ -89,27 +95,37 @@ impl MediaPlayer for MpvPlayer {
         }
     }
 
-    fn clear(&mut self) {
-        self.handle.command_async(&["playlist-clear"], 0).expect(
-            "Unable to clear playlist",
-        );
+    fn clear(&mut self) -> Result<(), Error> {
+        self.handle.command_async(&["playlist-clear"], 0)?;
+
+        Ok(())
     }
 
-    fn stop(&mut self) {
-        self.handle.command_async(&["stop"], 0).expect(
-            "Unable to stop player",
-        );
+    fn stop(&mut self) -> Result<(), Error> {
+        self.handle.command_async(&["stop"], 0)?;
+
+        Ok(())
     }
 
-    fn next(&mut self) {
-        self.handle
-            .command_async(&["playlist-next", "weak"], 0)
-            .expect("Unable to move next in the playlist");
+    fn next(&mut self) -> Result<(), Error> {
+        self.handle.command_async(&["playlist-next", "weak"], 0)?;
+
+        Ok(())
     }
 
-    fn prev(&mut self) {
-        self.handle
-            .command_async(&["playlist-prev", "weak"], 0)
-            .expect("Unable to move next in the playlist");
+    fn prev(&mut self) -> Result<(), Error> {
+        self.handle.command_async(&["playlist-prev", "weak"], 0)?;
+
+        Ok(())
+    }
+
+    fn seek(&mut self, seek: Seek) -> Result<(), Error> {
+        let (secs, mode) = match seek {
+            Absolute(secs) => (secs, "absolute"),
+            Relative(secs) => (secs, "relative"),
+        };
+        self.handle.command_async(&["seek", &format!("{}", secs), mode], 0)?;
+
+        Ok(())
     }
 }

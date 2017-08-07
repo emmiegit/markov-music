@@ -19,9 +19,8 @@
  */
 
 use error::Error;
-use player::MediaPlayer;
+use player::{MediaPlayer, Seek};
 use player::mpv_player::MpvPlayer;
-use std::path::Path;
 
 pub enum Player {
     Mpv(MpvPlayer),
@@ -42,43 +41,55 @@ impl Player {
 }
 
 impl MediaPlayer for Player {
+    fn get_pause(&self) -> bool {
+        self.get_inst().get_pause()
+    }
+
     fn set_pause(&mut self, pause: bool) {
         self.get_inst_mut().set_pause(pause);
     }
 
-    fn get_pause(&self) -> bool {
-        self.get_inst().get_pause()
+    fn get_mute(&self) -> bool {
+        self.get_inst().get_mute()
+    }
+
+    fn set_mute(&mut self, mute: bool) {
+        self.get_inst_mut().set_mute(mute);
+    }
+
+    fn get_volume(&self) -> i32 {
+        self.get_inst().get_volume()
+    }
+
+    fn set_volume(&mut self, volume: i32) {
+        self.get_inst_mut().set_volume(volume);
     }
 
     fn play(&mut self, song: &str) -> Result<(), Error> {
         self.get_inst_mut().play(song)
     }
 
-    fn get_current_dir<'a>(&'a self) -> &'a Path {
-        self.get_inst().get_current_dir()
-    }
-
-    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
-        self.get_inst_mut().set_current_dir(path)
-    }
-
     fn enqueue(&mut self, song: &str) -> Result<(), Error> {
         self.get_inst_mut().enqueue(song)
     }
 
-    fn clear(&mut self) {
-        self.get_inst_mut().clear();
+    fn clear(&mut self) -> Result<(), Error> {
+        self.get_inst_mut().clear()
     }
 
-    fn stop(&mut self) {
-        self.get_inst_mut().stop();
+    fn stop(&mut self) -> Result<(), Error> {
+        self.get_inst_mut().stop()
     }
 
-    fn next(&mut self) {
-        self.get_inst_mut().next();
+    fn next(&mut self) -> Result<(), Error> {
+        self.get_inst_mut().next()
     }
 
-    fn prev(&mut self) {
-        self.get_inst_mut().prev();
+    fn prev(&mut self) -> Result<(), Error> {
+        self.get_inst_mut().prev()
+    }
+
+    fn seek(&mut self, seek: Seek) -> Result<(), Error> {
+        self.get_inst_mut().seek(seek)
     }
 }

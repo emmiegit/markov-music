@@ -18,7 +18,7 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
+use error::{Error, ErrorCause};
 use std::env;
 use std::fs::File;
 use std::io::prelude::Read;
@@ -31,6 +31,8 @@ pub struct Config {
     pub player: String,
     pub music_dir: String,
     pub storage_file: String,
+    pub seek_seconds: f32,
+    pub volume_step: i32,
 }
 
 impl Config {
@@ -51,6 +53,8 @@ impl Config {
                     .to_string()
             },
             storage_file: MARKOV_FILE_NAME.to_string(),
+            seek_seconds: 0.2,
+            volume_step: 1,
         }
     }
 
@@ -58,9 +62,19 @@ impl Config {
         let mut file = File::open(path)?;
         let mut contents = String::new();
         let _ = file.read_to_string(&mut contents)?;
-        let config = toml::from_str(&contents)?;
+        let config: Config = toml::from_str(&contents)?;
 
-        Ok(config)
+        if !config.seek_seconds.is_finite() {
+            Err(Error::new("Seek seconds is not a real number", ErrorCause::NoCause()))
+        } else if config.seek_seconds == 0.0 {
+            Err(Error::new("Seek seconds is zero", ErrorCause::NoCause()))
+        } else if config.volume_step < 0 {
+            Err(Error::new("Volume step is negative", ErrorCause::NoCause()))
+        } else if config.volume_step > 100 {
+            Err(Error::new("Volume step is greater than 100", ErrorCause::NoCause()))
+        } else {
+            Ok(config)
+        }
     }
 
     pub fn default() -> Self {

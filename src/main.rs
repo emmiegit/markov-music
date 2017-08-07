@@ -26,7 +26,6 @@ extern crate rand;
 extern crate serde;
 extern crate serde_json;
 extern crate toml;
-extern crate walkdir;
 
 #[macro_use]
 extern crate serde_derive;
@@ -119,44 +118,46 @@ fn main() {
     };
 
     let player = get_player(&config.player);
-    let handle = markov::Handle::new(chain, player, &config);
-    if let Err(e) = main_loop(handle, &config) {
+    let handle = markov::Handle::new(chain, player);
+    if let Err(e) = main_loop(handle, config) {
         println!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(handle: markov::Handle, config: &Config) -> Result<(), Error> {
-    let mut ui = Ui::new(config)?;
+fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
+    let mut ui = Ui::new(&config)?;
     ui.full_redraw()?;
 
     loop {
-        /*
         match next_command(&ui) {
-            TogglePause => handle.player_toggle_pause(),
-            Stop => handle.player_stop(),
+            TogglePause => handle.toggle_pause(),
+            Stop => handle.stop()?,
             MoveUp => handle.cursor_up(),
             MoveDown => handle.cursor_down(),
             ParentDir => handle.cursor_parent(),
-            PlaySelected => handle.cursor_play(),
-            SeekBackwards => handle.player_seek_backwards(),
-            SeekForward => handle.player_seek_forward(),
-            AddSelected => handle.cursor_add(),
-            Shuffle => handle.,
-            Next,
-            Previous,
-            Repeat,
-            LoopBack,
-            Like,
-            Dislike,
-            Random,
-            Tired,
+            PlaySelected => handle.play()?,
+            RaiseVolume => handle.change_volume(config.volume_step),
+            LowerVolume => handle.change_volume(-config.volume_step),
+            Mute => handle.toggle_mute(),
+            SeekBack => handle.seek(-config.seek_seconds)?,
+            SeekForward => handle.seek(config.seek_seconds)?,
+            SeekStart => handle.seek_begin()?,
+            SeekEnd => handle.seek_end()?,
+            AddSelected => handle.add()?,
+            Shuffle => handle.shuffle()?,
+            Next => handle.next()?,
+            Previous => handle.prev()?,
+            Repeat => handle.repeat()?,
+            LoopBack => handle.loop_back()?,
+            Like => handle.like(),
+            Dislike => handle.dislike(),
+            Random => handle.random()?,
+            Tired => handle.tired(),
             Redraw => ui.full_redraw()?,
             Quit | Abort => break,
             Nothing => (),
         }
-        */
-        break;
     }
 
     Ok(())

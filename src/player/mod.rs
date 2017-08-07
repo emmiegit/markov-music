@@ -20,30 +20,45 @@
 
 pub use self::mpv_player::MpvPlayer;
 pub use self::player::Player;
-use std::path::Path;
 use error::Error;
 
 mod mpv_player;
 mod player;
 
+pub enum Seek {
+    Absolute(f32),
+    Relative(f32),
+}
+
 pub trait MediaPlayer {
     // Player control
-    fn set_pause(&mut self, pause: bool);
     fn get_pause(&self) -> bool;
+    fn set_pause(&mut self, pause: bool);
     fn toggle_pause(&mut self) {
         let pause = self.get_pause();
         self.set_pause(!pause);
     }
 
-    // Navigator
-    fn get_current_dir<'a>(&'a self) -> &'a Path;
-    fn set_current_dir(&mut self, path: &Path) -> Result<(), Error>;
+    fn get_mute(&self) -> bool;
+    fn set_mute(&mut self, mute: bool);
+    fn toggle_mute(&mut self) {
+        let mute = self.get_mute();
+        self.set_mute(!mute);
+    }
+
+    fn get_volume(&self) -> i32;
+    fn set_volume(&mut self, volume: i32);
+    fn change_volume(&mut self, offset: i32) {
+        let volume = self.get_volume();
+        self.set_volume(volume + offset);
+    }
 
     // Playlist
     fn play(&mut self, song: &str) -> Result<(), Error>;
     fn enqueue(&mut self, song: &str) -> Result<(), Error>;
-    fn clear(&mut self);
-    fn stop(&mut self);
-    fn next(&mut self);
-    fn prev(&mut self);
+    fn clear(&mut self) -> Result<(), Error>;
+    fn stop(&mut self) -> Result<(), Error>;
+    fn next(&mut self) -> Result<(), Error>;
+    fn prev(&mut self) -> Result<(), Error>;
+    fn seek(&mut self, seek: Seek) -> Result<(), Error>;
 }
