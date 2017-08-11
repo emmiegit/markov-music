@@ -119,7 +119,8 @@ impl Handle {
     }
 
     pub fn toggle_pause(&mut self) {
-        self.player.toggle_pause();
+        let pause = self.player.get_pause();
+        self.player.set_pause(!pause);
     }
 
     pub fn play(&mut self) -> Result<(), Error> {
@@ -136,7 +137,8 @@ impl Handle {
     }
 
     pub fn toggle_mute(&mut self) {
-        self.player.toggle_mute();
+        let mute = self.player.get_mute();
+        self.player.set_mute(!mute);
     }
 
     pub fn get_volume(&self) -> i32 {
@@ -144,7 +146,9 @@ impl Handle {
     }
 
     pub fn change_volume(&mut self, offset: i32) {
-        self.player.change_volume(offset);
+        let volume = self.player.get_volume() + offset;
+        let volume = cmp::max(cmp::min(volume, 100), 0);
+        self.player.set_volume(volume);
     }
 
     pub fn seek_begin(&mut self) -> Result<(), Error> {

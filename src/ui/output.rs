@@ -18,10 +18,13 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use config::Config;
 use pancurses::*;
 use ncurses;
 use ui::UiError;
+
+const PLAY: &'static str = "▶";
+const PAUSE: &'static str = "▮▮";
+const STOP: &'static str = "◼";
 
 pub struct Output<'a> {
     win: &'a mut Window,
@@ -30,7 +33,7 @@ pub struct Output<'a> {
 }
 
 impl<'a> Output<'a> {
-    pub fn new(win: &'a mut Window, config: &Config) -> Self {
+    pub fn new(win: &'a mut Window) -> Self {
         let (rows, cols) = win.get_max_yx();
         Output {
             win: win,

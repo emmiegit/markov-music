@@ -18,19 +18,17 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use config::Config;
 use error::Error;
 use pancurses::*;
 use std::ptr;
 use ui::output::Output;
 
-pub struct Ui<'a> {
+pub struct Ui {
     win: Window,
-    config: &'a Config,
 }
 
-impl<'a> Ui<'a> {
-    pub fn new(config: &'a Config) -> Result<Self, Error> {
+impl Ui {
+    pub fn new() -> Result<Self, Error> {
         let win = initscr();
         let _ = mousemask(ALL_MOUSE_EVENTS, ptr::null_mut());
         set_title("Markov Music Player");
@@ -40,10 +38,7 @@ impl<'a> Ui<'a> {
         curses!(win.keypad(true))?;
         curses!(win.nodelay(true))?;
 
-        Ok(Ui {
-            win: win,
-            config: config,
-        })
+        Ok(Ui { win: win })
     }
 
     pub fn get_window(&self) -> &Window {
@@ -55,7 +50,7 @@ impl<'a> Ui<'a> {
     }
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
-        let mut output = Output::new(&mut self.win, &self.config);
+        let mut output = Output::new(&mut self.win);
         output.clear()?;
         output.draw_box()?;
         output.flush()?;
@@ -68,7 +63,7 @@ impl<'a> Ui<'a> {
     }
 }
 
-impl<'a> Drop for Ui<'a> {
+impl Drop for Ui {
     fn drop(&mut self) {
         curses!(endwin()).expect("Calling endwin() failed");
     }

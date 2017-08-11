@@ -114,7 +114,7 @@ fn main() {
 }
 
 fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
-    let mut ui = Ui::new(&config)?;
+    let mut ui = Ui::new()?;
     ui.full_redraw()?;
 
     loop {

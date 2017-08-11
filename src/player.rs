@@ -21,7 +21,6 @@
 use error::Error;
 use mpv::{MpvHandler, MpvHandlerBuilder};
 use self::Seek::{Absolute, Relative};
-use std::cmp;
 
 pub enum Seek {
     Absolute(f32),
@@ -44,11 +43,6 @@ impl Player {
     }
 
     // Player control
-    pub fn toggle_pause(&mut self) {
-        let pause = self.get_pause();
-        self.set_pause(!pause);
-    }
-
     pub fn get_pause(&self) -> bool {
         self.handle.get_property("pause").expect(
             "Unable to get player pause",
@@ -61,11 +55,6 @@ impl Player {
         );
     }
 
-    pub fn toggle_mute(&mut self) {
-        let mute = self.get_mute();
-        self.set_mute(!mute);
-    }
-
     pub fn get_mute(&self) -> bool {
         self.handle.get_property("ao-mute").expect(
             "Unable to get player mute",
@@ -76,13 +65,6 @@ impl Player {
         self.handle.set_property_async("ao-mute", mute, 0).expect(
             "Unable to set player mute",
         );
-    }
-
-    pub fn change_volume(&mut self, offset: i32) -> i32 {
-        let volume = self.get_volume() + offset;
-        let volume = cmp::max(cmp::min(volume, 100), 0);
-        self.set_volume(volume);
-        volume
     }
 
     pub fn get_volume(&self) -> i32 {
