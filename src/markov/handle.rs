@@ -18,11 +18,11 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::Chain;
 use error::{Error, ErrorCause};
-use player::{MediaPlayer, Player, Seek};
+use player::{Player, Seek};
 use std::{cmp, env};
 use std::path::{Path, PathBuf};
+use super::Chain;
 
 struct Cursor {
     pub path: PathBuf,
@@ -55,7 +55,11 @@ impl Cursor {
         self.pos = cmp::min(self.pos + 1, self.files.len());
     }
 
-    fn parent(&mut self) {
+    fn left(&mut self) {
+        unimplemented!();
+    }
+
+    fn right(&mut self) {
         unimplemented!();
     }
 }
@@ -67,10 +71,10 @@ pub struct Handle {
 }
 
 impl Handle {
-    pub fn new(chain: Chain, player: Player) -> Self {
+    pub fn new(chain: Chain) -> Self {
         Handle {
             chain: chain,
-            player: player,
+            player: Player::new(),
             cursor: Cursor::new(),
         }
     }
@@ -101,8 +105,12 @@ impl Handle {
         self.cursor.down();
     }
 
-    pub fn cursor_parent(&mut self) {
-        self.cursor.parent();
+    pub fn cursor_left(&mut self) {
+        self.cursor.left();
+    }
+
+    pub fn cursor_right(&mut self) {
+        self.cursor.right();
     }
 
     // Player
@@ -122,7 +130,7 @@ impl Handle {
     }
 
     pub fn stop(&mut self) -> Result<(), Error> {
-        self.player.stop();
+        self.player.stop()?;
 
         Ok(())
     }

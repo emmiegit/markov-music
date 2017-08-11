@@ -19,9 +19,9 @@
  */
 
 use config::Config;
+use error::Error;
 use pancurses::*;
 use std::ptr;
-use super::Error;
 use ui::output::Output;
 
 pub struct Ui<'a> {

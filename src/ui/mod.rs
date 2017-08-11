@@ -21,9 +21,6 @@
 pub use self::error::UiError;
 pub use self::object::Ui;
 pub use self::input::{Command, next_command};
-pub use super::error::Error;
-pub use super::player::Player;
-pub use super::song::Song;
 
 mod error;
 mod input;

@@ -35,7 +35,6 @@ extern crate lazy_static;
 use args::parse_args;
 use config::Config;
 use error::Error;
-use player::{MpvPlayer, Player};
 use std::env;
 use std::path::Path;
 use std::process::exit;
@@ -63,16 +62,6 @@ mod player;
 mod song;
 mod ui;
 mod utils;
-
-fn get_player(player_name: &str) -> Player {
-    match player_name {
-        "mpv" => Player::Mpv(MpvPlayer::new()),
-        _ => {
-            println!("Unknown type of player: '{}'", player_name);
-            exit(1);
-        }
-    }
-}
 
 fn main() {
     let config = match parse_args() {
@@ -117,8 +106,7 @@ fn main() {
         }
     };
 
-    let player = get_player(&config.player);
-    let handle = markov::Handle::new(chain, player);
+    let handle = markov::Handle::new(chain);
     if let Err(e) = main_loop(handle, config) {
         println!("Error: {}", e);
         exit(1);
@@ -135,8 +123,9 @@ fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
             Stop => handle.stop()?,
             MoveUp => handle.cursor_up(),
             MoveDown => handle.cursor_down(),
-            ParentDir => handle.cursor_parent(),
-            PlaySelected => handle.play()?,
+            MoveLeft => handle.cursor_left(),
+            MoveRight => handle.cursor_right(),
+            PlayCurrent => handle.play()?,
             RaiseVolume => handle.change_volume(config.volume_step),
             LowerVolume => handle.change_volume(-config.volume_step),
             Mute => handle.toggle_mute(),

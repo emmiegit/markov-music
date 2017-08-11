@@ -18,17 +18,21 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::{Error, ErrorCause};
+use error::Error;
 use mpv::{MpvHandler, MpvHandlerBuilder};
-use player::MediaPlayer;
-use player::Seek::{self, Absolute, Relative};
-use std::env;
+use self::Seek::{Absolute, Relative};
+use std::cmp;
 
-pub struct MpvPlayer {
+pub enum Seek {
+    Absolute(f32),
+    Relative(f32),
+}
+
+pub struct Player {
     handle: MpvHandler,
 }
 
-impl MpvPlayer {
+impl Player {
     pub fn new() -> Self {
         let mut mpv_builder = MpvHandlerBuilder::new().expect("Failed to initialize MPV builder");
         mpv_builder.set_option("vo", "null").expect(
@@ -36,43 +40,58 @@ impl MpvPlayer {
         );
         let mpv_handler = mpv_builder.build().expect("Unable to build MPV handler");
 
-        MpvPlayer { handle: mpv_handler }
+        Player { handle: mpv_handler }
     }
-}
 
-impl MediaPlayer for MpvPlayer {
     // Player control
-    fn get_pause(&self) -> bool {
+    pub fn toggle_pause(&mut self) {
+        let pause = self.get_pause();
+        self.set_pause(!pause);
+    }
+
+    pub fn get_pause(&self) -> bool {
         self.handle.get_property("pause").expect(
             "Unable to get player pause",
         )
     }
 
-    fn set_pause(&mut self, pause: bool) {
+    pub fn set_pause(&mut self, pause: bool) {
         self.handle.set_property_async("pause", pause, 0).expect(
             "Unable to set player pause",
         );
     }
 
-    fn get_mute(&self) -> bool {
+    pub fn toggle_mute(&mut self) {
+        let mute = self.get_mute();
+        self.set_mute(!mute);
+    }
+
+    pub fn get_mute(&self) -> bool {
         self.handle.get_property("ao-mute").expect(
             "Unable to get player mute",
         )
     }
 
-    fn set_mute(&mut self, mute: bool) {
+    pub fn set_mute(&mut self, mute: bool) {
         self.handle.set_property_async("ao-mute", mute, 0).expect(
             "Unable to set player mute",
         );
     }
 
-    fn get_volume(&self) -> i32 {
+    pub fn change_volume(&mut self, offset: i32) -> i32 {
+        let volume = self.get_volume() + offset;
+        let volume = cmp::max(cmp::min(volume, 100), 0);
+        self.set_volume(volume);
+        volume
+    }
+
+    pub fn get_volume(&self) -> i32 {
         self.handle.get_property::<i64>("ao-volume").expect(
             "Unable to get player volume",
         ) as i32
     }
 
-    fn set_volume(&mut self, volume: i32) {
+    pub fn set_volume(&mut self, volume: i32) {
         assert!(volume >= 0);
         assert!(volume <= 100);
         self.handle
@@ -81,45 +100,45 @@ impl MediaPlayer for MpvPlayer {
     }
 
     // Playlist
-    fn play(&mut self, song: &str) -> Result<(), Error> {
+    pub fn play(&mut self, song: &str) -> Result<(), Error> {
         match self.handle.command(&["loadfile", song, "replace"]) {
             Ok(_) => Ok(()),
             Err(e) => Err(Error::from(e)),
         }
     }
 
-    fn enqueue(&mut self, song: &str) -> Result<(), Error> {
+    pub fn enqueue(&mut self, song: &str) -> Result<(), Error> {
         match self.handle.command(&["loadfile", song, "append"]) {
             Ok(_) => Ok(()),
             Err(e) => Err(Error::from(e)),
         }
     }
 
-    fn clear(&mut self) -> Result<(), Error> {
+    pub fn clear(&mut self) -> Result<(), Error> {
         self.handle.command_async(&["playlist-clear"], 0)?;
 
         Ok(())
     }
 
-    fn stop(&mut self) -> Result<(), Error> {
+    pub fn stop(&mut self) -> Result<(), Error> {
         self.handle.command_async(&["stop"], 0)?;
 
         Ok(())
     }
 
-    fn next(&mut self) -> Result<(), Error> {
+    pub fn next(&mut self) -> Result<(), Error> {
         self.handle.command_async(&["playlist-next", "weak"], 0)?;
 
         Ok(())
     }
 
-    fn prev(&mut self) -> Result<(), Error> {
+    pub fn prev(&mut self) -> Result<(), Error> {
         self.handle.command_async(&["playlist-prev", "weak"], 0)?;
 
         Ok(())
     }
 
-    fn seek(&mut self, seek: Seek) -> Result<(), Error> {
+    pub fn seek(&mut self, seek: Seek) -> Result<(), Error> {
         let (secs, mode) = match seek {
             Absolute(secs) => (secs, "absolute"),
             Relative(secs) => (secs, "relative"),
