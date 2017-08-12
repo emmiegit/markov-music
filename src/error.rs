@@ -75,7 +75,7 @@ impl fmt::Display for Error {
 
 // Auto-conversion
 impl From<io::Error> for Error {
-    fn from(error: io::Error) -> Error {
+    fn from(error: io::Error) -> Self {
         Error {
             message: error::Error::description(&error).to_string(),
             error: ErrorCause::Io(error),
@@ -84,7 +84,7 @@ impl From<io::Error> for Error {
 }
 
 impl From<mpv::Error> for Error {
-    fn from(error: mpv::Error) -> Error {
+    fn from(error: mpv::Error) -> Self {
         Error {
             message: error::Error::description(&error).to_string(),
             error: ErrorCause::Mpv(error),
@@ -93,7 +93,7 @@ impl From<mpv::Error> for Error {
 }
 
 impl From<serde_json::Error> for Error {
-    fn from(error: serde_json::Error) -> Error {
+    fn from(error: serde_json::Error) -> Self {
         Error {
             message: error::Error::description(&error).to_string(),
             error: ErrorCause::SerdeJson(error),
@@ -102,7 +102,7 @@ impl From<serde_json::Error> for Error {
 }
 
 impl From<toml::de::Error> for Error {
-    fn from(error: toml::de::Error) -> Error {
+    fn from(error: toml::de::Error) -> Self {
         Error {
             message: format!("{}", &error),
             error: ErrorCause::TomlDe(error),
@@ -111,7 +111,7 @@ impl From<toml::de::Error> for Error {
 }
 
 impl From<UiError> for Error {
-    fn from(error: UiError) -> Error {
+    fn from(error: UiError) -> Self {
         Error {
             message: error::Error::description(&error).to_string(),
             error: ErrorCause::Curses(error),
