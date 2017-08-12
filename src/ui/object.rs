@@ -78,7 +78,15 @@ impl Ui {
     }
 
     pub fn redraw(&mut self, handle: &Handle) -> Result<(), Error> {
-        unimplemented!();
+        let mut main = Output::new(&mut self.main);
+        let mut files = Output::new(&mut self.files);
+        let mut markov = Output::new(&mut self.markov);
+        let mut player = Output::new(&mut self.player);
+
+        files.draw_directory(handle)?;
+        player.draw_playing(handle)?;
+        main.flush()?;
+        Ok(())
     }
 }
 

@@ -147,6 +147,7 @@ fn main_loop(mut handle: Handle, args: Args) -> Result<(), Error> {
             Ok(_) => (),
             Err(_) => handle.reset(),
         }
+        ui.redraw(&handle)?;
     }
 
     Ok(())
