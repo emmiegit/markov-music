@@ -22,7 +22,7 @@ use error::Error;
 use handle::entry::{Entry, EntryType};
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};
-use std::{cmp, env, fs};
+use std::{cmp, env, fs, mem};
 
 #[derive(Debug)]
 pub struct Cursor {
@@ -46,10 +46,10 @@ impl Cursor {
         &self.path
     }
 
-    pub fn set_path(&mut self, path: PathBuf) -> Result<(), Error> {
-        self.path = path;
+    pub fn set_path(&mut self, mut path: PathBuf) -> Result<PathBuf, Error> {
+        mem::swap(&mut self.path, &mut path);
         self.update()?;
-        Ok(())
+        Ok(path)
     }
 
     pub fn entries(&self) -> &[Entry] {
