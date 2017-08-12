@@ -27,14 +27,16 @@ fn check(num: i32) {
     }
 }
 
-const DEFAULT_PAIR: u8 = 0;
-const DIRECTORY_PAIR: u8 = 1;
 static mut colors: bool = false;
 
 #[inline(always)]
 fn colors_enabled() -> bool {
     unsafe { colors }
 }
+
+const DEFAULT_PAIR: u8 = 0;
+const DIRECTORY_PAIR: u8 = 1;
+const TITLE_PAIR: u8 = 2;
 
 pub fn init(enabled: bool) -> Result<(), Error> {
     if enabled && has_colors() {
@@ -43,6 +45,7 @@ pub fn init(enabled: bool) -> Result<(), Error> {
 
         check(init_pair(DEFAULT_PAIR as i16, -1, -1));
         check(init_pair(DIRECTORY_PAIR as i16, COLOR_BLUE, -1));
+        check(init_pair(TITLE_PAIR as i16, COLOR_GREEN, -1));
         unsafe { colors = true; }
     } else {
         unsafe { colors = false; }
@@ -66,6 +69,16 @@ pub fn directory() -> chtype {
         let mut attr = Attributes::new();
         attr.set_bold(true);
         attr.set_color_pair(ColorPair(DIRECTORY_PAIR));
+        chtype::from(attr)
+    } else {
+        0
+    }
+}
+
+pub fn title() -> chtype {
+    if colors_enabled() {
+        let mut attr = Attributes::new();
+        attr.set_color_pair(ColorPair(TITLE_PAIR));
         chtype::from(attr)
     } else {
         0

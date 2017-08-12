@@ -25,6 +25,7 @@ use std::ptr;
 use ui::color;
 use ui::output::Output;
 
+#[derive(Debug)]
 pub struct Ui {
     pub main: Window,
     pub files: Window,

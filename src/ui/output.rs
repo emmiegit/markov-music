@@ -19,13 +19,15 @@
  */
 
 use pancurses::*;
+use player::State;
 use {markov, ncurses};
 use ui::{UiError, color};
 
-const PLAY: &'static str = "▶";
+const PLAY: &'static str = "▶ ";
 const PAUSE: &'static str = "▮▮";
-const STOP: &'static str = "◼";
+const STOP: &'static str = "◼ ";
 
+#[derive(Debug)]
 pub struct Output<'a> {
     win: &'a mut Window,
     rows: i32,
@@ -83,11 +85,46 @@ impl<'a> Output<'a> {
         curses!(self.win.mvaddch(self.rows - 4, 0, ncurses::ACS_LTEE()))?;
         curses!(self.win.mvaddch(self.rows - 4, self.cols / 2 - 1, ncurses::ACS_BTEE()))?;
         curses!(self.win.mvaddch(self.rows - 4, self.cols - 1, ncurses::ACS_RTEE()))?;
+
         Ok(())
     }
 
     pub fn draw_playing(&mut self, handle: &markov::Handle) -> Result<(), UiError> {
-        curses!(self.win.mvaddch(0, 0, color::directory()))?;
+        // Status
+        let status = match handle.play_state() {
+            State::Playing => PLAY,
+            State::Paused => PAUSE,
+            State::Stopped => STOP,
+        };
+        curses!(self.win.mvaddstr(0, 1, status))?;
+
+        // Title
+        let attr = color::title();
+        curses!(self.win.addch(' '))?;
+        curses!(self.win.attron(attr))?;
+        curses!(self.win.addstr("No Title"))?;
+        curses!(self.win.attroff(attr))?;
+        curses!(self.win.addstr(" by "))?;
+        curses!(self.win.attron(attr))?;
+        curses!(self.win.addstr("Reol"))?;
+        curses!(self.win.attroff(attr))?;
+
+        // Volume
+        let volume: String;
+        let percent = if handle.is_muted() {
+            volume = format!("{:3}%", handle.get_volume());
+            &volume
+        } else {
+            "  -%"
+        };
+        curses!(self.win.mvaddstr(0, self.cols - 5, percent))?;
+
+        // Progress
+        let progress = handle.play_percent() * (self.cols - 4) / 100;
+        curses!(self.win.mvaddch(1, 1, '['))?;
+        curses!(self.win.hline(ncurses::ACS_CKBOARD(), progress))?;
+        curses!(self.win.mvaddch(1, self.cols - 2, ']'))?;
+
         Ok(())
     }
 

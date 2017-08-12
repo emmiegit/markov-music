@@ -19,11 +19,13 @@
  */
 
 use error::{Error, ErrorCause};
-use player::{Player, Seek};
+use player::{Player, Seek, State};
+use song::Tags;
 use std::{cmp, env};
 use std::path::{Path, PathBuf};
 use super::Chain;
 
+#[derive(Debug)]
 struct Cursor {
     pub path: PathBuf,
     files: Vec<PathBuf>,
@@ -68,6 +70,7 @@ pub struct Handle {
     chain: Chain,
     player: Player,
     cursor: Cursor,
+    stopped: bool,
 }
 
 impl Handle {
@@ -76,6 +79,7 @@ impl Handle {
             chain: chain,
             player: Player::new(),
             cursor: Cursor::new(),
+            stopped: true,
         }
     }
 
@@ -114,35 +118,51 @@ impl Handle {
     }
 
     // Player
-    pub fn get_playing(&self) -> String {
+    pub fn song_tags(&self) -> Tags {
         // TODO
         unimplemented!();
     }
 
-    pub fn get_pause(&self) -> bool {
-        self.player.get_pause()
+    pub fn play_state(&self) -> State {
+        if self.stopped {
+            State::Stopped
+        } else if self.player.is_paused() {
+            State::Paused
+        } else {
+            State::Playing
+        }
+    }
+
+    pub fn play_percent(&self) -> i32 {
+        self.player.percent_pos()
     }
 
     pub fn toggle_pause(&mut self) {
-        let pause = self.player.get_pause();
+        let pause = self.player.is_paused();
         self.player.set_pause(!pause);
     }
 
     pub fn play(&mut self) -> Result<(), Error> {
         let song = self.cursor.current()?;
         self.player.play(song)?;
+        self.stopped = false;
 
         Ok(())
     }
 
     pub fn stop(&mut self) -> Result<(), Error> {
         self.player.stop()?;
+        self.stopped = true;
 
         Ok(())
     }
 
+    pub fn is_muted(&self) -> bool {
+        self.player.is_muted()
+    }
+
     pub fn toggle_mute(&mut self) {
-        let mute = self.player.get_mute();
+        let mute = self.player.is_muted();
         self.player.set_mute(!mute);
     }
 

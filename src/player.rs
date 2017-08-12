@@ -22,6 +22,14 @@ use error::Error;
 use mpv::{MpvHandler, MpvHandlerBuilder};
 use self::Seek::{Absolute, Relative};
 
+#[derive(Debug)]
+pub enum State {
+    Playing,
+    Paused,
+    Stopped,
+}
+
+#[derive(Debug)]
 pub enum Seek {
     Absolute(f32),
     Relative(f32),
@@ -43,42 +51,43 @@ impl Player {
     }
 
     // Player control
-    pub fn get_pause(&self) -> bool {
-        self.handle.get_property("pause").expect(
-            "Unable to get player pause",
-        )
+    pub fn is_paused(&self) -> bool {
+        self.handle.get_property("pause").unwrap_or(true)
     }
 
-    pub fn set_pause(&mut self, pause: bool) {
-        self.handle.set_property_async("pause", pause, 0).expect(
-            "Unable to set player pause",
-        );
+    pub fn set_pause(&mut self, pause: bool) -> Result<(), Error> {
+        match self.handle.set_property_async("pause", pause, 0) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Error::from(e)),
+        }
     }
 
-    pub fn get_mute(&self) -> bool {
-        self.handle.get_property("ao-mute").expect(
-            "Unable to get player mute",
-        )
+    pub fn is_muted(&self) -> bool {
+        self.handle.get_property("ao-mute").unwrap_or(false)
     }
 
-    pub fn set_mute(&mut self, mute: bool) {
-        self.handle.set_property_async("ao-mute", mute, 0).expect(
-            "Unable to set player mute",
-        );
+    pub fn set_mute(&mut self, mute: bool) -> Result<(), Error> {
+        match self.handle.set_property_async("ao-mute", mute, 0) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Error::from(e)),
+        }
     }
 
     pub fn get_volume(&self) -> i32 {
-        self.handle.get_property::<i64>("ao-volume").expect(
-            "Unable to get player volume",
-        ) as i32
+        self.handle.get_property::<i64>("ao-volume").unwrap_or(0) as i32
     }
 
-    pub fn set_volume(&mut self, volume: i32) {
+    pub fn set_volume(&mut self, volume: i32) -> Result<(), Error> {
         assert!(volume >= 0);
         assert!(volume <= 100);
-        self.handle
-            .set_property_async("ao-volume", volume as i64, 0)
-            .expect("Unable to set player volume");
+        match self.handle.set_property_async("ao-volume", volume as i64, 0) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Error::from(e)),
+        }
+    }
+
+    pub fn percent_pos(&self) -> i32 {
+        self.handle.get_property::<i64>("percent-pos").unwrap_or(0) as i32
     }
 
     // Playlist
