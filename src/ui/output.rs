@@ -52,6 +52,11 @@ impl<'a> Output<'a> {
         Ok(())
     }
 
+    pub fn fill<T: ToChtype>(&mut self, ch: T) -> Result<(), UiError> {
+        curses!(self.win.bkgd(ch.to_chtype()))?;
+        Ok(())
+    }
+
     pub fn draw_box(&mut self) -> Result<(), UiError> {
         curses!(self.win.border(
             ncurses::ACS_VLINE(),
@@ -63,6 +68,21 @@ impl<'a> Output<'a> {
             ncurses::ACS_LLCORNER(),
             ncurses::ACS_LRCORNER(),
         ))?;
+        Ok(())
+    }
+
+    pub fn draw_divisions(&mut self) -> Result<(), UiError> {
+        // Vertical divider
+        curses!(self.win.mv(1, self.cols / 2 - 2))?;
+        curses!(self.win.vline(ncurses::ACS_VLINE(), self.rows - 4))?;
+        curses!(self.win.mvaddch(0, self.cols / 2 - 2, ncurses::ACS_TTEE()))?;
+
+        // Horizontal divider
+        curses!(self.win.mv(self.rows - 4, 1))?;
+        curses!(self.win.hline(ncurses::ACS_HLINE(), self.cols - 2))?;
+        curses!(self.win.mvaddch(self.rows - 4, 0, ncurses::ACS_LTEE()))?;
+        curses!(self.win.mvaddch(self.rows - 4, self.cols / 2 - 2, ncurses::ACS_BTEE()))?;
+        curses!(self.win.mvaddch(self.rows - 4, self.cols - 1, ncurses::ACS_RTEE()))?;
         Ok(())
     }
 

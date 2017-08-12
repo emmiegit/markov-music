@@ -42,8 +42,8 @@ impl Ui {
         //curses!(win.nodelay(true))?;
 
         let (rows, cols) = win.get_max_yx();
-        let files = curses_res!(win.subwin(rows - 4, cols / 2 - 1, 1, 1))?;
-        let markov = curses_res!(win.subwin(rows - 4, cols / 2 - 1, 1, cols / 2))?;
+        let files = curses_res!(win.subwin(rows - 5, cols / 2 - 2, 1, 1))?;
+        let markov = curses_res!(win.subwin(rows - 5, cols / 2 - 1, 1, cols / 2))?;
         let player = curses_res!(win.subwin(2, cols - 2, rows - 3, 1))?;
 
         Ok(Ui {
@@ -62,13 +62,14 @@ impl Ui {
         let mut main = Output::new(&mut self.main);
         let mut files = Output::new(&mut self.files);
         let mut markov = Output::new(&mut self.markov);
-        //let mut player = Output::new(&mut self.player);
+        let mut player = Output::new(&mut self.player);
 
         main.clear()?;
         main.draw_box()?;
-        files.draw_box()?;
-        markov.draw_box()?;
-        curses!(self.player.bkgd('%'))?;
+        main.draw_divisions()?;
+        files.fill('@')?;
+        markov.fill('_')?;
+        player.fill('%')?;
         main.flush()?;
         Ok(())
     }
