@@ -48,7 +48,13 @@ mod macros {
         ($call:expr) => {
             match $call {
                 0 => Ok(()),
-                _ => Err(::ui::UiError::new(stringify!($call))),
+                _ => Err(::ui::UiError::new(
+                        &format!("{} at {}:{}",
+                                stringify!($call),
+                                file!(),
+                                line!())
+                        )
+                ),
             }
         }
     }
@@ -57,7 +63,13 @@ mod macros {
         ($call:expr) => {
             match $call {
                 Ok(x) => Ok(x),
-                Err(_) => Err(::ui::UiError::new(stringify!($call))),
+                _ => Err(::ui::UiError::new(
+                        &format!("{} at {}:{}",
+                                stringify!($call),
+                                file!(),
+                                line!())
+                        )
+                ),
             }
         }
     }
