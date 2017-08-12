@@ -22,8 +22,8 @@ use std::path::Path;
 
 #[derive(Hash, Debug)]
 pub struct Tags {
-    pub author: String,
     pub title: String,
+    pub artist: String,
 }
 
 #[derive(Eq, PartialEq, Hash, Debug, Serialize, Deserialize)]

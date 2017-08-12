@@ -115,7 +115,7 @@ impl<'a> Output<'a> {
             volume = format!("{:3}%", handle.get_volume());
             &volume
         } else {
-            "  -%"
+            " --%"
         };
         curses!(self.win.mvaddstr(0, self.cols - 5, percent))?;
 

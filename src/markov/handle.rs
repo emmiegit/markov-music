@@ -118,8 +118,7 @@ impl Handle {
     }
 
     // Player
-    pub fn song_tags(&self) -> Tags {
-        // TODO
+    pub fn song_tags(&self) -> Result<Tags, Error> {
         unimplemented!();
     }
 
