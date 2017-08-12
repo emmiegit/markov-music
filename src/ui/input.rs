@@ -60,7 +60,7 @@ pub fn next_command(ui: &Ui) -> Command {
     if let Some(key) = ui.get_key() {
         match key {
             /* Player control */
-            Character(' ') => Command::TogglePause,
+            Character(' ') | Character('p') => Command::TogglePause,
             Character('S') => Command::Stop,
             Character('j') | KeyDown => Command::MoveDown,
             Character('k') | KeyUp => Command::MoveUp,
@@ -79,7 +79,7 @@ pub fn next_command(ui: &Ui) -> Command {
             Character('a') => Command::AddSelected,
             Character('s') | KeyRedo => Command::Shuffle,
             Character('n') | KeyNext => Command::Next,
-            Character('p') | KeyPrevious => Command::Previous,
+            Character('N') | KeyPrevious => Command::Previous,
             Character('r') => Command::Repeat,
             Character('o') => Command::LoopBack,
             Character('+') => Command::Like,

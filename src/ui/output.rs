@@ -21,7 +21,6 @@
 use handle::{EntryType, Handle};
 use pancurses::*;
 use player::State;
-use std::borrow::Cow;
 use ui::{UiError, color};
 use {ncurses, utils};
 
@@ -44,6 +43,11 @@ impl<'a> Output<'a> {
             rows: rows,
             cols: cols,
         }
+    }
+
+    pub fn erase(&mut self) -> Result<(), UiError> {
+        curses!(self.win.erase())?;
+        Ok(())
     }
 
     pub fn clear(&mut self) -> Result<(), UiError> {
