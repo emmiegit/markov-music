@@ -44,6 +44,20 @@ impl Handle {
         }
     }
 
+    pub fn reset(&mut self) {
+        // Save values
+        let volume = self.get_volume();
+        let mute = self.is_muted();
+
+        // Do the actual reset
+        self.player = Player::new();
+        self.stopped = true;
+
+        // Restore values
+        let _ = self.player.set_volume(volume);
+        let _ = self.player.set_mute(mute);
+    }
+
     // Navigator
     pub fn get_current_dir(&self) -> &Path {
         self.cursor.get_path()
@@ -98,9 +112,11 @@ impl Handle {
         self.player.percent_pos()
     }
 
-    pub fn toggle_pause(&mut self) {
+    pub fn toggle_pause(&mut self) -> Result<(), Error> {
         let pause = self.player.is_paused();
-        self.player.set_pause(!pause);
+        self.player.set_pause(!pause)?;
+
+        Ok(())
     }
 
     pub fn play(&mut self) -> Result<(), Error> {
@@ -122,19 +138,23 @@ impl Handle {
         self.player.is_muted()
     }
 
-    pub fn toggle_mute(&mut self) {
+    pub fn toggle_mute(&mut self) -> Result<(), Error> {
         let mute = self.player.is_muted();
         self.player.set_mute(!mute);
+
+        Ok(())
     }
 
     pub fn get_volume(&self) -> i32 {
         self.player.get_volume()
     }
 
-    pub fn change_volume(&mut self, offset: i32) {
+    pub fn change_volume(&mut self, offset: i32) -> Result<(), Error> {
         let volume = self.player.get_volume() + offset;
         let volume = cmp::max(cmp::min(volume, 100), 0);
-        self.player.set_volume(volume);
+        self.player.set_volume(volume)?;
+
+        Ok(())
     }
 
     pub fn seek_begin(&mut self) -> Result<(), Error> {

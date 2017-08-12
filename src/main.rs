@@ -33,7 +33,6 @@ extern crate serde_derive;
 extern crate lazy_static;
 
 use args::{Args, parse_args};
-use config::Config;
 use error::Error;
 use handle::Handle;
 use std::env;
@@ -129,36 +128,48 @@ fn main_loop(mut handle: Handle, args: Args) -> Result<(), Error> {
     ui.full_redraw(&handle)?;
 
     loop {
-        match next_command(&ui) {
-            TogglePause => handle.toggle_pause(),
-            Stop => handle.stop()?,
-            MoveUp => handle.cursor_up(),
-            MoveDown => handle.cursor_down(),
-            MoveLeft => handle.cursor_left(),
-            MoveRight => handle.cursor_right(),
-            PlayCurrent => handle.play()?,
-            RaiseVolume => handle.change_volume(args.config.volume_step),
-            LowerVolume => handle.change_volume(-args.config.volume_step),
-            Mute => handle.toggle_mute(),
-            SeekBack => handle.seek(-args.config.seek_seconds)?,
-            SeekForward => handle.seek(args.config.seek_seconds)?,
-            SeekStart => handle.seek_begin()?,
-            SeekEnd => handle.seek_end()?,
-            AddSelected => handle.add()?,
-            Shuffle => handle.shuffle()?,
-            Next => handle.next()?,
-            Previous => handle.prev()?,
-            Repeat => handle.repeat()?,
-            LoopBack => handle.loop_back()?,
-            Like => handle.like(),
-            Dislike => handle.dislike(),
-            Random => handle.random()?,
-            Tired => handle.tired(),
-            Redraw => ui.full_redraw(&handle)?,
-            Quit | Abort => break,
-            Nothing => (),
+        let cmd = next_command(&ui);
+        // On error, rebuild the handle
+        match process_command(cmd, &mut ui, &mut handle, &args) {
+            Ok(true) => break,
+            Ok(_) => (),
+            Err(_) => handle.reset(),
         }
     }
 
     Ok(())
+}
+
+fn process_command(cmd: ui::Command, ui: &mut Ui, handle: &mut Handle, args: &Args) -> Result<bool, Error> {
+    match cmd {
+        TogglePause => handle.toggle_pause()?,
+        Stop => handle.stop()?,
+        MoveUp => handle.cursor_up(),
+        MoveDown => handle.cursor_down(),
+        MoveLeft => handle.cursor_left(),
+        MoveRight => handle.cursor_right(),
+        PlayCurrent => handle.play()?,
+        RaiseVolume => handle.change_volume(args.config.volume_step)?,
+        LowerVolume => handle.change_volume(-args.config.volume_step)?,
+        Mute => handle.toggle_mute()?,
+        SeekBack => handle.seek(-args.config.seek_seconds)?,
+        SeekForward => handle.seek(args.config.seek_seconds)?,
+        SeekStart => handle.seek_begin()?,
+        SeekEnd => handle.seek_end()?,
+        AddSelected => handle.add()?,
+        Shuffle => handle.shuffle()?,
+        Next => handle.next()?,
+        Previous => handle.prev()?,
+        Repeat => handle.repeat()?,
+        LoopBack => handle.loop_back()?,
+        Like => handle.like(),
+        Dislike => handle.dislike(),
+        Random => handle.random()?,
+        Tired => handle.tired(),
+        Redraw => ui.full_redraw(handle)?,
+        Quit | Abort => return Ok(true),
+        Nothing => (),
+    }
+
+    Ok(false)
 }

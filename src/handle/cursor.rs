@@ -18,7 +18,7 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::{Error, ErrorCause};
+use error::Error;
 use handle::entry::{Entry, EntryType};
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};

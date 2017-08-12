@@ -48,7 +48,7 @@ pub fn parse_args() -> Result<Args, Error> {
         )
         .get_matches();
 
-    let mut args = Args {
+    let args = Args {
         config: match matches.value_of("config") {
             Some(path) => Config::read(Path::new(path))?,
             None => Config::default(),

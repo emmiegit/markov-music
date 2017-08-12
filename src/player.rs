@@ -74,7 +74,7 @@ impl Player {
     }
 
     pub fn get_volume(&self) -> i32 {
-        self.handle.get_property::<i64>("ao-volume").unwrap_or(0) as i32
+        self.handle.get_property::<i64>("ao-volume").unwrap_or(60) as i32
     }
 
     pub fn set_volume(&mut self, volume: i32) -> Result<(), Error> {
