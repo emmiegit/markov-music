@@ -19,8 +19,10 @@
  */
 
 use error::Error;
+use markov;
 use pancurses::*;
 use std::ptr;
+use ui::color;
 use ui::output::Output;
 
 pub struct Ui {
@@ -31,7 +33,7 @@ pub struct Ui {
 }
 
 impl Ui {
-    pub fn new() -> Result<Self, Error> {
+    pub fn new(enable_color: bool) -> Result<Self, Error> {
         let win = initscr();
         let _ = mousemask(ALL_MOUSE_EVENTS, ptr::null_mut());
         set_title("Markov Music Player");
@@ -39,6 +41,7 @@ impl Ui {
         curses!(nl())?;
         curses!(noecho())?;
         curses!(win.keypad(true))?;
+        color::init(enable_color)?;
         //curses!(win.nodelay(true))?;
 
         let (rows, cols) = win.get_max_yx();
@@ -58,7 +61,7 @@ impl Ui {
         self.main.getch()
     }
 
-    pub fn full_redraw(&mut self) -> Result<(), Error> {
+    pub fn full_redraw(&mut self, handle: &markov::Handle) -> Result<(), Error> {
         let mut main = Output::new(&mut self.main);
         let mut files = Output::new(&mut self.files);
         let mut markov = Output::new(&mut self.markov);
@@ -67,14 +70,12 @@ impl Ui {
         main.clear()?;
         main.draw_box()?;
         main.draw_divisions()?;
-        files.fill('@')?;
-        markov.fill('_')?;
-        player.fill('%')?;
+        player.draw_playing(handle)?;
         main.flush()?;
         Ok(())
     }
 
-    pub fn redraw(&mut self) -> Result<(), Error> {
+    pub fn redraw(&mut self, handle: &markov::Handle) -> Result<(), Error> {
         unimplemented!();
     }
 }

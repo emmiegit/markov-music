@@ -32,7 +32,7 @@ extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
 
-use args::parse_args;
+use args::{Args, parse_args};
 use config::Config;
 use error::Error;
 use std::env;
@@ -73,7 +73,7 @@ mod ui;
 mod utils;
 
 fn main() {
-    let config = match parse_args() {
+    let args = match parse_args() {
         Ok(x) => x,
         Err(e) => {
             println!("Error parsing arguments: {}", e);
@@ -86,17 +86,17 @@ fn main() {
         exit(1);
     }
 
-    if let Err(e) = env::set_current_dir(&config.music_dir) {
+    if let Err(e) = env::set_current_dir(&args.config.music_dir) {
         println!(
             "Can't switch to music directory '{}': {}",
-            config.music_dir,
+            args.config.music_dir,
             e
         );
         exit(1);
     }
 
     let chain: markov::Chain = {
-        let path = Path::new(&config.storage_file);
+        let path = Path::new(&args.config.storage_file);
         if path.exists() {
             match markov::Chain::read(path) {
                 Ok(x) => x,
@@ -116,15 +116,15 @@ fn main() {
     };
 
     let handle = markov::Handle::new(chain);
-    if let Err(e) = main_loop(handle, config) {
+    if let Err(e) = main_loop(handle, args) {
         println!("Error: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
-    let mut ui = Ui::new()?;
-    ui.full_redraw()?;
+fn main_loop(mut handle: markov::Handle, args: Args) -> Result<(), Error> {
+    let mut ui = Ui::new(args.color)?;
+    ui.full_redraw(&handle)?;
 
     loop {
         match next_command(&ui) {
@@ -135,11 +135,11 @@ fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
             MoveLeft => handle.cursor_left(),
             MoveRight => handle.cursor_right(),
             PlayCurrent => handle.play()?,
-            RaiseVolume => handle.change_volume(config.volume_step),
-            LowerVolume => handle.change_volume(-config.volume_step),
+            RaiseVolume => handle.change_volume(args.config.volume_step),
+            LowerVolume => handle.change_volume(-args.config.volume_step),
             Mute => handle.toggle_mute(),
-            SeekBack => handle.seek(-config.seek_seconds)?,
-            SeekForward => handle.seek(config.seek_seconds)?,
+            SeekBack => handle.seek(-args.config.seek_seconds)?,
+            SeekForward => handle.seek(args.config.seek_seconds)?,
             SeekStart => handle.seek_begin()?,
             SeekEnd => handle.seek_end()?,
             AddSelected => handle.add()?,
@@ -152,7 +152,7 @@ fn main_loop(mut handle: markov::Handle, config: Config) -> Result<(), Error> {
             Dislike => handle.dislike(),
             Random => handle.random()?,
             Tired => handle.tired(),
-            Redraw => ui.full_redraw()?,
+            Redraw => ui.full_redraw(&handle)?,
             Quit | Abort => break,
             Nothing => (),
         }

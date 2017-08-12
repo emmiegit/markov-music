@@ -22,6 +22,7 @@ pub use self::error::UiError;
 pub use self::object::Ui;
 pub use self::input::{Command, next_command};
 
+mod color;
 mod error;
 mod input;
 mod object;

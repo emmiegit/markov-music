@@ -23,7 +23,12 @@ use config::Config;
 use error::Error;
 use std::path::Path;
 
-pub fn parse_args() -> Result<Config, Error> {
+pub struct Args {
+    pub config: Config,
+    pub color: bool,
+}
+
+pub fn parse_args() -> Result<Args, Error> {
     let matches = App::new("markov-music")
         .version("0.0.1")
         .about("Music player that chooses music based on a Markov chain")
@@ -46,14 +51,22 @@ pub fn parse_args() -> Result<Config, Error> {
         )
         .get_matches();
 
-    let mut config = match matches.value_of("config") {
-        Some(path) => Config::read(Path::new(path))?,
-        None => Config::default(),
+    let mut args = Args {
+        config: match matches.value_of("config") {
+            Some(path) => Config::read(Path::new(path))?,
+            None => Config::default(),
+        },
+        color: true,
     };
 
     if let Some(player) = matches.value_of("player") {
-        config.player = String::from(player);
+        args.config.player = String::from(player);
     }
 
-    Ok(config)
+    /*
+    if let Some(when) = matches.value_of("color") {
+    }
+    */
+
+    Ok(args)
 }

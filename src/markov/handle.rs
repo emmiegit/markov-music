@@ -114,6 +114,11 @@ impl Handle {
     }
 
     // Player
+    pub fn get_playing(&self) -> String {
+        // TODO
+        unimplemented!();
+    }
+
     pub fn get_pause(&self) -> bool {
         self.player.get_pause()
     }

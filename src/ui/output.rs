@@ -19,8 +19,8 @@
  */
 
 use pancurses::*;
-use ncurses;
-use ui::UiError;
+use {markov, ncurses};
+use ui::{UiError, color};
 
 const PLAY: &'static str = "▶";
 const PAUSE: &'static str = "▮▮";
@@ -83,6 +83,11 @@ impl<'a> Output<'a> {
         curses!(self.win.mvaddch(self.rows - 4, 0, ncurses::ACS_LTEE()))?;
         curses!(self.win.mvaddch(self.rows - 4, self.cols / 2 - 1, ncurses::ACS_BTEE()))?;
         curses!(self.win.mvaddch(self.rows - 4, self.cols - 1, ncurses::ACS_RTEE()))?;
+        Ok(())
+    }
+
+    pub fn draw_playing(&mut self, handle: &markov::Handle) -> Result<(), UiError> {
+        curses!(self.win.mvaddch(0, 0, color::directory()))?;
         Ok(())
     }
 
