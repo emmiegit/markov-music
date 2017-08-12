@@ -19,7 +19,7 @@
  */
 
 use error::Error;
-use markov;
+use handle::Handle;
 use pancurses::*;
 use std::ptr;
 use ui::color;
@@ -62,7 +62,7 @@ impl Ui {
         self.main.getch()
     }
 
-    pub fn full_redraw(&mut self, handle: &markov::Handle) -> Result<(), Error> {
+    pub fn full_redraw(&mut self, handle: &Handle) -> Result<(), Error> {
         let mut main = Output::new(&mut self.main);
         let mut files = Output::new(&mut self.files);
         let mut markov = Output::new(&mut self.markov);
@@ -71,12 +71,13 @@ impl Ui {
         main.clear()?;
         main.draw_box()?;
         main.draw_divisions()?;
+        files.draw_directory(handle)?;
         player.draw_playing(handle)?;
         main.flush()?;
         Ok(())
     }
 
-    pub fn redraw(&mut self, handle: &markov::Handle) -> Result<(), Error> {
+    pub fn redraw(&mut self, handle: &Handle) -> Result<(), Error> {
         unimplemented!();
     }
 }

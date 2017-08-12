@@ -53,34 +53,28 @@ pub fn init(enabled: bool) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn default() -> chtype {
+pub fn default() -> Attributes {
+    let mut attr = Attributes::new();
     if colors_enabled() {
-        let mut attr = Attributes::new();
         attr.set_normal();
         attr.set_color_pair(ColorPair(DEFAULT_PAIR));
-        chtype::from(attr)
-    } else {
-        0
     }
+    attr
 }
 
-pub fn directory() -> chtype {
+pub fn directory() -> Attributes {
+    let mut attr = Attributes::new();
     if colors_enabled() {
-        let mut attr = Attributes::new();
         attr.set_bold(true);
         attr.set_color_pair(ColorPair(DIRECTORY_PAIR));
-        chtype::from(attr)
-    } else {
-        0
     }
+    attr
 }
 
-pub fn title() -> chtype {
+pub fn title() -> Attributes {
+    let mut attr = Attributes::new();
     if colors_enabled() {
-        let mut attr = Attributes::new();
         attr.set_color_pair(ColorPair(TITLE_PAIR));
-        chtype::from(attr)
-    } else {
-        0
     }
+    attr
 }

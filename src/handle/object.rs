@@ -1,5 +1,5 @@
 /*
- * markov/handle.rs
+ * handle/object.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -19,52 +19,12 @@
  */
 
 use error::{Error, ErrorCause};
+use handle::cursor::Cursor;
+use markov::Chain;
 use player::{Player, Seek, State};
+use std::cmp;
 use song::Tags;
-use std::{cmp, env};
 use std::path::{Path, PathBuf};
-use super::Chain;
-
-#[derive(Debug)]
-struct Cursor {
-    pub path: PathBuf,
-    files: Vec<PathBuf>,
-    pos: usize,
-}
-
-impl Cursor {
-    pub fn new() -> Self {
-        Cursor {
-            path: env::current_dir().expect("Unable to get current directory"),
-            files: Vec::new(),
-            pos: 0,
-        }
-    }
-
-    fn current(&self) -> Result<&str, Error> {
-        self.files[self.pos].to_str().ok_or_else(|| {
-            Error::new("Path not valid UTF-8", ErrorCause::NoCause())
-        })
-    }
-
-    fn up(&mut self) {
-        if self.pos > 0 {
-            self.pos -= 1;
-        }
-    }
-
-    fn down(&mut self) {
-        self.pos = cmp::min(self.pos + 1, self.files.len());
-    }
-
-    fn left(&mut self) {
-        unimplemented!();
-    }
-
-    fn right(&mut self) {
-        unimplemented!();
-    }
-}
 
 pub struct Handle {
     chain: Chain,
@@ -85,12 +45,12 @@ impl Handle {
 
     // Navigator
     pub fn get_current_dir(&self) -> &Path {
-        &self.cursor.path
+        self.cursor.get_path()
     }
 
     pub fn set_current_dir(&mut self, path: &Path) -> Result<(), Error> {
         if path.is_dir() {
-            self.cursor.path = PathBuf::from(path);
+            self.cursor.set_path(PathBuf::from(path))?;
             Ok(())
         } else {
             let message = format!(

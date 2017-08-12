@@ -35,6 +35,7 @@ extern crate lazy_static;
 use args::{Args, parse_args};
 use config::Config;
 use error::Error;
+use handle::Handle;
 use std::env;
 use std::path::Path;
 use std::process::exit;
@@ -66,6 +67,7 @@ mod macros {
 mod args;
 mod config;
 mod error;
+mod handle;
 mod markov;
 mod player;
 mod song;
@@ -115,14 +117,14 @@ fn main() {
         }
     };
 
-    let handle = markov::Handle::new(chain);
+    let handle = Handle::new(chain);
     if let Err(e) = main_loop(handle, args) {
         println!("Error: {}", e);
         exit(1);
     }
 }
 
-fn main_loop(mut handle: markov::Handle, args: Args) -> Result<(), Error> {
+fn main_loop(mut handle: Handle, args: Args) -> Result<(), Error> {
     let mut ui = Ui::new(args.color)?;
     ui.full_redraw(&handle)?;
 

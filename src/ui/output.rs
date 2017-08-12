@@ -18,10 +18,11 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use handle::Handle;
 use pancurses::*;
 use player::State;
-use {markov, ncurses};
 use ui::{UiError, color};
+use {ncurses, utils};
 
 const PLAY: &'static str = "▶ ";
 const PAUSE: &'static str = "▮▮";
@@ -89,7 +90,20 @@ impl<'a> Output<'a> {
         Ok(())
     }
 
-    pub fn draw_playing(&mut self, handle: &markov::Handle) -> Result<(), UiError> {
+    pub fn draw_directory(&mut self, handle: &Handle) -> Result<(), UiError> {
+        // Current directory
+        let cwd = utils::compress_path(handle.get_current_dir());
+        let attr = color::directory() | Attribute::Underline;
+        curses!(self.win.attron(attr))?;
+        curses!(self.win.mvaddstr(0, 0, &cwd))?;
+        curses!(self.win.attroff(attr))?;
+
+        // File listing
+
+        Ok(())
+    }
+
+    pub fn draw_playing(&mut self, handle: &Handle) -> Result<(), UiError> {
         // Status
         let status = match handle.play_state() {
             State::Playing => PLAY,
@@ -126,9 +140,5 @@ impl<'a> Output<'a> {
         curses!(self.win.mvaddch(1, self.cols - 2, ']'))?;
 
         Ok(())
-    }
-
-    pub fn draw_directory(&mut self) -> Result<(), UiError> {
-        unimplemented!();
     }
 }

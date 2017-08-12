@@ -1,5 +1,5 @@
 /*
- * markov/mod.rs
+ * handle/mod.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -18,8 +18,8 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub use self::chain::Chain;
-pub use self::handle::Handle;
+pub use self::object::Handle;
 
-mod chain;
-mod handle;
+mod cursor;
+mod entry;
+mod object;
