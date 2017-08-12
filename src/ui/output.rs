@@ -44,13 +44,11 @@ impl<'a> Output<'a> {
 
     pub fn clear(&mut self) -> Result<(), UiError> {
         curses!(self.win.clear())?;
-
         Ok(())
     }
 
     pub fn flush(&mut self) -> Result<(), UiError> {
         curses!(self.win.refresh())?;
-
         Ok(())
     }
 
@@ -65,7 +63,6 @@ impl<'a> Output<'a> {
             ncurses::ACS_LLCORNER(),
             ncurses::ACS_LRCORNER(),
         ))?;
-
         Ok(())
     }
 

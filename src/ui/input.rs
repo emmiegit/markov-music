@@ -57,7 +57,7 @@ const CTRL_C: char = '\x03';
 const CTRL_L: char = '\x0c';
 
 pub fn next_command(ui: &Ui) -> Command {
-    if let Some(key) = ui.get_window().getch() {
+    if let Some(key) = ui.get_key() {
         match key {
             /* Player control */
             Character(' ') => Command::TogglePause,

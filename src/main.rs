@@ -52,6 +52,15 @@ mod macros {
             }
         }
     }
+
+    macro_rules! curses_res {
+        ($call:expr) => {
+            match $call {
+                Ok(x) => Ok(x),
+                Err(_) => Err(::ui::UiError::new(stringify!($call))),
+            }
+        }
+    }
 }
 
 mod args;

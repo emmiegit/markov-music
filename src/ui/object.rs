@@ -24,7 +24,10 @@ use std::ptr;
 use ui::output::Output;
 
 pub struct Ui {
-    win: Window,
+    pub main: Window,
+    pub files: Window,
+    pub markov: Window,
+    pub player: Window,
 }
 
 impl Ui {
@@ -36,25 +39,37 @@ impl Ui {
         curses!(nl())?;
         curses!(noecho())?;
         curses!(win.keypad(true))?;
-        curses!(win.nodelay(true))?;
+        //curses!(win.nodelay(true))?;
 
-        Ok(Ui { win: win })
+        let (rows, cols) = win.get_max_yx();
+        let files = curses_res!(win.subwin(rows - 4, cols / 2 - 1, 1, 1))?;
+        let markov = curses_res!(win.subwin(rows - 4, cols / 2 - 1, 1, cols / 2))?;
+        let player = curses_res!(win.subwin(2, cols - 2, rows - 3, 1))?;
+
+        Ok(Ui {
+            main: win,
+            files: files,
+            markov: markov,
+            player: player,
+        })
     }
 
-    pub fn get_window(&self) -> &Window {
-        &self.win
-    }
-
-    pub fn get_window_mut(&mut self) -> &mut Window {
-        &mut self.win
+    pub fn get_key(&self) -> Option<Input> {
+        self.main.getch()
     }
 
     pub fn full_redraw(&mut self) -> Result<(), Error> {
-        let mut output = Output::new(&mut self.win);
-        output.clear()?;
-        output.draw_box()?;
-        output.flush()?;
+        let mut main = Output::new(&mut self.main);
+        let mut files = Output::new(&mut self.files);
+        let mut markov = Output::new(&mut self.markov);
+        //let mut player = Output::new(&mut self.player);
 
+        main.clear()?;
+        main.draw_box()?;
+        files.draw_box()?;
+        markov.draw_box()?;
+        curses!(self.player.bkgd('%'))?;
+        main.flush()?;
         Ok(())
     }
 
