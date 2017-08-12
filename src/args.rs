@@ -42,12 +42,9 @@ pub fn parse_args() -> Result<Args, Error> {
                 .help("Use a specific configuration file instead of the default"),
         )
         .arg(
-            Arg::with_name("player")
-                .short("P")
-                .long("player")
-                .takes_value(true)
-                .value_name("PLAYER")
-                .help("Specify which media player to use to play the music"),
+            Arg::with_name("no-color")
+                .long("no-color")
+                .help("Disables colors even on terminals that support them"),
         )
         .get_matches();
 
@@ -56,17 +53,8 @@ pub fn parse_args() -> Result<Args, Error> {
             Some(path) => Config::read(Path::new(path))?,
             None => Config::default(),
         },
-        color: true,
+        color: !matches.is_present("no-color"),
     };
-
-    if let Some(player) = matches.value_of("player") {
-        args.config.player = String::from(player);
-    }
-
-    /*
-    if let Some(when) = matches.value_of("color") {
-    }
-    */
 
     Ok(args)
 }

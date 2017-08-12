@@ -28,7 +28,6 @@ use toml;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub player: String,
     pub music_dir: String,
     pub storage_file: String,
     pub seek_seconds: f32,
@@ -37,12 +36,10 @@ pub struct Config {
 
 impl Config {
     fn default_config() -> Config {
-        const DEFAULT_PLAYER: &str = "mpv";
         const MUSIC_DIR_NAME: &str = "music";
         const MARKOV_FILE_NAME: &str = ".markov_music.json";
 
         Config {
-            player: DEFAULT_PLAYER.to_string(),
             music_dir: {
                 let mut path = HOME_DIR_PATH.clone();
                 path.push(MUSIC_DIR_NAME);
