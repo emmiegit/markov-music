@@ -20,6 +20,7 @@
 
 use error::{Error, ErrorCause};
 use handle::cursor::Cursor;
+use handle::entry::Entry;
 use markov::Chain;
 use player::{Player, Seek, State};
 use std::cmp;
@@ -53,12 +54,13 @@ impl Handle {
             self.cursor.set_path(PathBuf::from(path))?;
             Ok(())
         } else {
-            let message = format!(
-                "Not a directory: {}",
-                path.to_str().unwrap_or("<invalid UTF-8>")
-            );
+            let message = format!("Not a directory: {}", path.to_string_lossy());
             Err(Error::new(message, ErrorCause::NoCause()))
         }
+    }
+
+    pub fn get_entries(&self) -> &[Entry] {
+        self.cursor.entries()
     }
 
     pub fn cursor_up(&mut self) {
@@ -102,8 +104,8 @@ impl Handle {
     }
 
     pub fn play(&mut self) -> Result<(), Error> {
-        let song = self.cursor.current()?;
-        self.player.play(song)?;
+        let song = self.cursor.current();
+        self.player.play(&song)?;
         self.stopped = false;
 
         Ok(())
@@ -156,7 +158,7 @@ impl Handle {
 
     // Markov chain
     pub fn add(&mut self) -> Result<(), Error> {
-        let song = self.cursor.current()?;
+        let song = self.cursor.current();
         unimplemented!();
     }
 

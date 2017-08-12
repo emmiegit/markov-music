@@ -18,9 +18,10 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use handle::Handle;
+use handle::{EntryType, Handle};
 use pancurses::*;
 use player::State;
+use std::borrow::Cow;
 use ui::{UiError, color};
 use {ncurses, utils};
 
@@ -93,13 +94,30 @@ impl<'a> Output<'a> {
     pub fn draw_directory(&mut self, handle: &Handle) -> Result<(), UiError> {
         // Current directory
         let cwd = utils::compress_path(handle.get_current_dir());
-        let attr = color::directory() | Attribute::Underline;
+        let attr = Attribute::Bold | Attribute::Underline;
         curses!(self.win.attron(attr))?;
-        curses!(self.win.mvaddstr(0, 0, &cwd))?;
+        curses!(self.win.mvaddstr(0, 1, &cwd))?;
         curses!(self.win.attroff(attr))?;
 
         // File listing
+        let mut row = 1;
+        let dir_attr = color::directory();
+        for entry in handle.get_entries() {
+            let attr = match entry.ftype {
+                EntryType::File => None,
+                EntryType::Directory => Some(dir_attr),
+            };
+            let path = entry.path.file_name().unwrap().to_string_lossy();
 
+            if let Some(a) = attr { curses!(self.win.attron(a))?; }
+            curses!(self.win.mvaddstr(row, 1, &path))?;
+            if let Some(a) = attr { curses!(self.win.attroff(a))?; }
+
+            row += 1;
+            if row >= self.rows {
+                break;
+            }
+        }
         Ok(())
     }
 
@@ -115,10 +133,13 @@ impl<'a> Output<'a> {
         // Title
         let attr = color::title();
         curses!(self.win.addch(' '))?;
+
         curses!(self.win.attron(attr))?;
         curses!(self.win.addstr("No Title"))?;
         curses!(self.win.attroff(attr))?;
+
         curses!(self.win.addstr(" by "))?;
+
         curses!(self.win.attron(attr))?;
         curses!(self.win.addstr("Reol"))?;
         curses!(self.win.attroff(attr))?;

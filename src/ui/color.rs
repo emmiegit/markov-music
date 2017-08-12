@@ -27,15 +27,15 @@ fn check(num: i32) {
     }
 }
 
-static mut colors: bool = false;
+static mut COLORS: bool = false;
 
 #[inline(always)]
 fn colors_enabled() -> bool {
-    unsafe { colors }
+    unsafe { COLORS }
 }
 
-const DIRECTORY_PAIR: u8 = 0;
-const TITLE_PAIR: u8 = 1;
+const DIRECTORY_PAIR: u8 = 1;
+const TITLE_PAIR: u8 = 2;
 
 pub fn init(enabled: bool) -> Result<(), Error> {
     if enabled && has_colors() {
@@ -44,9 +44,9 @@ pub fn init(enabled: bool) -> Result<(), Error> {
 
         check(init_pair(DIRECTORY_PAIR as i16, COLOR_BLUE, -1));
         check(init_pair(TITLE_PAIR as i16, COLOR_GREEN, -1));
-        unsafe { colors = true; }
+        unsafe { COLORS = true; }
     } else {
-        unsafe { colors = false; }
+        unsafe { COLORS = false; }
     }
     Ok(())
 }

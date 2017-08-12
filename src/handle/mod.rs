@@ -18,6 +18,7 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+pub use self::entry::{Entry, EntryType};
 pub use self::object::Handle;
 
 mod cursor;

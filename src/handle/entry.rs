@@ -21,13 +21,13 @@
 use std::cmp::Ordering;
 use std::path::PathBuf;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Hash, Clone, PartialEq, Eq)]
 pub enum EntryType {
     File,
     Directory,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash, Clone)]
 pub struct Entry {
     pub path: PathBuf,
     pub ftype: EntryType,

@@ -18,38 +18,28 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-#[derive(Hash, Debug)]
+#[derive(Debug, Hash, Clone, Eq, PartialEq)]
 pub struct Tags {
     pub title: String,
     pub artist: String,
 }
 
-#[derive(Eq, PartialEq, Hash, Debug, Serialize, Deserialize)]
+#[derive(Debug, Hash, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Song {
-    path: String,
+    path: PathBuf,
 }
 
 impl Song {
-    pub fn new(pathstr: &str) -> Self {
-        let path = Path::new(pathstr);
+    pub fn new(path: &Path) -> Self {
+        let path = PathBuf::from(path);
         assert!(path.is_relative());
 
-        Song { path: String::from(pathstr) }
-    }
-
-    pub fn get_str(&self) -> &str {
-        &*self.path
+        Song { path: path }
     }
 
     pub fn get_path(&self) -> &Path {
-        Path::new(&*self.path)
-    }
-}
-
-impl Clone for Song {
-    fn clone(&self) -> Self {
-        Song { path: self.path.clone() }
+        &self.path
     }
 }

@@ -20,13 +20,14 @@
 
 use error::{Error, ErrorCause};
 use handle::entry::{Entry, EntryType};
-use std::{cmp, env, fs};
+use std::borrow::Cow;
 use std::path::{Path, PathBuf};
+use std::{cmp, env, fs};
 
 #[derive(Debug)]
 pub struct Cursor {
     path: PathBuf,
-    files: Vec<Entry>,
+    entries: Vec<Entry>,
     pos: usize,
 }
 
@@ -34,7 +35,7 @@ impl Cursor {
     pub fn new() -> Self {
         let mut cursor = Cursor {
             path: env::current_dir().expect("Unable to get current directory"),
-            files: Vec::new(),
+            entries: Vec::new(),
             pos: 0,
         };
         cursor.update().expect("Unable to populate directory list");
@@ -51,10 +52,21 @@ impl Cursor {
         Ok(())
     }
 
+    pub fn entries(&self) -> &[Entry] {
+        &self.entries
+    }
+
     fn update(&mut self) -> Result<(), Error> {
-        self.files.clear();
+        self.entries.clear();
         for entry in fs::read_dir(&self.path)? {
             let entry = entry?;
+            let path = entry.path();
+
+            // Ignore hidden files
+            if path.file_name().unwrap().to_string_lossy().starts_with(".") {
+                continue;
+            }
+
             let ftype = entry.file_type()?;
 
             let ftype = if ftype.is_file() {
@@ -65,18 +77,17 @@ impl Cursor {
                 continue;
             };
 
-            self.files.push(Entry {
-                path: entry.path(),
+            self.entries.push(Entry {
+                path: path,
                 ftype: ftype,
             });
         }
+        self.entries.sort();
         Ok(())
     }
 
-    pub fn current(&self) -> Result<&str, Error> {
-        self.files[self.pos].path.to_str().ok_or_else(|| {
-            Error::new("Path not valid UTF-8", ErrorCause::NoCause())
-        })
+    pub fn current(&self) -> Cow<str> {
+        self.entries[self.pos].path.to_string_lossy()
     }
 
     pub fn up(&mut self) {
@@ -86,7 +97,7 @@ impl Cursor {
     }
 
     pub fn down(&mut self) {
-        self.pos = cmp::min(self.pos + 1, self.files.len());
+        self.pos = cmp::min(self.pos + 1, self.entries.len());
     }
 
     pub fn left(&mut self) {
