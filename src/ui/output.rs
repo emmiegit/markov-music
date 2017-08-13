@@ -90,8 +90,16 @@ impl<'a> Output<'a> {
         curses!(self.win.mv(self.rows - 4, 1))?;
         curses!(self.win.hline(ncurses::ACS_HLINE(), self.cols - 2))?;
         curses!(self.win.mvaddch(self.rows - 4, 0, ncurses::ACS_LTEE()))?;
-        curses!(self.win.mvaddch(self.rows - 4, self.cols / 2 - 1, ncurses::ACS_BTEE()))?;
-        curses!(self.win.mvaddch(self.rows - 4, self.cols - 1, ncurses::ACS_RTEE()))?;
+        curses!(self.win.mvaddch(
+            self.rows - 4,
+            self.cols / 2 - 1,
+            ncurses::ACS_BTEE(),
+        ))?;
+        curses!(self.win.mvaddch(
+            self.rows - 4,
+            self.cols - 1,
+            ncurses::ACS_RTEE(),
+        ))?;
 
         Ok(())
     }

@@ -44,9 +44,13 @@ pub fn init(enabled: bool) -> Result<(), Error> {
 
         check(init_pair(DIRECTORY_PAIR as i16, COLOR_BLUE, -1));
         check(init_pair(TITLE_PAIR as i16, COLOR_GREEN, -1));
-        unsafe { COLORS = true; }
+        unsafe {
+            COLORS = true;
+        }
     } else {
-        unsafe { COLORS = false; }
+        unsafe {
+            COLORS = false;
+        }
     }
     Ok(())
 }

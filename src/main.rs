@@ -155,7 +155,12 @@ fn main_loop(mut handle: Handle, args: Args) -> Result<(), Error> {
     Ok(())
 }
 
-fn process_command(cmd: ui::Command, ui: &mut Ui, handle: &mut Handle, args: &Args) -> Result<bool, Error> {
+fn process_command(
+    cmd: ui::Command,
+    ui: &mut Ui,
+    handle: &mut Handle,
+    args: &Args,
+) -> Result<bool, Error> {
     match cmd {
         TogglePause => handle.toggle_pause()?,
         Stop => handle.stop()?,

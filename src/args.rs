@@ -41,11 +41,9 @@ pub fn parse_args() -> Result<Args, Error> {
                 .value_name("FILE")
                 .help("Use a specific configuration file instead of the default"),
         )
-        .arg(
-            Arg::with_name("no-color")
-                .long("no-color")
-                .help("Disables colors even on terminals that support them"),
-        )
+        .arg(Arg::with_name("no-color").long("no-color").help(
+            "Disables colors even on terminals that support them",
+        ))
         .get_matches();
 
     let args = Args {

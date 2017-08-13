@@ -39,5 +39,6 @@ pub fn compress_path<P: AsRef<Path>>(path: P) -> String {
             &pathbuf
         }
         Err(_) => path,
-    }.to_string_lossy().into_owned()
+    }.to_string_lossy()
+        .into_owned()
 }

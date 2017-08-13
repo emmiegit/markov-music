@@ -80,7 +80,11 @@ impl Player {
     pub fn set_volume(&mut self, volume: i32) -> Result<(), Error> {
         assert!(volume >= 0);
         assert!(volume <= 100);
-        match self.handle.set_property_async("ao-volume", volume as i64, 0) {
+        match self.handle.set_property_async(
+            "ao-volume",
+            volume as i64,
+            0,
+        ) {
             Ok(_) => Ok(()),
             Err(e) => Err(Error::from(e)),
         }

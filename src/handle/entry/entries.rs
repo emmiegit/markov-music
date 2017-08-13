@@ -115,5 +115,3 @@ impl<'a> IntoIterator for &'a Entries {
         EntryIterator::new(self)
     }
 }
-
-
