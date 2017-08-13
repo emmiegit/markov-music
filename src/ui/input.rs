@@ -29,6 +29,8 @@ pub enum Command {
     MoveDown,
     MoveLeft,
     MoveRight,
+    PageUp,
+    PageDown,
     PlayCurrent,
     LowerVolume,
     RaiseVolume,
@@ -53,7 +55,9 @@ pub enum Command {
     Nothing,
 }
 
+const CTRL_B: char = '\x02';
 const CTRL_C: char = '\x03';
+const CTRL_F: char = '\x06';
 const CTRL_L: char = '\x0c';
 
 pub fn next_command(ui: &Ui) -> Command {
@@ -66,6 +70,8 @@ pub fn next_command(ui: &Ui) -> Command {
             Character('k') | KeyUp => Command::MoveUp,
             Character('h') | KeyLeft => Command::MoveLeft,
             Character('l') | KeyRight => Command::MoveRight,
+            Character(CTRL_B) => Command::PageUp,
+            Character(CTRL_F) => Command::PageDown,
             Character('\n') => Command::PlayCurrent,
             Character('<') => Command::LowerVolume,
             Character('>') => Command::RaiseVolume,

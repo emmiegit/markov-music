@@ -168,6 +168,8 @@ fn process_command(
         MoveDown => handle.cursor_down(&ui),
         MoveLeft => handle.cursor_left(&ui),
         MoveRight => handle.cursor_right(&ui),
+        PageUp => handle.cursor_page_up(&ui),
+        PageDown => handle.cursor_page_down(&ui),
         PlayCurrent => handle.play()?,
         RaiseVolume => handle.change_volume(args.config.volume_step)?,
         LowerVolume => handle.change_volume(-args.config.volume_step)?,

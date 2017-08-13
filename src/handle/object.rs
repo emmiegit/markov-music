@@ -100,6 +100,16 @@ impl Handle {
         self.cursor.down(rows);
     }
 
+    pub fn cursor_page_up(&mut self, ui: &Ui) {
+        let rows = ui.files.get_max_y() as usize;
+        self.cursor.page_up(rows);
+    }
+
+    pub fn cursor_page_down(&mut self, ui: &Ui) {
+        let rows = ui.files.get_max_y() as usize;
+        self.cursor.page_down(rows);
+    }
+
     pub fn cursor_left(&mut self, ui: &Ui) {
         let _ = ui;
         self.cursor.left();

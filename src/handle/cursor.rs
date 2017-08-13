@@ -84,6 +84,14 @@ impl Cursor {
         }
     }
 
+    pub fn page_up(&mut self, rows: usize) {
+        unimplemented!();
+    }
+
+    pub fn page_down(&mut self, rows: usize) {
+        unimplemented!();
+    }
+
     pub fn left(&mut self) {
         unimplemented!();
     }
