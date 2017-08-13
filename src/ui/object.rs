@@ -73,6 +73,7 @@ impl Ui {
         main.draw_divisions()?;
         files.draw_directory(handle)?;
         player.draw_playing(handle)?;
+        files.move_cursor(handle)?;
         main.flush()?;
         Ok(())
     }
@@ -85,10 +86,11 @@ impl Ui {
 
         files.erase()?;
         files.draw_directory(handle)?;
-        files.flush()?;
         player.erase()?;
         player.draw_playing(handle)?;
         player.flush()?;
+        files.move_cursor(handle)?;
+        files.flush()?;
         Ok(())
     }
 }

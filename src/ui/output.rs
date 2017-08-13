@@ -115,18 +115,19 @@ impl<'a> Output<'a> {
         // File listing
         let mut row = 1;
         let current = handle.current_index();
+        let attr = Attribute::Reverse;
         for (index, entry) in handle.entries() {
             let path = match entry.path.file_name() {
                 Some(p) => p,
                 None => entry.path.as_os_str(),
             }.to_string_lossy();
 
-            if index == current { curses!(self.win.attron(Attribute::Underline))?; }
+            if index == current { curses!(self.win.attron(attr))?; }
             curses!(self.win.mvaddstr(row, 1, &path))?;
             if entry.ftype == EntryType::Directory {
                 curses!(self.win.addch(path::MAIN_SEPARATOR))?;
             }
-            if index == current { curses!(self.win.attroff(Attribute::Underline))?; }
+            if index == current { curses!(self.win.attroff(attr))?; }
 
             row += 1;
             if row >= self.rows {
@@ -175,6 +176,12 @@ impl<'a> Output<'a> {
         curses!(self.win.hline(ncurses::ACS_CKBOARD(), progress))?;
         curses!(self.win.mvaddch(1, self.cols - 2, ']'))?;
 
+        Ok(())
+    }
+
+    pub fn move_cursor(&mut self, handle: &Handle) -> Result<(), UiError> {
+        let row = handle.cursor_row() as i32;
+        curses!(self.win.mv(row, 1))?;
         Ok(())
     }
 }

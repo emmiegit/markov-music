@@ -20,7 +20,6 @@
 
 use error::Error;
 use handle::entry::{Entry, EntryType, Entries, EntryIterator};
-use std::cmp;
 use std::path::{Path, PathBuf};
 use utils;
 
@@ -56,18 +55,33 @@ impl Cursor {
         self.pos
     }
 
+    pub fn current_top(&self) -> usize {
+        self.top
+    }
+
     pub fn entries(&self) -> EntryIterator {
         EntryIterator::new(&self.entries, self.top)
     }
 
-    pub fn up(&mut self) {
+    pub fn up(&mut self, rows: usize) {
         if self.pos > 0 {
             self.pos -= 1;
         }
+
+        // Update scrolling view
+        // TODO
     }
 
-    pub fn down(&mut self) {
-        self.pos = cmp::min(self.pos + 1, self.entries.len());
+    pub fn down(&mut self, rows: usize) {
+        if self.pos < self.entries.len() {
+            self.pos += 1;
+        }
+
+        // Update scrolling view
+        let from_bot = self.top + rows - self.pos;
+        if from_bot == 0 {
+            // TODO
+        }
     }
 
     pub fn left(&mut self) {

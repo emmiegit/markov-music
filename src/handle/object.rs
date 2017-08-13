@@ -26,6 +26,7 @@ use player::{Player, Seek, State};
 use std::cmp;
 use song::Tags;
 use std::path::{Path, PathBuf};
+use ui::Ui;
 
 pub struct Handle {
     chain: Chain,
@@ -85,19 +86,27 @@ impl Handle {
         self.cursor.current_index()
     }
 
-    pub fn cursor_up(&mut self) {
-        self.cursor.up();
+    pub fn cursor_row(&self) -> usize {
+        self.cursor.current_index() - self.cursor.current_top() + 1
     }
 
-    pub fn cursor_down(&mut self) {
-        self.cursor.down();
+    pub fn cursor_up(&mut self, ui: &Ui) {
+        let rows = ui.files.get_max_y() as usize;
+        self.cursor.up(rows);
     }
 
-    pub fn cursor_left(&mut self) {
+    pub fn cursor_down(&mut self, ui: &Ui) {
+        let rows = ui.files.get_max_y() as usize;
+        self.cursor.down(rows);
+    }
+
+    pub fn cursor_left(&mut self, ui: &Ui) {
+        let _ = ui;
         self.cursor.left();
     }
 
-    pub fn cursor_right(&mut self) {
+    pub fn cursor_right(&mut self, ui: &Ui) {
+        let _ = ui;
         self.cursor.right();
     }
 
