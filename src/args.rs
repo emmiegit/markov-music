@@ -29,9 +29,9 @@ pub struct Args {
 }
 
 pub fn parse_args() -> Result<Args, Error> {
-    let matches = App::new("markov-music")
-        .version("0.0.1")
-        .about("Music player that chooses music based on a Markov chain")
+    let matches = App::new("Markov Music")
+        .version(env!("CARGO_PKG_VERSION"))
+        .about("Dynamic music player that chooses your music based on a Markov chain")
         .max_term_width(80)
         .arg(
             Arg::with_name("config")

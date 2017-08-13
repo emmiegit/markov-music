@@ -1,6 +1,6 @@
 [package]
 name = "markov-music"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Ammon Smith <ammon.i.smith@gmail.com>"]
 
 [dependencies]

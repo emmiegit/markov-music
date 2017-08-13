@@ -9,5 +9,17 @@ Licensed under the GPL, version 2 or later.
 Run `cargo build --release` in the top directory of the repository.
 
 ### Usage
-TODO
+```
+USAGE:
+    markov-music [FLAGS] [OPTIONS]
+
+FLAGS:
+    -h, --help        Prints help information
+        --no-color    Disables colors even on terminals that support them
+    -V, --version     Prints version information
+
+OPTIONS:
+    -c, --config <FILE>    Use a specific configuration file instead of the
+                           default
+```
 
