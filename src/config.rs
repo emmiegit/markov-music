@@ -79,7 +79,7 @@ impl Config {
         }
     }
 
-    pub fn default() -> Self {
+    pub fn default() -> Result<Self, Error> {
         const CONFIG_HOME: &str = ".config";
         const CONFIG_DIR: &str = "markov-music";
         const CONFIG_FILE: &str = "config.toml";
@@ -103,10 +103,13 @@ impl Config {
         path.push(CONFIG_DIR);
         path.push(CONFIG_FILE);
         match Config::read(path.as_path()) {
-            Ok(cfg) => cfg,
+            Ok(cfg) => Ok(cfg),
             Err(e) => {
-                println!("Error: {} - using default configuration data", e);
-                Config::default_config()
+                if !path.is_file() {
+                    Ok(Config::default_config())
+                } else {
+                    Err(e)
+                }
             }
         }
     }

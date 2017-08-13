@@ -49,7 +49,7 @@ pub fn parse_args() -> Result<Args, Error> {
     let args = Args {
         config: match matches.value_of("config") {
             Some(path) => Config::read(Path::new(path))?,
-            None => Config::default(),
+            None => Config::default()?,
         },
         color: !matches.is_present("no-color"),
     };

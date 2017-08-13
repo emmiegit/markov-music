@@ -41,6 +41,7 @@ impl Ui {
         curses!(cbreak())?;
         curses!(nl())?;
         curses!(noecho())?;
+        curses!(set_blink(false))?;
         curses!(win.keypad(true))?;
         color::init(enable_color)?;
         //curses!(win.nodelay(true))?;
