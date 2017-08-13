@@ -115,7 +115,10 @@ impl<'a> Output<'a> {
         // File listing
         let mut row = 1;
         for entry in handle.entries() {
-            let path = entry.path.file_name().unwrap().to_string_lossy();
+            let path = match entry.path.file_name() {
+                Some(p) => p,
+                None => entry.path.as_os_str(),
+            }.to_string_lossy();
 
             curses!(self.win.mvaddstr(row, 1, &path))?;
             if entry.ftype == EntryType::Directory {
