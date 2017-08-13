@@ -189,7 +189,7 @@ fn process_command(
         Random => handle.random()?,
         Tired => handle.tired(),
         Redraw => ui.full_redraw(handle)?,
-        Quit | Abort => return Ok(true),
+        Quit => return Ok(true),
         Nothing => (),
     }
 

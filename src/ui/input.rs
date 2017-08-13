@@ -22,6 +22,7 @@ use pancurses::Input::*;
 use pancurses::getmouse;
 use ui::Ui;
 
+#[derive(Debug)]
 pub enum Command {
     TogglePause,
     Stop,
@@ -51,14 +52,18 @@ pub enum Command {
     Tired,
     Redraw,
     Quit,
-    Abort,
     Nothing,
 }
 
-const CTRL_B: char = '\x02';
-const CTRL_C: char = '\x03';
-const CTRL_F: char = '\x06';
-const CTRL_L: char = '\x0c';
+macro_rules! ctrl {
+    ($call:expr) => {
+        (((($call) as u8) & !0x20) - b'A' + 1) as char
+    }
+}
+
+const CTRL_B: char = ctrl!('B');
+const CTRL_F: char = ctrl!('F');
+const CTRL_L: char = ctrl!('L');
 
 pub fn next_command(ui: &Ui) -> Command {
     if let Some(key) = ui.get_key() {
@@ -99,8 +104,6 @@ pub fn next_command(ui: &Ui) -> Command {
             KeyClear |
             KeyResize => Command::Redraw,
             Character('q') | KeyClose | KeyExit => Command::Quit,
-            Character(CTRL_C) |
-            KeyCancel => Command::Abort,
             _ => Command::Nothing,
         }
     } else {

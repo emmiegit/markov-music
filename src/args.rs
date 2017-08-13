@@ -23,6 +23,7 @@ use config::Config;
 use error::Error;
 use std::path::Path;
 
+#[derive(Debug)]
 pub struct Args {
     pub config: Config,
     pub color: bool,
