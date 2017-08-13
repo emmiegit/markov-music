@@ -21,6 +21,7 @@
 use handle::{EntryType, Handle};
 use pancurses::*;
 use player::State;
+use std::path;
 use ui::{UiError, color};
 use {ncurses, utils};
 
@@ -98,24 +99,20 @@ impl<'a> Output<'a> {
     pub fn draw_directory(&mut self, handle: &Handle) -> Result<(), UiError> {
         // Current directory
         let cwd = utils::compress_path(handle.get_current_dir());
-        let attr = Attribute::Bold | Attribute::Underline;
+        let attr = color::directory();
         curses!(self.win.attron(attr))?;
         curses!(self.win.mvaddstr(0, 1, &cwd))?;
         curses!(self.win.attroff(attr))?;
 
         // File listing
         let mut row = 1;
-        let dir_attr = color::directory();
         for entry in handle.get_entries() {
-            let attr = match entry.ftype {
-                EntryType::File => None,
-                EntryType::Directory => Some(dir_attr),
-            };
             let path = entry.path.file_name().unwrap().to_string_lossy();
 
-            if let Some(a) = attr { curses!(self.win.attron(a))?; }
             curses!(self.win.mvaddstr(row, 1, &path))?;
-            if let Some(a) = attr { curses!(self.win.attroff(a))?; }
+            if entry.ftype == EntryType::Directory {
+                curses!(self.win.addch(path::MAIN_SEPARATOR))?;
+            }
 
             row += 1;
             if row >= self.rows {

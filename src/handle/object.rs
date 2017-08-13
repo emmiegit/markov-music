@@ -120,11 +120,7 @@ impl Handle {
     }
 
     pub fn play(&mut self) -> Result<(), Error> {
-        let song = self.cursor.current();
-        self.player.play(&song)?;
-        self.stopped = false;
-
-        Ok(())
+        unimplemented!();
     }
 
     pub fn stop(&mut self) -> Result<(), Error> {

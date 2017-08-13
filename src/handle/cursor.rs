@@ -20,7 +20,6 @@
 
 use error::Error;
 use handle::entry::{Entry, EntryType};
-use std::borrow::Cow;
 use std::path::{Path, PathBuf};
 use std::{cmp, env, fs, mem};
 use utils;
@@ -69,7 +68,6 @@ impl Cursor {
             }
 
             let ftype = entry.file_type()?;
-
             let ftype = if ftype.is_file() {
                 EntryType::File
             } else if ftype.is_dir() {
@@ -87,8 +85,8 @@ impl Cursor {
         Ok(())
     }
 
-    pub fn current(&self) -> Cow<str> {
-        self.entries[self.pos].path.to_string_lossy()
+    pub fn current(&self) -> &Entry {
+        &self.entries[self.pos]
     }
 
     pub fn up(&mut self) {

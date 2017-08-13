@@ -47,14 +47,14 @@ mod macros {
     macro_rules! curses {
         ($call:expr) => {
             match $call {
-                0 => Ok(()),
-                _ => Err(::ui::UiError::new(
+                ::pancurses::ERR => Err(::ui::UiError::new(
                         &format!("{} at {}:{}",
                                 stringify!($call),
                                 file!(),
                                 line!())
                         )
                 ),
+                _ => Ok(()),
             }
         }
     }
@@ -63,7 +63,7 @@ mod macros {
         ($call:expr) => {
             match $call {
                 Ok(x) => Ok(x),
-                _ => Err(::ui::UiError::new(
+                Err(_) => Err(::ui::UiError::new(
                         &format!("{} at {}:{}",
                                 stringify!($call),
                                 file!(),
