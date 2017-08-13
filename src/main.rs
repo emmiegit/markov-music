@@ -18,6 +18,8 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#![deny(missing_debug_implementations)]
+
 extern crate clap;
 extern crate mpv;
 extern crate ncurses;

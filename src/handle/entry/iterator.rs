@@ -1,5 +1,5 @@
 /*
- * handle/entry.rs
+ * handle/entry/iterator.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017 Ammon Smith
@@ -18,37 +18,34 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::cmp::Ordering;
-use std::path::PathBuf;
+use error::Error;
+use handle::entry::{Entry, Entries};
 
-#[derive(Debug, Hash, Clone, PartialEq, Eq)]
-pub enum EntryType {
-    File,
-    Directory,
+#[derive(Debug, Hash)]
+pub struct EntryIterator<'a> {
+    entries: &'a Entries,
+    index: usize,
 }
 
-#[derive(Debug, Hash, Clone)]
-pub struct Entry {
-    pub path: PathBuf,
-    pub ftype: EntryType,
-}
-
-impl Eq for Entry {}
-
-impl PartialEq for Entry {
-    fn eq(&self, other: &Entry) -> bool {
-        &self.path == &other.path
+impl<'a> EntryIterator<'a> {
+    pub fn new(entries: &'a Entries) -> Self {
+        EntryIterator {
+            entries: entries,
+            index: 0,
+        }
     }
 }
 
-impl Ord for Entry {
-    fn cmp(&self, other: &Entry) -> Ordering {
-        self.path.cmp(&other.path)
-    }
-}
+impl<'a> Iterator for EntryIterator<'a> {
+    type Item = &'a Entry;
 
-impl PartialOrd for Entry {
-    fn partial_cmp(&self, other: &Entry) -> Option<Ordering> {
-        Some(self.cmp(other))
+    fn next(&mut self) -> Option<&'a Entry> {
+        if self.index >= self.entries.len() {
+            return None;
+        }
+
+        let ent = &self.entries[self.index];
+        self.index += 1;
+        Some(ent)
     }
 }

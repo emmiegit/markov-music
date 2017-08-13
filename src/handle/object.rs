@@ -20,7 +20,7 @@
 
 use error::{Error, ErrorCause};
 use handle::cursor::Cursor;
-use handle::entry::Entry;
+use handle::entry::{Entry, EntryIterator};
 use markov::Chain;
 use player::{Player, Seek, State};
 use std::cmp;
@@ -73,7 +73,7 @@ impl Handle {
         }
     }
 
-    pub fn get_entries(&self) -> &[Entry] {
+    pub fn entries(&self) -> EntryIterator {
         self.cursor.entries()
     }
 

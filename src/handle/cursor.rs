@@ -19,74 +19,41 @@
  */
 
 use error::Error;
-use handle::entry::{Entry, EntryType};
+use handle::entry::{Entry, EntryType, Entries, EntryIterator};
+use std::cmp;
 use std::path::{Path, PathBuf};
-use std::{cmp, env, fs, mem};
 use utils;
 
 #[derive(Debug)]
 pub struct Cursor {
-    path: PathBuf,
-    entries: Vec<Entry>,
+    entries: Entries,
+    top: usize,
     pos: usize,
 }
 
 impl Cursor {
     pub fn new() -> Self {
-        let mut cursor = Cursor {
-            path: env::current_dir().expect("Unable to get current directory"),
-            entries: Vec::new(),
-            pos: 0,
-        };
-        cursor.update().expect("Unable to populate directory list");
-        cursor
+        Cursor {
+            entries: Entries::new(),
+            top: 0,
+            pos: 1,
+        }
     }
 
     pub fn get_path(&self) -> &Path {
-        &self.path
+        &self.entries.path()
     }
 
-    pub fn set_path(&mut self, mut path: PathBuf) -> Result<PathBuf, Error> {
-        mem::swap(&mut self.path, &mut path);
-        self.update()?;
-        Ok(path)
-    }
-
-    pub fn entries(&self) -> &[Entry] {
-        &self.entries
-    }
-
-    fn update(&mut self) -> Result<(), Error> {
-        self.entries.clear();
-        for entry in fs::read_dir(&self.path)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            // Ignore hidden files
-            if path.file_name().unwrap().to_string_lossy().starts_with(".") {
-                continue;
-            }
-
-            let ftype = entry.file_type()?;
-            let ftype = if ftype.is_file() {
-                EntryType::File
-            } else if ftype.is_dir() {
-                EntryType::Directory
-            } else {
-                continue;
-            };
-
-            self.entries.push(Entry {
-                path: path,
-                ftype: ftype,
-            });
-        }
-        self.entries.sort();
-        Ok(())
+    pub fn set_path(&mut self, path: PathBuf) -> Result<(), Error> {
+        self.entries.update(path)
     }
 
     pub fn current(&self) -> &Entry {
         &self.entries[self.pos]
+    }
+
+    pub fn entries(&self) -> EntryIterator {
+        self.entries.into_iter()
     }
 
     pub fn up(&mut self) {
