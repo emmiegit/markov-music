@@ -85,9 +85,10 @@ impl Ui {
 
         files.erase()?;
         files.draw_directory(handle)?;
+        files.flush()?;
         player.erase()?;
         player.draw_playing(handle)?;
-        main.flush()?;
+        player.flush()?;
         Ok(())
     }
 }

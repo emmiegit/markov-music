@@ -146,7 +146,7 @@ fn main_loop(mut handle: Handle, args: Args) -> Result<(), Error> {
         // On error, rebuild the handle
         match process_command(cmd, &mut ui, &mut handle, &args) {
             Ok(true) => break,
-            Ok(_) => (),
+            Ok(false) => (),
             Err(_) => handle.reset(),
         }
         ui.redraw(&handle)?;
