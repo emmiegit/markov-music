@@ -108,10 +108,10 @@ impl Index<usize> for Entries {
 }
 
 impl<'a> IntoIterator for &'a Entries {
-    type Item = &'a Entry;
+    type Item = (usize, &'a Entry);
     type IntoIter = EntryIterator<'a>;
 
     fn into_iter(self) -> EntryIterator<'a> {
-        EntryIterator::new(self)
+        EntryIterator::new(self, 0)
     }
 }

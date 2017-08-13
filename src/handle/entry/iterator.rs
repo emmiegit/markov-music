@@ -28,24 +28,24 @@ pub struct EntryIterator<'a> {
 }
 
 impl<'a> EntryIterator<'a> {
-    pub fn new(entries: &'a Entries) -> Self {
+    pub fn new(entries: &'a Entries, start: usize) -> Self {
         EntryIterator {
             entries: entries,
-            index: 0,
+            index: start,
         }
     }
 }
 
 impl<'a> Iterator for EntryIterator<'a> {
-    type Item = &'a Entry;
+    type Item = (usize, &'a Entry);
 
-    fn next(&mut self) -> Option<&'a Entry> {
+    fn next(&mut self) -> Option<Self::Item> {
         if self.index >= self.entries.len() {
             return None;
         }
 
-        let ent = &self.entries[self.index];
+        let item = (self.index, &self.entries[self.index]);
         self.index += 1;
-        Some(ent)
+        Some(item)
     }
 }

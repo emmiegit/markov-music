@@ -114,16 +114,19 @@ impl<'a> Output<'a> {
 
         // File listing
         let mut row = 1;
-        for entry in handle.entries() {
+        let current = handle.current_index();
+        for (index, entry) in handle.entries() {
             let path = match entry.path.file_name() {
                 Some(p) => p,
                 None => entry.path.as_os_str(),
             }.to_string_lossy();
 
+            if index == current { curses!(self.win.attron(Attribute::Underline))?; }
             curses!(self.win.mvaddstr(row, 1, &path))?;
             if entry.ftype == EntryType::Directory {
                 curses!(self.win.addch(path::MAIN_SEPARATOR))?;
             }
+            if index == current { curses!(self.win.attroff(Attribute::Underline))?; }
 
             row += 1;
             if row >= self.rows {

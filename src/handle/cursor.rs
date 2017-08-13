@@ -52,8 +52,12 @@ impl Cursor {
         &self.entries[self.pos]
     }
 
+    pub fn current_index(&self) -> usize {
+        self.pos
+    }
+
     pub fn entries(&self) -> EntryIterator {
-        self.entries.into_iter()
+        EntryIterator::new(&self.entries, self.top)
     }
 
     pub fn up(&mut self) {

@@ -77,6 +77,14 @@ impl Handle {
         self.cursor.entries()
     }
 
+    pub fn current(&self) -> &Entry {
+        self.cursor.current()
+    }
+
+    pub fn current_index(&self) -> usize {
+        self.cursor.current_index()
+    }
+
     pub fn cursor_up(&mut self) {
         self.cursor.up();
     }
