@@ -70,8 +70,8 @@ impl Cursor {
         }
 
         // Update scrolling view
-        if self.top == self.pos + 1{
-            self.top -= cmp::min(self.top, rows / 2);
+        if self.top == self.pos + 1 {
+            self.top = cmp::min(0, self.top - rows / 2);
         }
     }
 
