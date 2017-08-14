@@ -20,6 +20,7 @@
 
 use error::Error;
 use handle::entry::{Entry, EntryType, Entries, EntryIterator};
+use std::cmp;
 use std::path::{Path, PathBuf};
 use utils;
 
@@ -69,7 +70,9 @@ impl Cursor {
         }
 
         // Update scrolling view
-        // TODO
+        if self.top == self.pos + 1{
+            self.top -= cmp::min(self.top, rows / 2);
+        }
     }
 
     pub fn down(&mut self, rows: usize) {
@@ -78,9 +81,9 @@ impl Cursor {
         }
 
         // Update scrolling view
-        let from_bot = self.top + rows - self.pos;
-        if from_bot == 0 {
-            // TODO
+        let bottom = self.top + rows - 1;
+        if bottom == self.pos {
+            self.top = cmp::min(bottom, self.top + rows / 2);
         }
     }
 
