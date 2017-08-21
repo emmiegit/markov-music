@@ -45,7 +45,8 @@ impl Entries {
             entries: Vec::new(),
             has_parent: true,
         };
-        entries._update();
+        let _ = entries._update();
+
         entries
     }
 

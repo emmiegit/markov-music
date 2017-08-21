@@ -19,27 +19,13 @@
  */
 
 use error::Error;
-use rand::{thread_rng, Rng};
+use rand::thread_rng;
 use serde_json;
 use song::Song;
 use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
-use std::hash::Hash;
 use std::path::Path;
-
-fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> Option<&'a T> {
-    let sum = map.values().sum::<u32>() as f32;
-    let mut rand = rng.next_f32();
-    for (key, val) in map.iter() {
-        let prob = (*val as f32) / sum;
-        if rand < prob {
-            return Some(&key);
-        }
-        rand -= prob;
-    }
-
-    None
-}
+use utils::roulette_wheel;
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub struct Chain {

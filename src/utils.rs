@@ -18,7 +18,10 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use rand::Rng;
+use std::collections::HashMap;
 use std::env;
+use std::hash::Hash;
 use std::path::{Path, PathBuf};
 
 lazy_static! {
@@ -41,4 +44,18 @@ pub fn compress_path<P: AsRef<Path>>(path: P) -> String {
         Err(_) => path,
     }.to_string_lossy()
         .into_owned()
+}
+
+pub fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, u32>, rng: &mut Rng) -> Option<&'a T> {
+    let sum = map.values().sum::<u32>() as f32;
+    let mut rand = rng.next_f32();
+    for (key, val) in map.iter() {
+        let prob = (*val as f32) / sum;
+        if rand < prob {
+            return Some(&key);
+        }
+        rand -= prob;
+    }
+
+    None
 }

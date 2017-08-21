@@ -19,10 +19,11 @@
  */
 
 use error::Error;
-use handle::entry::{Entry, EntryType, Entries, EntryIterator};
+use handle::entry::{Entry, Entries, EntryIterator};
 use std::cmp;
 use std::path::{Path, PathBuf};
-use utils;
+
+ use std::io;use std::io::Write;
 
 #[derive(Debug)]
 pub struct Cursor {
@@ -64,35 +65,50 @@ impl Cursor {
         EntryIterator::new(&self.entries, self.top)
     }
 
-    pub fn up(&mut self, rows: usize) {
-        if self.pos > 0 {
-            self.pos -= 1;
-        }
+    fn adjust_view(&mut self, rows: usize) {
+        let rows = rows - 1;
 
-        // Update scrolling view
-        if self.top == self.pos + 1 {
-            self.top = cmp::min(0, self.top - rows / 2);
-        }
-    }
-
-    pub fn down(&mut self, rows: usize) {
-        if self.pos < self.entries.len() {
-            self.pos += 1;
-        }
-
-        // Update scrolling view
-        let bottom = self.top + rows - 1;
-        if bottom == self.pos {
-            self.top = cmp::min(bottom, self.top + rows / 2);
+        if self.pos >= self.top {
+            /* Up */
+            let screens = (self.pos - self.top) / rows;
+            self.top = cmp::min(self.entries.len() - 1, self.top + screens * rows);
+        } else {
+            /* Down */
+            let screens = (self.top - self.pos) / rows;
+            self.top = cmp::min(0, self.top - screens * rows);
         }
     }
 
-    pub fn page_up(&mut self, rows: usize) {
-        unimplemented!();
+    fn sanity(&self, rows: usize) {
+write!(&mut io::stderr(), "top: {}, pos: {} -- ", self.top, self.pos).unwrap();
+        assert!(self.top <= self.pos);
+        assert!(self.top < self.entries.len());
+        assert!(self.pos < self.entries.len());
+        assert!(self.pos - self.top <= rows);
     }
 
-    pub fn page_down(&mut self, rows: usize) {
-        unimplemented!();
+    pub fn up(&mut self, off: usize, rows: usize) {
+        self.pos -= cmp::min(self.pos, off);
+        self.adjust_view(rows);
+        self.sanity(rows);
+    }
+
+    pub fn down(&mut self, off: usize, rows: usize) {
+        self.pos = cmp::min(self.entries.len() - 1, self.pos + off);
+        self.adjust_view(rows);
+        self.sanity(rows);
+    }
+
+    pub fn jump_top(&mut self) {
+        self.top = 0;
+        self.pos = 0;
+    }
+
+    pub fn jump_bottom(&mut self, rows: usize) {
+        self.pos = self.entries.len() - 1;
+        self.top = self.pos - rows + 1;
+        self.adjust_view(rows);
+        self.sanity(rows);
     }
 
     pub fn left(&mut self) {

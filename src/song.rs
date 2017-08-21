@@ -38,8 +38,4 @@ impl Song {
 
         Song { path: path }
     }
-
-    pub fn get_path(&self) -> &Path {
-        &self.path
-    }
 }

@@ -18,7 +18,6 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
 use handle::entry::{Entry, Entries};
 
 #[derive(Debug, Hash)]

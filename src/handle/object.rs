@@ -92,22 +92,22 @@ impl Handle {
 
     pub fn cursor_up(&mut self, ui: &Ui) {
         let rows = ui.files.get_max_y() as usize;
-        self.cursor.up(rows);
+        self.cursor.up(1, rows);
     }
 
     pub fn cursor_down(&mut self, ui: &Ui) {
         let rows = ui.files.get_max_y() as usize;
-        self.cursor.down(rows);
+        self.cursor.down(1, rows);
     }
 
     pub fn cursor_page_up(&mut self, ui: &Ui) {
         let rows = ui.files.get_max_y() as usize;
-        self.cursor.page_up(rows);
+        self.cursor.up(rows / 2, rows);
     }
 
     pub fn cursor_page_down(&mut self, ui: &Ui) {
         let rows = ui.files.get_max_y() as usize;
-        self.cursor.page_down(rows);
+        self.cursor.down(rows / 2, rows);
     }
 
     pub fn cursor_left(&mut self, ui: &Ui) {
@@ -118,6 +118,16 @@ impl Handle {
     pub fn cursor_right(&mut self, ui: &Ui) {
         let _ = ui;
         self.cursor.right();
+    }
+
+    pub fn cursor_jump_top(&mut self, ui: &Ui) {
+        let _ = ui;
+        self.cursor.jump_top();
+    }
+
+    pub fn cursor_jump_bottom(&mut self, ui: &Ui) {
+        let rows = ui.files.get_max_y() as usize;
+        self.cursor.jump_bottom(rows);
     }
 
     // Player
@@ -163,7 +173,7 @@ impl Handle {
 
     pub fn toggle_mute(&mut self) -> Result<(), Error> {
         let mute = self.player.is_muted();
-        self.player.set_mute(!mute);
+        self.player.set_mute(!mute)?;
 
         Ok(())
     }
