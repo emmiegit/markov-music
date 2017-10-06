@@ -20,13 +20,16 @@
 
 #![deny(missing_debug_implementations)]
 
+// Temp warnings during dev
+#![allow(dead_code)]
+
 extern crate clap;
 extern crate mpv;
 extern crate ncurses;
 extern crate pancurses;
 extern crate rand;
+extern crate rmp_serde;
 extern crate serde;
-extern crate serde_json;
 extern crate toml;
 
 #[macro_use]
@@ -37,6 +40,7 @@ extern crate lazy_static;
 use args::{Args, parse_args};
 use error::Error;
 use handle::Handle;
+use state::State;
 use std::env;
 use std::path::Path;
 use std::process::exit;
@@ -84,6 +88,7 @@ mod handle;
 mod markov;
 mod player;
 mod song;
+mod state;
 mod ui;
 mod utils;
 
@@ -110,10 +115,10 @@ fn main() {
         exit(1);
     }
 
-    let chain: markov::Chain = {
+    let state = {
         let path = Path::new(&args.config.storage_file);
         if path.exists() {
-            match markov::Chain::read(path) {
+            match State::read(path) {
                 Ok(x) => x,
                 Err(e) => {
                     println!("Can't read markov data: {}", e);
@@ -121,16 +126,16 @@ fn main() {
                 }
             }
         } else {
-            let chain = markov::Chain::new();
-            if let Err(e) = chain.write(path) {
+            let state = State::new();
+            if let Err(e) = state.write(path) {
                 println!("Can't write markov data: {}", e);
                 exit(1);
             }
-            chain
+            state
         }
     };
 
-    let handle = Handle::new(chain);
+    let handle = Handle::new(state);
     if let Err(e) = main_loop(handle, args) {
         println!("Error: {}", e);
         exit(1);

@@ -37,7 +37,7 @@ pub struct Config {
 impl Config {
     fn default_config() -> Config {
         const MUSIC_DIR_NAME: &str = "music";
-        const MARKOV_FILE_NAME: &str = ".markov_music.json";
+        const MARKOV_FILE_NAME: &str = ".markov_music_state";
 
         Config {
             music_dir: {

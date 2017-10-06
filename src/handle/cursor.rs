@@ -35,11 +35,17 @@ pub struct Cursor {
 }
 
 impl Cursor {
-    pub fn new() -> Self {
+    pub fn new(initial: Option<usize>) -> Self {
+        let entries = Entries::new();
+        let pos = match initial {
+            Some(pos) => cmp::min(pos, entries.len()),
+            None => 1,
+        };
+
         Cursor {
-            entries: Entries::new(),
+            entries: entries,
             top: 0,
-            pos: 1,
+            pos: pos,
         }
     }
 

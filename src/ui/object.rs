@@ -66,7 +66,7 @@ impl Ui {
     pub fn full_redraw(&mut self, handle: &Handle) -> Result<(), Error> {
         let mut main = Output::new(&mut self.main);
         let mut files = Output::new(&mut self.files);
-        let mut markov = Output::new(&mut self.markov);
+        // let mut markov = Output::new(&mut self.markov);
         let mut player = Output::new(&mut self.player);
 
         main.clear()?;
@@ -80,9 +80,8 @@ impl Ui {
     }
 
     pub fn redraw(&mut self, handle: &Handle) -> Result<(), Error> {
-        let mut main = Output::new(&mut self.main);
         let mut files = Output::new(&mut self.files);
-        let mut markov = Output::new(&mut self.markov);
+        // let mut markov = Output::new(&mut self.markov);
         let mut player = Output::new(&mut self.player);
 
         files.erase()?;

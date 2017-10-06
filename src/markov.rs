@@ -18,22 +18,25 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::Error;
 use rand::thread_rng;
-use serde_json;
-use song::Song;
 use std::collections::HashMap;
-use std::fs::{File, OpenOptions};
-use std::path::Path;
+use std::fmt::Debug;
+use std::hash::Hash;
 use utils::roulette_wheel;
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize)]
-pub struct Chain {
-    assocs: HashMap<Song, HashMap<Song, u32>>,
-    start: HashMap<Song, u32>,
+pub struct Chain<T>
+where
+    T: Eq + Hash + Debug,
+{
+    assocs: HashMap<T, HashMap<T, u32>>,
+    start: HashMap<T, u32>,
 }
 
-impl Chain {
+impl<T> Chain<T>
+where
+    T: Eq + Hash + Debug,
+{
     pub fn new() -> Self {
         Chain {
             assocs: HashMap::new(),
@@ -41,25 +44,18 @@ impl Chain {
         }
     }
 
-    pub fn read(path: &Path) -> Result<Self, Error> {
-        let file = File::open(path)?;
-        let config = serde_json::from_reader(file)?;
-
-        Ok(config)
-    }
-
-    pub fn associate(&mut self, prev: Song, next: Song) {
+    pub fn associate(&mut self, prev: T, next: T) {
         let probs = self.assocs.entry(prev).or_insert_with(HashMap::new);
         let count = probs.entry(next).or_insert(0);
         *count += 1;
     }
 
-    pub fn start(&self) -> Option<&Song> {
+    pub fn start(&self) -> Option<&T> {
         let mut rng = thread_rng();
         roulette_wheel(&self.start, &mut rng)
     }
 
-    pub fn next(&self, current: &Song) -> Option<&Song> {
+    pub fn next(&self, current: &T) -> Option<&T> {
         let mut rng = thread_rng();
         match self.assocs.get(current) {
             Some(probs) => roulette_wheel(&probs, &mut rng),
@@ -67,18 +63,7 @@ impl Chain {
         }
     }
 
-    pub fn possible_next(&self, current: &Song) -> Option<&HashMap<Song, u32>> {
+    pub fn possible_next(&self, current: &T) -> Option<&HashMap<T, u32>> {
         self.assocs.get(current)
-    }
-
-    pub fn write(&self, path: &Path) -> Result<(), Error> {
-        let file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open(path)?;
-        serde_json::to_writer(file, self)?;
-
-        Ok(())
     }
 }

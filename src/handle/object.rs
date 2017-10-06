@@ -22,25 +22,27 @@ use error::{Error, ErrorCause};
 use handle::cursor::Cursor;
 use handle::entry::{Entry, EntryIterator};
 use markov::Chain;
-use player::{Player, Seek, State};
+use player::{Player, Seek};
+use player::State as PlayerState;
 use std::cmp;
-use song::Tags;
+use song::{Song, Tags};
+use state::State;
 use std::path::{Path, PathBuf};
 use ui::Ui;
 
 pub struct Handle {
-    chain: Chain,
+    chain: Chain<Song>,
     player: Player,
     cursor: Cursor,
     stopped: bool,
 }
 
 impl Handle {
-    pub fn new(chain: Chain) -> Self {
+    pub fn new(state: State) -> Self {
         Handle {
-            chain: chain,
+            chain: state.chain,
             player: Player::new(),
-            cursor: Cursor::new(),
+            cursor: Cursor::new(Some(state.cursor)),
             stopped: true,
         }
     }
@@ -135,13 +137,13 @@ impl Handle {
         unimplemented!();
     }
 
-    pub fn play_state(&self) -> State {
+    pub fn play_state(&self) -> PlayerState {
         if self.stopped {
-            State::Stopped
+            PlayerState::Stopped
         } else if self.player.is_paused() {
-            State::Paused
+            PlayerState::Paused
         } else {
-            State::Playing
+            PlayerState::Playing
         }
     }
 
@@ -211,7 +213,7 @@ impl Handle {
 
     // Markov chain
     pub fn add(&mut self) -> Result<(), Error> {
-        let song = self.cursor.current();
+        // let song = self.cursor.current();
         unimplemented!();
     }
 

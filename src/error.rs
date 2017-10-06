@@ -18,7 +18,7 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use {mpv, serde_json, toml};
+use {mpv, rmp_serde, toml};
 use std::{error, fmt, io};
 use ui::UiError;
 
@@ -26,7 +26,8 @@ use ui::UiError;
 pub enum ErrorCause {
     Io(io::Error),
     Mpv(mpv::Error),
-    SerdeJson(serde_json::Error),
+    RmpEncode(rmp_serde::encode::Error),
+    RmpDecode(rmp_serde::decode::Error),
     TomlDe(toml::de::Error),
     Curses(UiError),
     NoCause(),
@@ -59,7 +60,8 @@ impl error::Error for Error {
         match self.error {
             ErrorCause::Io(ref e) => Some(e),
             ErrorCause::Mpv(ref e) => Some(e),
-            ErrorCause::SerdeJson(ref e) => Some(e),
+            ErrorCause::RmpEncode(ref e) => Some(e),
+            ErrorCause::RmpDecode(ref e) => Some(e),
             ErrorCause::TomlDe(ref e) => Some(e),
             ErrorCause::Curses(ref e) => Some(e),
             ErrorCause::NoCause() => None,
@@ -92,11 +94,20 @@ impl From<mpv::Error> for Error {
     }
 }
 
-impl From<serde_json::Error> for Error {
-    fn from(error: serde_json::Error) -> Self {
+impl From<rmp_serde::encode::Error> for Error {
+    fn from(error: rmp_serde::encode::Error) -> Self {
         Error {
             message: error::Error::description(&error).to_string(),
-            error: ErrorCause::SerdeJson(error),
+            error: ErrorCause::RmpEncode(error),
+        }
+    }
+}
+
+impl From<rmp_serde::decode::Error> for Error {
+    fn from(error: rmp_serde::decode::Error) -> Self {
+        Error {
+            message: error::Error::description(&error).to_string(),
+            error: ErrorCause::RmpDecode(error),
         }
     }
 }

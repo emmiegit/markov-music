@@ -116,7 +116,6 @@ pub fn next_command(ui: &Ui) -> Command {
     }
 }
 
-use std::io::{self, Write};
 fn process_mouse() -> Command {
     let mevt = getmouse().expect("Not mouse event despite character event");
     match mevt.bstate as i32 {

@@ -9,7 +9,7 @@ music_dir = "music"
 
 # The file to create and manage in
 # your music directory
-storage_file = ".markov_music.json"
+storage_file = ".markov_music_data"
 
 # Default seconds to seek by
 seek_seconds = 0.2
