@@ -20,6 +20,7 @@
 
 use pancurses::Input::*;
 use pancurses::getmouse;
+use ncurses::{BUTTON2_PRESSED, BUTTON4_PRESSED, BUTTON5_PRESSED};
 use ui::Ui;
 
 #[derive(Debug)]
@@ -115,8 +116,13 @@ pub fn next_command(ui: &Ui) -> Command {
     }
 }
 
+use std::io::{self, Write};
 fn process_mouse() -> Command {
     let mevt = getmouse().expect("Not mouse event despite character event");
-    let _ = mevt;
-    Command::Nothing
+    match mevt.bstate as i32 {
+        BUTTON2_PRESSED => Command::TogglePause,
+        BUTTON4_PRESSED => Command::MoveUp,
+        BUTTON5_PRESSED => Command::MoveDown,
+        _ => Command::Nothing,
+    }
 }
