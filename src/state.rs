@@ -38,7 +38,7 @@ impl State {
         State {
             chain: Chain::new(),
             current: None,
-            cursor: 0,
+            cursor: 1,
         }
     }
 

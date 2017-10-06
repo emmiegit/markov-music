@@ -74,8 +74,9 @@ impl Ui {
         main.draw_divisions()?;
         files.draw_directory(handle)?;
         player.draw_playing(handle)?;
-        files.move_cursor(handle)?;
         main.flush()?;
+        files.move_cursor(handle)?;
+        files.flush()?;
         Ok(())
     }
 
