@@ -33,7 +33,9 @@ pub fn parse_args() -> Result<Args, Error> {
     let matches = App::new("Markov Music")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Ammon Smith")
-        .about("Dynamic music player that chooses your music based on a Markov chain")
+        .about(
+            "Dynamic music player that chooses your music based on a Markov chain",
+        )
         .max_term_width(80)
         .arg(
             Arg::with_name("config")

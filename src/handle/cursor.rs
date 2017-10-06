@@ -23,7 +23,9 @@ use handle::entry::{Entry, Entries, EntryIterator};
 use std::cmp;
 use std::path::{Path, PathBuf};
 
- use std::io;use std::io::Write;
+fn ceildiv(numer: usize, denom: usize) -> usize {
+    (numer + (denom - 1)) / denom
+}
 
 #[derive(Debug)]
 pub struct Cursor {
@@ -68,19 +70,26 @@ impl Cursor {
     fn adjust_view(&mut self, rows: usize) {
         let rows = rows - 1;
 
-        if self.pos >= self.top {
-            /* Up */
-            let screens = (self.pos - self.top) / rows;
-            self.top = cmp::min(self.entries.len() - 1, self.top + screens * rows);
+        if self.top > self.pos {
+            /* Move view up */
+            let screens = ceildiv(self.top - self.pos, rows);
+            let screen_rows = screens * rows;
+
+            // Perform an unsigned cmp::max()
+            if self.top > screen_rows {
+                self.top -= screen_rows;
+            } else {
+                self.top = 0;
+            }
         } else {
-            /* Down */
-            let screens = (self.top - self.pos) / rows;
-            self.top = cmp::min(0, self.top - screens * rows);
+            /* Move view down */
+            let screens = (self.pos - self.top) / rows;
+            let screen_rows = screens * rows;
+            self.top = cmp::min(self.entries.len() - 1, self.top + screen_rows);
         }
     }
 
     fn sanity(&self, rows: usize) {
-write!(&mut io::stderr(), "top: {}, pos: {} -- ", self.top, self.pos).unwrap();
         assert!(self.top <= self.pos);
         assert!(self.top < self.entries.len());
         assert!(self.pos < self.entries.len());
@@ -106,7 +115,6 @@ write!(&mut io::stderr(), "top: {}, pos: {} -- ", self.top, self.pos).unwrap();
 
     pub fn jump_bottom(&mut self, rows: usize) {
         self.pos = self.entries.len() - 1;
-        self.top = self.pos - rows + 1;
         self.adjust_view(rows);
         self.sanity(rows);
     }

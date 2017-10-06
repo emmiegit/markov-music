@@ -25,8 +25,6 @@ use std::path;
 use ui::{UiError, color};
 use {ncurses, utils};
 
- use std::io;use std::io::Write;
-
 const PLAY: &'static str = "▶ ";
 const PAUSE: &'static str = "▮▮";
 const STOP: &'static str = "◼ ";
@@ -124,12 +122,16 @@ impl<'a> Output<'a> {
                 None => entry.path.as_os_str(),
             }.to_string_lossy();
 
-            if index == current { curses!(self.win.attron(attr))?; }
+            if index == current {
+                curses!(self.win.attron(attr))?;
+            }
             curses!(self.win.mvaddstr(row, 1, &path))?;
             if entry.ftype == EntryType::Directory {
                 curses!(self.win.addch(path::MAIN_SEPARATOR))?;
             }
-            if index == current { curses!(self.win.attroff(attr))?; }
+            if index == current {
+                curses!(self.win.attroff(attr))?;
+            }
 
             row += 1;
             if row >= self.rows {
@@ -173,7 +175,7 @@ impl<'a> Output<'a> {
         curses!(self.win.mvaddstr(0, self.cols - 5, percent))?;
 
         // Progress
-        let progress = 80 /*handle.play_percent() */ * (self.cols - 4) / 100;
+        let progress = handle.play_percent() * (self.cols - 4) / 100;
         curses!(self.win.mvaddch(1, 1, '['))?;
         curses!(self.win.attron(Attribute::Reverse))?;
         curses!(self.win.hline(' ', progress))?;
@@ -185,7 +187,6 @@ impl<'a> Output<'a> {
 
     pub fn move_cursor(&mut self, handle: &Handle) -> Result<(), UiError> {
         let row = handle.cursor_row() as i32;
-writeln!(&mut io::stderr(), "mv {}, 1", row).unwrap();
         curses!(self.win.mv(row, 1))?;
         Ok(())
     }
