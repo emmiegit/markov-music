@@ -7,7 +7,9 @@ authors = ["Ammon Smith <ammon.i.smith@gmail.com>"]
 clap = "2"
 diesel = { version = "1.1", features = ["sqlite"] }
 lazy_static = "1"
+log = "0.4"
 mpd = "*"
 rand = "0.4"
 serde = { version = "1", features = ["derive"] }
+simple-logging = "2.0"
 toml = "0.4"

@@ -27,17 +27,22 @@ extern crate diesel;
 
 #[macro_use]
 extern crate lazy_static;
+
+#[macro_use]
+extern crate log;
 extern crate mpd;
 extern crate rand;
 
 #[macro_use]
 extern crate serde;
+extern crate simple_logging;
 extern crate toml;
 
 mod config;
 mod database;
 mod error;
 mod handle;
+mod logging;
 mod markov;
 mod player;
 mod utils;
@@ -62,10 +67,7 @@ fn main() {
         }
     };
 
-    if let Err(e) = env::set_current_dir(&*HOME_DIR) {
-        eprintln!("Can't switch to home directory '{}': {}", HOME_DIR.display(), e);
-        exit(1);
-    }
+    logging::setup();
 
     if let Err(e) = main_loop(config) {
         eprintln!("Error in main loop: {}", e);

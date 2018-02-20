@@ -18,4 +18,11 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use log::LevelFilter;
+use simple_logging;
 
+#[inline]
+#[cold]
+pub fn setup() {
+    simple_logging::log_to_stderr(LevelFilter::Info);
+}
