@@ -1,5 +1,5 @@
 /*
- * database.rs
+ * database/models.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017-2018 Ammon Smith
@@ -17,21 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-table! {
-    associations (prev_song, next_song) {
-        prev_song -> Text,
-        next_song -> Text,
-        weight -> Integer,
-    }
-}
-
-table! {
-    starters (song) {
-        song -> Text,
-        weight -> Integer,
-    }
-}
 
 #[derive(Queryable, Debug, Clone, PartialEq)]
 pub struct Association {

@@ -26,7 +26,7 @@ use std::hash::Hash;
 use utils::roulette_wheel;
 
 #[derive(PartialEq, Eq)]
-pub struct Chain<T>
+pub struct Chain<T, D>
 where
     T: Eq + Hash,
 {
@@ -88,6 +88,11 @@ where
           U: ?Sized,
     {
         self.assocs.get(current.borrow())
+    }
+
+    #[inline]
+    pub fn internals(&self) -> (&HashMap<T, HashMap<T, i32>>, &HashMap<T, i32>) {
+        (&self.assocs, &self.start)
     }
 }
 
