@@ -1,18 +1,10 @@
-# What music player to use
-# Currently only supports mpv
-player = "mpv"
+# Sample configuration file
 
-# The name of your music directory
-# If this is a relative path, it's
-# relative to your home directory.
-music_dir = "music"
+# Where the markov chain database will be stored
+storage_file = "~/.mpd/x-markov-music.db"
 
-# The file to create and manage in
-# your music directory
-storage_file = ".markov_music_data"
+# Use IPv4
+ipv4 = false
 
-# Default seconds to seek by
-seek_seconds = 0.2
-
-# How much to increase/decrease the volume by
-volume_step = 1
+# Port of mpd (usually 6600)
+port = 6600

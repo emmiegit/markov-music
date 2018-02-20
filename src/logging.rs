@@ -1,8 +1,8 @@
 /*
- * handle/entry/object.rs
+ * logging.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
- * Copyright (c) 2017 Ammon Smith
+ * Copyright (c) 2017-2018 Ammon Smith
  *
  * markov-music is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,32 +18,4 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use handle::entry::EntryType;
-use std::cmp::Ordering;
-use std::path::PathBuf;
 
-#[derive(Debug, Hash, Clone)]
-pub struct Entry {
-    pub path: PathBuf,
-    pub ftype: EntryType,
-}
-
-impl Eq for Entry {}
-
-impl PartialEq for Entry {
-    fn eq(&self, other: &Entry) -> bool {
-        &self.path == &other.path
-    }
-}
-
-impl Ord for Entry {
-    fn cmp(&self, other: &Entry) -> Ordering {
-        self.path.cmp(&other.path)
-    }
-}
-
-impl PartialOrd for Entry {
-    fn partial_cmp(&self, other: &Entry) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}

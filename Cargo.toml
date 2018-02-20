@@ -1,16 +1,13 @@
 [package]
 name = "markov-music"
-version = "0.0.4"
+version = "0.1.0"
 authors = ["Ammon Smith <ammon.i.smith@gmail.com>"]
 
 [dependencies]
 clap = "2"
-lazy_static = "0.2"
-mpv = "0.2"
-ncurses = "5"
-pancurses = "0.9"
-rand = "0.3"
-rmp-serde = "0.13"
-serde = "1"
-serde_derive = "1"
+diesel = { version = "1.1", features = ["sqlite"] }
+lazy_static = "1"
+mpd = "*"
+rand = "0.4"
+serde = { version = "1", features = ["derive"] }
 toml = "0.4"

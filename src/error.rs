@@ -2,7 +2,7 @@
  * error.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
- * Copyright (c) 2017 Ammon Smith
+ * Copyright (c) 2017-2018 Ammon Smith
  *
  * markov-music is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,114 +18,83 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use {mpv, rmp_serde, toml};
-use std::{error, fmt, io};
-use ui::UiError;
+use mpd::error as mpd;
+use self::Error::*;
+use std::{fmt, io};
+use toml;
+
+pub use std::error::Error as StdError;
 
 #[derive(Debug)]
-pub enum ErrorCause {
+pub enum Error {
+    StaticMsg(&'static str),
+    Msg(String),
     Io(io::Error),
-    Mpv(mpv::Error),
-    RmpEncode(rmp_serde::encode::Error),
-    RmpDecode(rmp_serde::decode::Error),
     TomlDe(toml::de::Error),
-    Curses(UiError),
-    NoCause(),
+    MpdParse(mpd::ParseError),
+    MpdProto(mpd::ProtoError),
+    MpdServer(mpd::ServerError),
 }
 
-#[derive(Debug)]
-pub struct Error {
-    message: String,
-    error: ErrorCause,
-}
-
-impl Error {
-    pub fn new<M>(message: M, error: ErrorCause) -> Self
-    where
-        M: Into<String>,
-    {
-        Error {
-            message: message.into(),
-            error: error,
+impl StdError for Error {
+    fn description(&self) -> &str {
+        match *self {
+            StaticMsg(s) => s,
+            Msg(ref s) => s,
+            Io(ref e) => e.description(),
+            TomlDe(ref e) => e.description(),
+            MpdParse(ref e) => e.description(),
+            MpdProto(ref e) => e.description(),
+            MpdServer(ref e) => e.description(),
         }
     }
-}
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        &self.message
-    }
-
-    fn cause(&self) -> Option<&error::Error> {
-        match self.error {
-            ErrorCause::Io(ref e) => Some(e),
-            ErrorCause::Mpv(ref e) => Some(e),
-            ErrorCause::RmpEncode(ref e) => Some(e),
-            ErrorCause::RmpDecode(ref e) => Some(e),
-            ErrorCause::TomlDe(ref e) => Some(e),
-            ErrorCause::Curses(ref e) => Some(e),
-            ErrorCause::NoCause() => None,
+    fn cause(&self) -> Option<&StdError> {
+        match *self {
+            StaticMsg(_) | Msg(_) => None,
+            Io(ref e) => Some(e),
+            TomlDe(ref e) => Some(e),
+            MpdParse(ref e) => Some(e),
+            MpdProto(ref e) => Some(e),
+            MpdServer(ref e) => Some(e),
         }
     }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", &self.message)
+        write!(f, "{}", StdError::description(self))
     }
 }
 
 // Auto-conversion
+impl From<String> for Error {
+    fn from(error: String) -> Self {
+        Error::Msg(error)
+    }
+}
+
 impl From<io::Error> for Error {
     fn from(error: io::Error) -> Self {
-        Error {
-            message: error::Error::description(&error).to_string(),
-            error: ErrorCause::Io(error),
-        }
-    }
-}
-
-impl From<mpv::Error> for Error {
-    fn from(error: mpv::Error) -> Self {
-        Error {
-            message: error::Error::description(&error).to_string(),
-            error: ErrorCause::Mpv(error),
-        }
-    }
-}
-
-impl From<rmp_serde::encode::Error> for Error {
-    fn from(error: rmp_serde::encode::Error) -> Self {
-        Error {
-            message: error::Error::description(&error).to_string(),
-            error: ErrorCause::RmpEncode(error),
-        }
-    }
-}
-
-impl From<rmp_serde::decode::Error> for Error {
-    fn from(error: rmp_serde::decode::Error) -> Self {
-        Error {
-            message: error::Error::description(&error).to_string(),
-            error: ErrorCause::RmpDecode(error),
-        }
+        Error::Io(error)
     }
 }
 
 impl From<toml::de::Error> for Error {
     fn from(error: toml::de::Error) -> Self {
-        Error {
-            message: format!("{}", &error),
-            error: ErrorCause::TomlDe(error),
-        }
+        Error::TomlDe(error)
     }
 }
 
-impl From<UiError> for Error {
-    fn from(error: UiError) -> Self {
-        Error {
-            message: error::Error::description(&error).to_string(),
-            error: ErrorCause::Curses(error),
+impl From<mpd::Error> for Error {
+    fn from(error: mpd::Error) -> Self {
+        use self::mpd::Error::*;
+
+        match error {
+            Io(e) => Error::Io(e),
+            Parse(e) => Error::MpdParse(e),
+            Proto(e) => Error::MpdProto(e),
+            Server(e) => Error::MpdServer(e),
         }
     }
 }

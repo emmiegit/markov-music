@@ -2,7 +2,7 @@
  * config.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
- * Copyright (c) 2017 Ammon Smith
+ * Copyright (c) 2017-2018 Ammon Smith
  *
  * markov-music is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,99 +18,112 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use error::{Error, ErrorCause};
+use clap::{App, Arg};
 use std::env;
 use std::fs::File;
 use std::io::prelude::Read;
-use std::path::Path;
-use utils::HOME_DIR_PATH;
-use toml;
+use std::path::{Path, PathBuf};
+use utils::HOME_DIR;
+use {toml, Result};
 
-#[derive(Debug, Deserialize)]
+lazy_static! {
+    static ref DEFAULT_CONFIG_PATH: PathBuf = {
+        let mut dir = match env::var_os("XDG_CONFIG_HOME") {
+            Some(dir) => PathBuf::from(dir),
+            None => {
+                let mut dir = HOME_DIR.clone();
+                dir.push(".config");
+                dir
+            },
+        };
+
+        dir.push("markov-music/config.toml");
+        dir
+    };
+}
+
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Config {
-    pub music_dir: String,
-    pub storage_file: String,
-    pub seek_seconds: f32,
-    pub volume_step: i32,
+    pub storage_file: PathBuf,
+    pub ipv4: bool,
+    pub port: u16,
 }
 
 impl Config {
-    fn default_config() -> Config {
-        const MUSIC_DIR_NAME: &str = "music";
-        const MARKOV_FILE_NAME: &str = ".markov_music_state";
-
-        Config {
-            music_dir: {
-                let mut path = HOME_DIR_PATH.clone();
-                path.push(MUSIC_DIR_NAME);
-                path.as_path()
-                    .to_str()
-                    .expect("Unable to convert path to string")
-                    .to_string()
-            },
-            storage_file: MARKOV_FILE_NAME.to_string(),
-            seek_seconds: 0.2,
-            volume_step: 1,
-        }
-    }
-
-    pub fn read(path: &Path) -> Result<Self, Error> {
-        let mut file = File::open(path)?;
+    pub fn read<P: AsRef<Path>>(path: P) -> Result<Self> {
+        let mut file = File::open(path.as_ref())?;
         let mut contents = String::new();
         let _ = file.read_to_string(&mut contents)?;
-        let config: Config = toml::from_str(&contents)?;
+        let config: Self = toml::from_str(&contents)?;
 
-        if !config.seek_seconds.is_finite() {
-            Err(Error::new(
-                "Seek seconds is not a real number",
-                ErrorCause::NoCause(),
-            ))
-        } else if config.seek_seconds == 0.0 {
-            Err(Error::new("Seek seconds is zero", ErrorCause::NoCause()))
-        } else if config.volume_step < 0 {
-            Err(Error::new("Volume step is negative", ErrorCause::NoCause()))
-        } else if config.volume_step > 100 {
-            Err(Error::new(
-                "Volume step is greater than 100",
-                ErrorCause::NoCause(),
-            ))
-        } else {
-            Ok(config)
+        Ok(config)
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            storage_file: {
+                let mut dir = match env::var_os("XDG_DATA_HOME") {
+                    Some(dir) => PathBuf::from(dir),
+                    None => {
+                        let mut dir = HOME_DIR.clone();
+                        dir.push(".local/share");
+                        dir
+                    },
+                };
+
+                dir.push("markov-music/chain.db");
+                dir
+            },
+            ipv4: false,
+            port: 6600,
         }
     }
+}
 
-    pub fn default() -> Result<Self, Error> {
-        const CONFIG_HOME: &str = ".config";
-        const CONFIG_DIR: &str = "markov-music";
-        const CONFIG_FILE: &str = "config.toml";
-        let mut path = HOME_DIR_PATH.clone();
+pub fn parse_args() -> Result<Config> {
+    let matches = App::new("Markov Music")
+        .version(env!("CARGO_PKG_VERSION"))
+        .author("Ammon Smith")
+        .about(
+            "Dynamic music player that chooses your music based on a Markov chain",
+        )
+        .max_term_width(110)
+        .arg(
+            Arg::with_name("config")
+                .short("c")
+                .long("config")
+                .value_name("FILE")
+                .help("Use a specific configuration file instead of the default"),
+        )
+        .arg(
+            Arg::with_name("port")
+                .short("p")
+                .long("port")
+                .value_name("NUMBER")
+                .help("Use the given port to connect to mpd"),
+        )
+        .arg(
+            Arg::with_name("ipv4")
+                .short("4")
+                .long("ipv4")
+                .help("Use IPV4 instead of IPv6.")
+        )
+        .arg(
+            Arg::with_name("no-color")
+                .long("no-color")
+                .help("Disables colors even on terminals that support them"),
+        )
+        .get_matches();
 
-        // Get configuration directory
-        match env::var("XDG_CONFIG_HOME") {
-            Ok(val) => {
-                if val.len() > 0 {
-                    path.push(val);
-                } else {
-                    path.push(CONFIG_HOME);
-                }
-            }
-            Err(_) => {
-                path.push(CONFIG_HOME);
-            }
-        }
+    let config = match matches.value_of("config") {
+        Some(path) => Config::read(Path::new(path))?,
+        None if DEFAULT_CONFIG_PATH.is_file() => {
+            Config::read(&*DEFAULT_CONFIG_PATH)?
+        },
+        _ => Config::default(),
+    };
 
-        // Read "$CONFIG/markov-music/config.toml"
-        path.push(CONFIG_DIR);
-        path.push(CONFIG_FILE);
-        match Config::read(path.as_path()) {
-            Ok(cfg) => Ok(cfg),
-            Err(e) => {
-                if !path.is_file() {
-                    Ok(Config::default_config())
-                } else {
-                    Err(e)
-                }
-            }
-        }
-    }
+    Ok(config)
 }
