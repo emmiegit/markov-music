@@ -18,7 +18,6 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod handle;
 mod models;
 mod schema;
 
