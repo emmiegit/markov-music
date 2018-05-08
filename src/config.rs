@@ -47,6 +47,7 @@ pub struct Config {
     pub storage_file: PathBuf,
     pub host: String,
     pub port: u16,
+    pub password: Option<String>,
 }
 
 impl Config {
@@ -66,6 +67,7 @@ impl Default for Config {
             storage_file: HOME_DIR.join(".mpd/x-markov-music.db"),
             host: "localhost".into(),
             port: 6600,
+            password: None,
         }
     }
 }
@@ -99,6 +101,13 @@ pub fn parse_args() -> Result<Config> {
                 .value_name("NUMBER")
                 .help("Use the given port to connect to mpd"),
         )
+        .arg(
+            Arg::with_name("password")
+                .short("P")
+                .long("password")
+                .value_name("PASSWORD")
+                .help("Password used to login to mpd"),
+        )
         .get_matches();
 
     let mut config = match matches.value_of("config") {
@@ -115,6 +124,10 @@ pub fn parse_args() -> Result<Config> {
 
     if let Some(val) = matches.value_of("port") {
         config.port = val.parse::<u16>()?;
+    }
+
+    if let Some(val) = matches.value_of("password") {
+        config.password = Some(val.into());
     }
 
     Ok(config)

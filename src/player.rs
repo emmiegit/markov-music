@@ -30,7 +30,12 @@ pub struct Player {
 
 impl Player {
     pub fn new(config: &Config) -> Result<Self> {
-        let conn = mpd::Client::connect((config.host.as_str(), config.port))?;
+        let mut conn = mpd::Client::connect((config.host.as_str(), config.port))?;
+
+        if let Some(ref password) = config.password {
+            conn.login(password)?;
+        }
+
         Ok(Player { conn })
     }
 
