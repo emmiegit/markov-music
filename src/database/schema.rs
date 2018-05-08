@@ -19,9 +19,9 @@
  */
 
 table! {
-    associations (prev_song, next_song) {
-        prev_song -> Text,
-        next_song -> Text,
+    associations (song, next) {
+        song -> Text,
+        next -> Text,
         weight -> Integer,
     }
 }

@@ -18,18 +18,20 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use super::schema::*;
+
 #[derive(Queryable, Debug, Clone, PartialEq)]
 pub struct Association {
-    pub prev_song: String,
-    pub next_song: String,
+    pub song: String,
+    pub next: String,
     pub weight: i32,
 }
 
 #[derive(Insertable, Debug, Copy, Clone, PartialEq)]
 #[table_name = "associations"]
 pub struct NewAssociation<'a> {
-    pub prev_song: &'a str,
-    pub next_song: &'a str,
+    pub song: &'a str,
+    pub next: &'a str,
     pub weight: i32,
 }
 

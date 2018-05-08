@@ -49,13 +49,11 @@ mod utils;
 
 use config::{parse_args, Config};
 use handle::Handle;
-use std::{env, result};
 use std::process::exit;
-use utils::HOME_DIR;
 
 pub use error::{Error, StdError};
 
-pub type StdResult<T, E> = result::Result<T, E>;
+pub type StdResult<T, E> = std::result::Result<T, E>;
 pub type Result<T> = StdResult<T, Error>;
 
 fn main() {

@@ -29,14 +29,14 @@ impl Database for NullDatabase {
 
     fn modify_weight(
         &mut self,
-        _prev: &str,
+        _this: &str,
         _next: &str,
         _diff: i32,
     ) -> StdResult<(), ()> {
         Ok(())
     }
 
-    fn clear(&mut self, _prev: &str) -> StdResult<(), ()> {
+    fn clear(&mut self, _this: &str) -> StdResult<(), ()> {
         Ok(())
     }
 }

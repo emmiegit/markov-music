@@ -18,9 +18,10 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use {Error, Result, StdResult};
+use {diesel, Error, Result, StdResult};
 use diesel::sqlite::SqliteConnection;
 use super::Database;
+use super::models::*;
 use super::schema::*;
 
 pub struct SqliteDatabase {
@@ -39,12 +40,51 @@ impl Database for SqliteDatabase {
 
     fn modify_weight(
         &mut self,
-        prev: &str,
+        song: &str,
         next: &str,
         diff: i32,
-    ) -> StdResult<(), Self::Error> {
+    ) -> Result<()> {
+        self.conn.transaction::<(), Error, _>(|| {
+            use self::associations::dsl;
+
+            let row = associations::table
+                .find((song, next))
+                .first::<Association>(&self.conn)
+                .optional()?;
+
+            let weight = row.map(|assoc| assoc.weight).unwrap_or(0) + diff;
+            let new_assoc = NewAssociation {
+                song: song,
+                next: next,
+                weight: weight,
+            };
+
+            diesel::replace_into(starters::table)
+                .values(&[new_assoc])
+                .execute(&self.conn)?;
+
+            Ok(())
+        })
     }
 
-    fn clear(&mut self, prev: &str) -> StdResult<(), Self::Error> {
+    fn clear(&mut self, song: &str) -> Result<()> {
+        self.conn.transaction::<(), Error, _>(|| {
+            {
+                use self::starters::dsl;
+
+                diesel::update(starters::table.filter(dsl::song.eq(song)))
+                    .set(weight.eq(0))
+                    .execute(&self.conn)?;
+            }
+
+            {
+                use self::associations::dsl;
+
+                diesel::delete(associations::table.filter(dsl::song.eq(song)))
+                    .execute(&self.conn)?;
+            }
+
+            Ok(())
+        })
     }
 }

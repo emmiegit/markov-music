@@ -26,7 +26,7 @@ use std::hash::Hash;
 use utils::roulette_wheel;
 
 #[derive(PartialEq, Eq)]
-pub struct Chain<T, D>
+pub struct Chain<T>
 where
     T: Eq + Hash,
 {

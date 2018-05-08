@@ -22,17 +22,16 @@ mod models;
 mod schema;
 
 use StdResult;
-use std::borrow::Borrow;
 
 pub trait Database {
     type Error;
 
     fn modify_weight(
         &mut self,
-        prev: &str,
+        this: &str,
         next: &str,
         diff: i32,
     ) -> StdResult<(), Self::Error>;
 
-    fn clear(&mut self, prev: &str) -> StdResult<(), Self::Error>;
+    fn clear(&mut self, this: &str) -> StdResult<(), Self::Error>;
 }
