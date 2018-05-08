@@ -38,7 +38,7 @@ impl Player {
         };
 
         let conn = mpd::Client::connect(SocketAddr::new(addr, config.port))?;
-        Ok(Player { conn: conn })
+        Ok(Player { conn })
     }
 
     pub fn update(&mut self) -> Result<()> {

@@ -35,9 +35,9 @@ impl Handle {
         let player = Player::new(&config)?;
 
         Ok(Handle {
-            config: config,
+            config,
             chain: markov::Chain::new(),
-            player: player,
+            player,
         })
     }
 

@@ -89,11 +89,6 @@ where
     {
         self.assocs.get(current.borrow())
     }
-
-    #[inline]
-    pub fn internals(&self) -> (&HashMap<T, HashMap<T, i32>>, &HashMap<T, i32>) {
-        (&self.assocs, &self.start)
-    }
 }
 
 impl<T> Debug for Chain<T>
