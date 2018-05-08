@@ -45,7 +45,7 @@ lazy_static! {
 #[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Config {
     pub storage_file: PathBuf,
-    pub ipv4: bool,
+    pub host: String,
     pub port: u16,
 }
 
@@ -63,20 +63,8 @@ impl Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
-            storage_file: {
-                let mut dir = match env::var_os("XDG_DATA_HOME") {
-                    Some(dir) => PathBuf::from(dir),
-                    None => {
-                        let mut dir = HOME_DIR.clone();
-                        dir.push(".local/share");
-                        dir
-                    },
-                };
-
-                dir.push("markov-music/chain.db");
-                dir
-            },
-            ipv4: false,
+            storage_file: HOME_DIR.join(".mpd/x-markov-music.db"),
+            host: "localhost".into(),
             port: 6600,
         }
     }
@@ -98,23 +86,18 @@ pub fn parse_args() -> Result<Config> {
                 .help("Use a specific configuration file instead of the default"),
         )
         .arg(
+            Arg::with_name("host")
+                .short("H")
+                .long("host")
+                .value_name("HOSTNAME")
+                .help("The mpd server to connect to"),
+        )
+        .arg(
             Arg::with_name("port")
                 .short("p")
                 .long("port")
                 .value_name("NUMBER")
                 .help("Use the given port to connect to mpd"),
-        )
-        .arg(
-            Arg::with_name("ipv4")
-                .short("4")
-                .long("ipv4")
-                .help("Use IPv4")
-        )
-        .arg(
-            Arg::with_name("ipv6")
-                .short("6")
-                .long("ipv6")
-                .help("Use IPv6 (default)")
         )
         .get_matches();
 
@@ -126,16 +109,12 @@ pub fn parse_args() -> Result<Config> {
         _ => Config::default(),
     };
 
+    if let Some(val) = matches.value_of("host") {
+        config.host = val.into();
+    }
+
     if let Some(val) = matches.value_of("port") {
         config.port = val.parse::<u16>()?;
-    }
-
-    if matches.is_present("ipv4") {
-        config.ipv4 = true;
-    }
-
-    if matches.is_present("ipv6") {
-        config.ipv4 = false;
     }
 
     Ok(config)

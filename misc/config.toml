@@ -3,8 +3,6 @@
 # Where the markov chain database will be stored
 storage_file = "~/.mpd/x-markov-music.db"
 
-# Use IPv4
-ipv4 = false
-
-# Port of mpd (usually 6600)
+# mpd server address
+host = "localhost"
 port = 6600

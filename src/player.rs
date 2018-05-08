@@ -21,7 +21,6 @@
 use Result;
 use config::Config;
 use mpd::{self, Idle, Subsystem};
-use std::net::IpAddr::*;
 use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr};
 
 #[derive(Debug)]
@@ -31,13 +30,7 @@ pub struct Player {
 
 impl Player {
     pub fn new(config: &Config) -> Result<Self> {
-        let addr = if config.ipv4 {
-            V4(Ipv4Addr::new(127, 0, 0, 1))
-        } else {
-            V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1))
-        };
-
-        let conn = mpd::Client::connect(SocketAddr::new(addr, config.port))?;
+        let conn = mpd::Client::connect((config.host.as_str(), config.port))?;
         Ok(Player { conn })
     }
 
