@@ -108,22 +108,35 @@ pub fn parse_args() -> Result<Config> {
             Arg::with_name("ipv4")
                 .short("4")
                 .long("ipv4")
-                .help("Use IPV4 instead of IPv6.")
+                .help("Use IPv4")
         )
         .arg(
-            Arg::with_name("no-color")
-                .long("no-color")
-                .help("Disables colors even on terminals that support them"),
+            Arg::with_name("ipv6")
+                .short("6")
+                .long("ipv6")
+                .help("Use IPv6 (default)")
         )
         .get_matches();
 
-    let config = match matches.value_of("config") {
+    let mut config = match matches.value_of("config") {
         Some(path) => Config::read(Path::new(path))?,
         None if DEFAULT_CONFIG_PATH.is_file() => {
             Config::read(&*DEFAULT_CONFIG_PATH)?
         },
         _ => Config::default(),
     };
+
+    if let Some(val) = matches.value_of("port") {
+        config.port = val.parse::<u16>()?;
+    }
+
+    if matches.is_present("ipv4") {
+        config.ipv4 = true;
+    }
+
+    if matches.is_present("ipv6") {
+        config.ipv4 = false;
+    }
 
     Ok(config)
 }

@@ -20,7 +20,7 @@
 
 use mpd::error as mpd;
 use self::Error::*;
-use std::{fmt, io};
+use std::{fmt, num, io};
 use toml;
 
 pub use std::error::Error as StdError;
@@ -30,6 +30,7 @@ pub enum Error {
     StaticMsg(&'static str),
     Msg(String),
     Io(io::Error),
+    IntParse(num::ParseIntError),
     TomlDe(toml::de::Error),
     MpdParse(mpd::ParseError),
     MpdProto(mpd::ProtoError),
@@ -42,6 +43,7 @@ impl StdError for Error {
             StaticMsg(s) => s,
             Msg(ref s) => s,
             Io(ref e) => e.description(),
+            IntParse(ref e) => e.description(),
             TomlDe(ref e) => e.description(),
             MpdParse(ref e) => e.description(),
             MpdProto(ref e) => e.description(),
@@ -53,6 +55,7 @@ impl StdError for Error {
         match *self {
             StaticMsg(_) | Msg(_) => None,
             Io(ref e) => Some(e),
+            IntParse(ref e) => Some(e),
             TomlDe(ref e) => Some(e),
             MpdParse(ref e) => Some(e),
             MpdProto(ref e) => Some(e),
@@ -77,6 +80,12 @@ impl From<String> for Error {
 impl From<io::Error> for Error {
     fn from(error: io::Error) -> Self {
         Error::Io(error)
+    }
+}
+
+impl From<num::ParseIntError> for Error {
+    fn from(error: num::ParseIntError) -> Self {
+        Error::IntParse(error)
     }
 }
 
