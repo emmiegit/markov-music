@@ -24,6 +24,7 @@ extern crate clap;
 
 #[macro_use]
 extern crate diesel;
+extern crate futures;
 
 #[macro_use]
 extern crate lazy_static;
@@ -36,6 +37,9 @@ extern crate rand;
 #[macro_use]
 extern crate serde;
 extern crate simple_logging;
+extern crate tokio_core;
+extern crate tokio_io;
+extern crate tokio_uds;
 extern crate toml;
 
 mod config;
