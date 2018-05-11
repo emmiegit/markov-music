@@ -19,9 +19,8 @@
  */
 
 use Result;
-use config::Config;
+use config::MpdConfig;
 use mpd::{self, Idle, Subsystem};
-use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr};
 
 #[derive(Debug)]
 pub struct Player {
@@ -29,7 +28,7 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(config: &Config) -> Result<Self> {
+    pub fn new(config: &MpdConfig) -> Result<Self> {
         let mut conn = mpd::Client::connect((config.host.as_str(), config.port))?;
 
         if let Some(ref password) = config.password {
@@ -41,9 +40,6 @@ impl Player {
 
     pub fn update(&mut self) -> Result<()> {
         let _ = self.conn.wait(&[Subsystem::Update, Subsystem::Queue])?;
-
-    let _status = self.conn.status()?;
-    let _stats = self.conn.stats()?;
 
         unimplemented!()
     }

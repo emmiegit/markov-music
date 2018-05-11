@@ -3,8 +3,8 @@ A music player that determines what song to next play based on a Markov chain. T
 
 You should copy the provided sample configuration file to `~/.config/markov-music/config.toml`. The player will listen to the mpd socket, determining how to modify the weights of the markov chain. It will automatically control the queue, adding new songs and removing old ones. If the daemon is disabled, it will continue to listen and build the chain, but not modify the queue.
 
-The process will expose a FIFO (named pipe) at the configured location.
-You can write `y` to enable the daemon and `n` to disable it.
+The process will expose a UNIX domain socket at a configured location. This can be used to control
+the daemon.
 
 Licensed under the GPL, version 2 or later.
 

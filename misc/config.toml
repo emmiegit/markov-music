@@ -1,8 +1,9 @@
 # Sample configuration file
 
-# Where the markov chain database will be stored
+[daemon]
 storage_file = "~/.mpd/x-markov-music.db"
+socket = "~/.mpd/x-markov-music.sock"
 
-# mpd server address
+[mpd]
 host = "localhost"
 port = 6600

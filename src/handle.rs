@@ -32,7 +32,7 @@ pub struct Handle {
 
 impl Handle {
     pub fn new(config: Config) -> Result<Self> {
-        let player = Player::new(&config)?;
+        let player = Player::new(&config.mpd)?;
 
         Ok(Handle {
             config,

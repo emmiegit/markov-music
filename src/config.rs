@@ -42,12 +42,42 @@ lazy_static! {
     };
 }
 
-#[derive(Deserialize, Debug, Clone, PartialEq)]
-pub struct Config {
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct DaemonConfig {
     pub storage_file: PathBuf,
+    pub socket: PathBuf,
+}
+
+impl Default for DaemonConfig {
+    fn default() -> Self {
+        DaemonConfig {
+            storage_file: HOME_DIR.join(".mpd/x-markov-music.db"),
+            socket: HOME_DIR.join(".mpd/x-markov-music.sock"),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct MpdConfig {
     pub host: String,
     pub port: u16,
     pub password: Option<String>,
+}
+
+impl Default for MpdConfig {
+    fn default() -> Self {
+        MpdConfig {
+            host: "localhost".into(),
+            port: 6600,
+            password: None,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+pub struct Config {
+    pub daemon: DaemonConfig,
+    pub mpd: MpdConfig,
 }
 
 impl Config {
@@ -58,17 +88,6 @@ impl Config {
         let config: Self = toml::from_str(&contents)?;
 
         Ok(config)
-    }
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Config {
-            storage_file: HOME_DIR.join(".mpd/x-markov-music.db"),
-            host: "localhost".into(),
-            port: 6600,
-            password: None,
-        }
     }
 }
 
@@ -119,15 +138,15 @@ pub fn parse_args() -> Result<Config> {
     };
 
     if let Some(val) = matches.value_of("host") {
-        config.host = val.into();
+        config.mpd.host = val.into();
     }
 
     if let Some(val) = matches.value_of("port") {
-        config.port = val.parse::<u16>()?;
+        config.mpd.port = val.parse::<u16>()?;
     }
 
     if let Some(val) = matches.value_of("password") {
-        config.password = Some(val.into());
+        config.mpd.password = Some(val.into());
     }
 
     Ok(config)
