@@ -16,14 +16,16 @@ $ cargo build --release
 ### Usage
 ```
 USAGE:
-    markov-music [FLAGS] [OPTIONS]
+    markov-music [OPTIONS]
 
 FLAGS:
-    -h, --help        Prints help information
-    -V, --version     Prints version information
+    -h, --help       Prints help information
+    -V, --version    Prints version information
 
 OPTIONS:
-    -c, --config <FILE>    Use a specific configuration file instead of the
-                           default
+    -c, --config <FILE>          Use a specific configuration file instead of the default
+    -H, --host <HOSTNAME>        The mpd server to connect to
+    -P, --password <PASSWORD>    Password used to login to mpd
+    -p, --port <NUMBER>          Use the given port to connect to mpd
 ```
 
