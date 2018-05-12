@@ -20,7 +20,7 @@
 
 use rand::Rng;
 use std::collections::HashMap;
-use std::env;
+use std::{env, str};
 use std::hash::Hash;
 use std::path::PathBuf;
 
@@ -40,4 +40,9 @@ pub fn roulette_wheel<'a, T: Eq + Hash>(map: &'a HashMap<T, i32>, rng: &mut Rng)
     }
 
     None
+}
+
+#[inline]
+pub fn empty_mut_str() -> &'static mut str {
+    unsafe { str::from_utf8_unchecked_mut(&mut []) }
 }

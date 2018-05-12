@@ -1,5 +1,5 @@
 /*
- * handle.rs
+ * context.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017-2018 Ammon Smith
@@ -24,17 +24,17 @@ use player::Player;
 use std::borrow::{Borrow, BorrowMut};
 
 #[derive(Debug)]
-pub struct Handle {
+pub struct Context {
     config: Config,
     chain: markov::Chain<String>,
     player: Player,
 }
 
-impl Handle {
+impl Context {
     pub fn new(config: Config) -> Result<Self> {
         let player = Player::new(&config.mpd)?;
 
-        Ok(Handle {
+        Ok(Context {
             config,
             chain: markov::Chain::new(),
             player,
@@ -49,31 +49,31 @@ impl Handle {
     }
 }
 
-impl Borrow<Config> for Handle {
+impl Borrow<Config> for Context {
     fn borrow(&self) -> &Config {
         &self.config
     }
 }
 
-impl Borrow<markov::Chain<String>> for Handle {
+impl Borrow<markov::Chain<String>> for Context {
     fn borrow(&self) -> &markov::Chain<String> {
         &self.chain
     }
 }
 
-impl BorrowMut<markov::Chain<String>> for Handle {
+impl BorrowMut<markov::Chain<String>> for Context {
     fn borrow_mut(&mut self) -> &mut markov::Chain<String> {
         &mut self.chain
     }
 }
 
-impl Borrow<Player> for Handle {
+impl Borrow<Player> for Context {
     fn borrow(&self) -> &Player {
         &self.player
     }
 }
 
-impl BorrowMut<Player> for Handle {
+impl BorrowMut<Player> for Context {
     fn borrow_mut(&mut self) -> &mut Player {
         &mut self.player
     }

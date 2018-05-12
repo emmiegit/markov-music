@@ -24,7 +24,6 @@ extern crate clap;
 
 #[macro_use]
 extern crate diesel;
-extern crate futures;
 
 #[macro_use]
 extern crate lazy_static;
@@ -37,22 +36,20 @@ extern crate rand;
 #[macro_use]
 extern crate serde;
 extern crate simple_logging;
-extern crate tokio_core;
-extern crate tokio_io;
-extern crate tokio_uds;
 extern crate toml;
 
 mod config;
+mod context;
 mod database;
 mod error;
-mod handle;
 mod logging;
 mod markov;
 mod player;
+mod socket;
 mod utils;
 
 use config::{parse_args, Config};
-use handle::Handle;
+use context::Context;
 use std::process::exit;
 
 pub use error::{Error, StdError};
@@ -72,16 +69,16 @@ fn main() {
     logging::setup();
 
     if let Err(e) = main_loop(config) {
-        eprintln!("Error in main loop: {}", e);
+        error!("Error in main loop: {}", e);
         exit(1);
     }
 }
 
 fn main_loop(config: Config) -> Result<()> {
-    let mut handle = Handle::new(config)?;
+    let mut ctx = Context::new(config)?;
 
     loop {
-        handle.wait()?;
+        ctx.wait()?;
         // TODO
     }
 }

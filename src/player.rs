@@ -20,7 +20,7 @@
 
 use Result;
 use config::MpdConfig;
-use mpd::{self, Idle, Subsystem};
+use mpd::{self, Idle};
 
 #[derive(Debug)]
 pub struct Player {
@@ -39,7 +39,7 @@ impl Player {
     }
 
     pub fn update(&mut self) -> Result<()> {
-        let _ = self.conn.wait(&[Subsystem::Update, Subsystem::Queue])?;
+        let _ = self.conn.wait(&[])?;
 
         unimplemented!()
     }
