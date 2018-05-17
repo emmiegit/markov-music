@@ -19,7 +19,7 @@
  */
 
 use choose::{random_key, roulette_wheel};
-use rand::thread_rng;
+use rand::Rng;
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::fmt::{self, Debug};
@@ -61,18 +61,16 @@ where
         }
     }
 
-    pub fn start(&self) -> Option<&T> {
-        let mut rng = thread_rng();
-        random_key(&self.assocs, &mut rng)
+    pub fn start(&self, rng: &mut Rng) -> Option<&T> {
+        random_key(&self.assocs, rng)
     }
 
-    pub fn next<U>(&self, current: &U) -> Option<&T>
+    pub fn next<U>(&self, current: &U, rng: &mut Rng) -> Option<&T>
     where U: Borrow<T>,
           U: ?Sized,
     {
-        let mut rng = thread_rng();
         match self.assocs.get(current.borrow()) {
-            Some(probs) => roulette_wheel(probs, &mut rng),
+            Some(probs) => roulette_wheel(probs, rng),
             None => None,
         }
     }
