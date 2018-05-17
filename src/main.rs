@@ -38,6 +38,7 @@ extern crate serde;
 extern crate simple_logging;
 extern crate toml;
 
+mod choose;
 mod config;
 mod context;
 mod database;

@@ -22,13 +22,6 @@ table! {
     associations (song, next) {
         song -> Text,
         next -> Text,
-        weight -> Integer,
-    }
-}
-
-table! {
-    starters (song) {
-        song -> Text,
-        weight -> Integer,
+        weight -> Float,
     }
 }

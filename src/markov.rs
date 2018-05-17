@@ -18,20 +18,20 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use choose::{random_key, roulette_wheel};
 use rand::thread_rng;
 use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::fmt::{self, Debug};
 use std::hash::Hash;
-use utils::roulette_wheel;
+use utils::sigmoid;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq)]
 pub struct Chain<T>
 where
     T: Eq + Hash,
 {
-    assocs: HashMap<T, HashMap<T, i32>>,
-    start: HashMap<T, i32>,
+    assocs: HashMap<T, HashMap<T, f32>>,
 }
 
 impl<T> Chain<T>
@@ -41,14 +41,15 @@ where
     pub fn new() -> Self {
         Chain {
             assocs: HashMap::new(),
-            start: HashMap::new(),
         }
     }
 
-    pub fn modify_weight(&mut self, prev: T, next: T, diff: i32) {
+    pub fn modify_weight(&mut self, prev: T, next: T, diff: f32) {
+        assert!(diff.is_finite());
+
         let probs = self.assocs.entry(prev).or_insert_with(HashMap::new);
-        let weight = probs.entry(next).or_insert(0);
-        *weight += diff;
+        let weight = probs.entry(next).or_insert(0.0);
+        *weight = sigmoid(*weight + diff);
     }
 
     pub fn clear<U>(&mut self, item: &U)
@@ -62,7 +63,7 @@ where
 
     pub fn start(&self) -> Option<&T> {
         let mut rng = thread_rng();
-        roulette_wheel(&self.start, &mut rng)
+        random_key(&self.assocs, &mut rng)
     }
 
     pub fn next<U>(&self, current: &U) -> Option<&T>
@@ -71,23 +72,32 @@ where
     {
         let mut rng = thread_rng();
         match self.assocs.get(current.borrow()) {
-            Some(probs) => roulette_wheel(&probs, &mut rng),
+            Some(probs) => roulette_wheel(probs, &mut rng),
             None => None,
         }
     }
 
-    pub fn next_or_new<U>(&self, current: &U) -> Option<&T>
-    where U: Borrow<T>,
-          U: ?Sized,
-   {
-       self.next(current.borrow()).or_else(|| self.start())
-   }
-
-    pub fn possible_next<U>(&self, current: &U) -> Option<&HashMap<T, i32>>
+    pub fn possible_next<U>(&self, current: &U) -> Option<&HashMap<T, f32>>
     where U: Borrow<T>,
           U: ?Sized,
     {
         self.assocs.get(current.borrow())
+    }
+}
+
+impl<T> Clone for Chain<T>
+where
+    T: Eq + Hash,
+    T: Clone,
+{
+    fn clone(&self) -> Self {
+        Chain {
+            assocs: self.assocs.clone(),
+        }
+    }
+
+    fn clone_from(&mut self, source: &Self) {
+        self.assocs.clone_from(&source.assocs);
     }
 }
 
@@ -99,7 +109,6 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("Chain")
          .field("assocs", &self.assocs)
-         .field("start", &self.start)
          .finish()
     }
 }

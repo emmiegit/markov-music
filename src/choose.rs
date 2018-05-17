@@ -1,5 +1,5 @@
 /*
- * utils.rs
+ * choose.rs
  *
  * markov-music - A music player that uses Markov chains to choose songs
  * Copyright (c) 2017-2018 Ammon Smith
@@ -18,20 +18,28 @@
  * along with markov-music.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::{env, str};
-use std::path::PathBuf;
+use rand::Rng;
+use std::collections::HashMap;
+use std::hash::Hash;
 
-lazy_static! {
-    pub static ref HOME_DIR: PathBuf = env::home_dir().expect("Unable to get home directory");
+macro_rules! len {
+    ($map:tt) => { $map.len() as f32 }
 }
 
-#[inline]
-pub fn empty_mut_str() -> &'static mut str {
-    unsafe { str::from_utf8_unchecked_mut(&mut []) }
+pub fn random_key<'a, K: Eq + Hash, V>(map: &'a HashMap<K, V>, rng: &mut Rng) -> Option<&'a K> {
+    let index = rng.next_f32() * len!(map);
+    map.keys().nth(index as usize)
 }
 
-#[inline]
-pub fn sigmoid(n: f32) -> f32 {
-    let en = n.exp();
-    en / (en + 1.0)
+pub fn roulette_wheel<'a, K: Eq + Hash>(map: &'a HashMap<K, f32>, rng: &mut Rng) -> Option<&'a K> {
+    let mut rand = rng.next_f32() * len!(map);
+    for (key, &weight) in map.iter() {
+        if rand < weight {
+            return Some(key);
+        }
+
+        rand -= weight;
+    }
+
+    None
 }

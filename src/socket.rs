@@ -20,8 +20,7 @@
 
 use Result;
 use config::DaemonConfig;
-use std::os::unix::net::{SocketAddr, UnixDatagram};
-use std::path::PathBuf;
+use std::os::unix::net::UnixDatagram;
 use std::process::exit;
 use std::str;
 use utils::empty_mut_str;

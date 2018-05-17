@@ -24,7 +24,7 @@ use super::schema::*;
 pub struct Association {
     pub song: String,
     pub next: String,
-    pub weight: i32,
+    pub weight: f32,
 }
 
 #[derive(Insertable, Debug, Copy, Clone, PartialEq)]
@@ -32,18 +32,5 @@ pub struct Association {
 pub struct NewAssociation<'a> {
     pub song: &'a str,
     pub next: &'a str,
-    pub weight: i32,
-}
-
-#[derive(Queryable, Debug, Clone, PartialEq)]
-pub struct Start {
-    pub song: String,
-    pub weight: i32,
-}
-
-#[derive(Insertable, Debug, Copy, Clone, PartialEq)]
-#[table_name = "starters"]
-pub struct NewStart<'a> {
-    pub song: &'a str,
-    pub weight: i32,
+    pub weight: f32,
 }

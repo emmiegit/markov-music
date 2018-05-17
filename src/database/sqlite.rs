@@ -69,20 +69,10 @@ impl Database for SqliteDatabase {
 
     fn clear(&mut self, song: &str) -> Result<()> {
         self.conn.transaction::<(), Error, _>(|| {
-            {
-                use self::starters::dsl;
+            use self::associations::dsl;
 
-                diesel::update(starters::table.filter(dsl::song.eq(song)))
-                    .set(weight.eq(0))
-                    .execute(&self.conn)?;
-            }
-
-            {
-                use self::associations::dsl;
-
-                diesel::delete(associations::table.filter(dsl::song.eq(song)))
-                    .execute(&self.conn)?;
-            }
+            diesel::delete(associations::table.filter(dsl::song.eq(song)))
+                .execute(&self.conn)?;
 
             Ok(())
         })
